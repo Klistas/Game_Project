@@ -57,3 +57,31 @@ Next step: play all three situations and keep only the one with the strongest vi
 - Prepared first-three fallback packets under `Builds/BodyRebelsExternalTestRuns` and a batch runbook under `Builds/ExternalTestBatches`.
 
 Fallback rule: use this build only if Everyone Innocent's first-three signal returns `PATCH_OR_SWITCH`.
+
+## 2026-06-27 Concept Art Vertical Slice
+
+- Reworked `GamePrototype.BodyRebels.BodyRebelsPrototype` toward the supplied concept art.
+- New fun-validation loop:
+  - choose one of five body-part opinions,
+  - resolve it with `Follow`, `Suppress`, or `Compromise`,
+  - show an immediate social-result panel,
+  - advance through one day of social situations.
+- Current playable day:
+  - `interview_intro`
+  - `blind_date`
+  - `convenience_store`
+  - `company_dinner`
+- Added body-state layer for:
+  - brain / mouth / left hand / right hand / legs,
+  - level, trust, fatigue, and tag,
+  - `Tab` body-state overlay.
+- Added concept-art aligned controls:
+  - `1-5`: select body opinion,
+  - `Q`: follow,
+  - `W`: suppress,
+  - `E`: compromise,
+  - `Space`: advance after result,
+  - `R`: restart day.
+- Updated editor default prototype to `BodyRebels` in `PrototypeRuntimeDefaults.json`.
+
+Validation question: does the player feel tempted to choose the risky funny body opinion even when the safe option exists?
