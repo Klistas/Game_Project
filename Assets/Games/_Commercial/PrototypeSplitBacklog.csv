@@ -1,0 +1,5 @@
+﻿"prototype","priority","task","trigger","done_when"
+"EveryoneInnocent","P2","Re-stage split payload after source changes.","Prototype source, shared runtime, packages, or project settings change.","Latest split payload is newer than relevant source changes."
+"BodyRebels","P2","Re-stage split payload after source changes.","Prototype source, shared runtime, packages, or project settings change.","Latest split payload is newer than relevant source changes."
+"BodyRebels","P2","Draft minimal Steam store positioning for fallback candidate.","Fallback becomes active candidate.","Prototype has a one-line pitch, tags, screenshot list, and price hypothesis."
+"IntendedFeature","P2","Re-stage split payload after source changes.","Prototype source, shared runtime, packages, or project settings change.","Latest split payload is newer than relevant source changes."

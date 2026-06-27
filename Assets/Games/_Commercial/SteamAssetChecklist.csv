@@ -1,0 +1,18 @@
+asset_id,required,width,height,format,path,status,notes
+store_header_capsule,yes,920,430,png,Assets/Marketing/Steam/EveryoneInnocent/store_header_capsule.png,planned,Logo plus readable cleanup/blame key art.
+store_small_capsule,yes,462,174,png,Assets/Marketing/Steam/EveryoneInnocent/store_small_capsule.png,planned,Readable logo at small size.
+store_main_capsule,yes,1232,706,png,Assets/Marketing/Steam/EveryoneInnocent/store_main_capsule.png,planned,Primary key art.
+store_vertical_capsule,yes,748,896,png,Assets/Marketing/Steam/EveryoneInnocent/store_vertical_capsule.png,planned,Vertical discovery capsule.
+store_screenshot_01,yes,1920,1080,png,Assets/Marketing/Steam/EveryoneInnocent/screenshots/screenshot_01_cleanup.png,planned,Show cleanup teamwork.
+store_screenshot_02,yes,1920,1080,png,Assets/Marketing/Steam/EveryoneInnocent/screenshots/screenshot_02_hidden_blame.png,planned,Show evidence planting.
+store_screenshot_03,yes,1920,1080,png,Assets/Marketing/Steam/EveryoneInnocent/screenshots/screenshot_03_trial_reveal.png,planned,Show replay accusation.
+store_screenshot_04,yes,1920,1080,png,Assets/Marketing/Steam/EveryoneInnocent/screenshots/screenshot_04_four_player_chaos.png,planned,Needed after multiplayer/AI stand-ins exist.
+store_screenshot_05,yes,1920,1080,png,Assets/Marketing/Steam/EveryoneInnocent/screenshots/screenshot_05_score_summary.png,planned,Show readable result screen.
+page_background,no,1438,810,png,Assets/Marketing/Steam/EveryoneInnocent/page_background.png,planned,Subtle background; not too bright.
+shortcut_icon,yes,512,512,png,Assets/Marketing/Steam/EveryoneInnocent/shortcut_icon.png,planned,Steam can generate ico from png.
+app_icon,yes,184,184,jpg,Assets/Marketing/Steam/EveryoneInnocent/app_icon.jpg,planned,Compact client icon.
+library_capsule,yes,600,900,png,Assets/Marketing/Steam/EveryoneInnocent/library_capsule.png,planned,Library vertical art.
+library_hero,yes,3840,1240,png,Assets/Marketing/Steam/EveryoneInnocent/library_hero.png,planned,Artwork only; logo overlays separately.
+library_logo,yes,1280,720,png,Assets/Marketing/Steam/EveryoneInnocent/library_logo.png,planned,Transparent logo.
+trailer_announce,yes,1920,1080,mp4,Assets/Marketing/Steam/EveryoneInnocent/trailers/announce_trailer.mp4,planned,30-45 second hook trailer.
+trailer_demo,no,1920,1080,mp4,Assets/Marketing/Steam/EveryoneInnocent/trailers/demo_trailer.mp4,planned,Use if demo scope tests well.

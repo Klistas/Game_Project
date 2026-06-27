@@ -1,0 +1,6 @@
+﻿"prototype","priority","task","trigger","done_when"
+"Everyone Innocent","P0","Complete first-three observed sessions EI-001 through EI-003.","Current active candidate is in first-three gate.","FirstBatchSignalReport is CONTINUE_TO_10 or PATCH_OR_SWITCH."
+"Everyone Innocent","P0","If first-three passes, run EI-004 through EI-010.","FirstBatchSignalReport is CONTINUE_TO_10.","ExternalTestGateReport recommends pass or fail after 10 sessions."
+"Body Rebels","P1","Keep fallback build and smoke readiness green.","Everyone Innocent remains active.","BodyRebelsFallbackSmokeReport remains PASS after source changes."
+"Body Rebels","P0-if-triggered","Prepare and run BR-001 through BR-003.","Everyone Innocent returns PATCH_OR_SWITCH or fails 10-person gate.","BodyRebelsFirstBatchSignalReport gives CONTINUE_TO_10 or PATCH_OR_SWITCH."
+"Intended Feature","P2","Run manual 3-minute hook pass and update scorecard.","Both higher-ranked candidates fail or capacity is available.","Intended Feature has comparable first-read evidence."

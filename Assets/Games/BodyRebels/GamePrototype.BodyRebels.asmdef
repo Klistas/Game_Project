@@ -1,0 +1,17 @@
+{
+  "name": "GamePrototype.BodyRebels",
+  "rootNamespace": "GamePrototype.BodyRebels",
+  "references": [
+    "GUID:1e94ae7d7bc9b4a409e28e1016a9eba0",
+    "GUID:75469ad4d38634e559750d17036d5f7c"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

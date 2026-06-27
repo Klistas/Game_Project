@@ -1,0 +1,18 @@
+{
+  "editorDefault": "IntendedFeature",
+  "playerDefault": "EveryoneInnocent",
+  "aliases": [
+    {
+      "alias": "Intended",
+      "prototypeId": "IntendedFeature"
+    },
+    {
+      "alias": "Body",
+      "prototypeId": "BodyRebels"
+    },
+    {
+      "alias": "Everyone",
+      "prototypeId": "EveryoneInnocent"
+    }
+  ]
+}
