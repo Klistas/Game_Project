@@ -1,170 +1,215 @@
 # Everyone Innocent AI Asset Prompts
 
-목표: 친구들과 사고 현장을 같이 수습하지만, 몰래 물증을 심어 서로에게 누명을 씌우는 CCTV 디오라마 파티게임 느낌을 만든다.
-생성 이미지는 `Assets/Games/EveryoneInnocent/Resources/EveryoneInnocentSprites`에 파일명 그대로 넣는다.
+이 문서는 새 컨셉 방향에 맞춘 이미지 생성 프롬프트다.
+참조 이미지는 `Assets/Games/EveryoneInnocent/Art/References`에 보관되어 있다.
 
 ## 공통 스타일
 
-```text
-Korean indie party game asset, fixed CCTV diorama view, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, comedic crime-scene cleanup mood, slightly absurd but not dark, warm museum lighting, game-ready asset, no readable text, no UI, no logo, no watermark
-```
+아래 문장을 모든 프롬프트 끝에 붙인다.
 
 ```text
-negative prompt: readable text, letters, UI, menu, logo, watermark, signature, photorealistic, 3D render, blurry, cropped subject, horror, gore, realistic violence, distorted anatomy, extra fingers
+Korean commercial indie party game concept art, fixed isometric diorama camera, cute chibi 2.5D characters, dense accident scene full of readable props, cozy dark cinematic lighting, chunky clean outlines, polished mobile/Steam game UI feeling, playful betrayal comedy, evidence-based slapstick, high readability, no gore, no horror, no watermark
 ```
 
-## 빠른 최소 세트
-
-처음에는 아래 8개만 뽑아도 화면 체감이 크게 좋아진다.
-
-- `room_backdrop.png`
-- `red_body.png`
-- `blue_body.png`
-- `cream_spill.png`
-- `broken_vase.png`
-- `shard_evidence.png`
-- `blue_bag.png`
-- `prosecutor_bot.png`
-
-## 배경/무대
-
-### `room_backdrop.png`
-
-권장 크기: 1920x1080 또는 1280x720.
+네거티브 프롬프트:
 
 ```text
-Empty museum night-gallery diorama room seen from a fixed CCTV camera, small exhibit room, polished floor, display wall, subtle security camera vibe, central area clear for two small characters and evidence objects, comedic cleanup accident atmosphere, no people, no readable text, no UI.
-Korean indie party game asset, fixed CCTV diorama view, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, comedic crime-scene cleanup mood, slightly absurd but not dark, warm museum lighting, game-ready asset, no readable text, no UI, no logo, no watermark
+photorealistic, realistic violence, gore, horror, empty room, plain background, low detail, blurry, unreadable clutter, bad anatomy, extra fingers, deformed hands, duplicate faces, messy perspective, watermark, signature, real brand logo
 ```
 
-### `work_table.png`
+## 현재 프로토타입에 바로 쓰는 방법
+
+현재 런타임은 배경을 `room_backdrop.png` 하나로 읽는다.
+아래 현장 배경 중 하나를 생성한 뒤 `Assets/Games/EveryoneInnocent/Resources/EveryoneInnocentSprites/room_backdrop.png`로 넣으면 바로 적용된다.
+
+캐릭터/증거/효과는 같은 폴더의 슬롯 파일명을 그대로 사용한다.
+
+## 컨셉샷 프롬프트
+
+아래 프롬프트는 UI까지 포함한 고해상도 방향성 이미지용이다. 실제 게임 에셋으로 넣을 때는 UI 없는 배경 버전을 따로 뽑는다.
+
+### 박물관 야간관 전체 컨셉
 
 ```text
-Wooden evidence work table prop for a museum cleanup scene, front-facing, simple readable shape, small scattered tools but no readable labels, transparent background, centered.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no readable text, no UI, no logo, no watermark
+Full gameplay screenshot concept for a Korean party game titled "Totally Innocent", a night museum gallery accident scene. Fixed isometric diorama room, cute chibi players with colored caps working together to restore a shattered porcelain vase, one player secretly planting evidence into another player's backpack, visible CCTV camera on the wall, security guard NPC suspicious, footprints and ceramic shards on the floor, left-side task checklist UI, timer, normalcy gauge, right-side witness alert level and REC camera panel, bottom control bar, polished dark comedy UI.
+Korean commercial indie party game concept art, fixed isometric diorama camera, cute chibi 2.5D characters, dense accident scene full of readable props, cozy dark cinematic lighting, chunky clean outlines, polished mobile/Steam game UI feeling, playful betrayal comedy, evidence-based slapstick, high readability, no gore, no horror, no watermark
 ```
 
-### `display_stand.png`
+### 편의점 야간조 전체 컨셉
 
 ```text
-Museum display stand prop, low pedestal for a repaired vase silhouette, slightly fancy but simple, front-facing, transparent background, centered.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no readable text, no UI, no logo, no watermark
+Full gameplay screenshot concept for "Totally Innocent", a messy Korean convenience store night shift accident scene. Fixed isometric diorama room, open frozen-food fridge spilling frost, snack rack knocked over, soda spills and footprints on the tile floor, chibi players in colored caps cleaning, carrying products, hiding suspicious items in a backpack, nervous cashier NPC, wall CCTV monitor, left task checklist UI, timer, normalcy gauge, right witness alert and REC panel, bottom control bar, funny betrayal party-game mood.
+Korean commercial indie party game concept art, fixed isometric diorama camera, cute chibi 2.5D characters, dense accident scene full of readable props, cozy dark cinematic lighting, chunky clean outlines, polished mobile/Steam game UI feeling, playful betrayal comedy, evidence-based slapstick, high readability, no gore, no horror, no watermark
 ```
 
-### `cctv_frame_top.png` / `cctv_frame_bottom.png`
+### 웨딩홀 대기실 전체 컨셉
 
 ```text
-Simple CCTV recording frame strip, dark grey metallic border with subtle camera-monitor feel, transparent background, no text, no icons, game overlay asset.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no readable text, no UI, no logo, no watermark
+Full gameplay screenshot concept for "Totally Innocent", a wedding hall waiting room accident scene. Fixed isometric diorama room, collapsed wedding cake, flowers and gift boxes everywhere, chibi players in colored caps cleaning cream, carrying presents, swapping name tags, photographer NPC suspicious, CCTV REC overlay, left task checklist UI, timer and normalcy gauge, right witness alert panel, bottom controls, cute chaotic social betrayal comedy.
+Korean commercial indie party game concept art, fixed isometric diorama camera, cute chibi 2.5D characters, dense accident scene full of readable props, warm wedding lighting, chunky clean outlines, polished mobile/Steam game UI feeling, playful betrayal comedy, evidence-based slapstick, high readability, no gore, no horror, no watermark
 ```
 
-## 플레이어
+### 방송국 생방송 세트 전체 컨셉
 
-두 플레이어는 같은 체형으로 만들고 색상만 다르게 뽑는다. 각 파츠는 투명 PNG 권장.
+```text
+Full gameplay screenshot concept for "Totally Innocent", a live broadcast studio accident scene. Fixed isometric diorama room, broken set wall, ON AIR sign, cameras, microphone desk, scattered cue cards, white powder footprints, chibi players cleaning the set, rotating a camera, hiding evidence in a backpack, panicked producer NPC with headset, left task checklist UI, timer, normalcy gauge, right witness alert and REC panel, bottom controls, polished dark comedy party-game screenshot.
+Korean commercial indie party game concept art, fixed isometric diorama camera, cute chibi 2.5D characters, dense accident scene full of readable props, dramatic studio lighting, chunky clean outlines, polished mobile/Steam game UI feeling, playful betrayal comedy, evidence-based slapstick, high readability, no gore, no horror, no watermark
+```
+
+### CCTV 재판 화면 전체 컨셉
+
+```text
+Full courtroom result screen concept for "Totally Innocent", CCTV trial board after the cleanup round. Dark UI dashboard, three large evidence clip cards in the center with arrows connecting them, accused red player mugshot panel on the right with guilty gauge, AI prosecutor bot speech bubble, left panel showing team success, evidence channel counts, creative troll MVP, bottom jury voting row with cute chibi portraits, short excuse-card buttons, red warning stamp, polished Korean party-game UI, high readability.
+Korean commercial indie party game concept art, CCTV replay trial screen, cute chibi 2.5D character portraits, evidence-based slapstick, dark polished UI, red warning accents, gold reward accents, high readability, no gore, no horror, no watermark
+```
+
+## 실제 런타임 배경 프롬프트
+
+아래는 UI와 캐릭터를 제거한 배경 전용 프롬프트다. 현재 프로토타입에서는 마음에 드는 현장 하나를 `room_backdrop.png`로 저장해서 사용한다.
+
+### `room_backdrop.png` 후보: 박물관 야간관
+
+```text
+Empty isometric night museum gallery accident room background, shattered porcelain vase on a restoration table, ceramic shards, footprints, cleaning cart, CCTV camera on wall, display ropes, security booth corner, warm spotlights, center area readable for small chibi characters, no characters, no UI, no readable text, no logo.
+Korean commercial indie party game background, fixed isometric diorama camera, dense accident scene full of readable props, cozy dark cinematic lighting, chunky clean outlines, polished game asset, high readability, no gore, no horror, no watermark
+```
+
+### `room_backdrop.png` 후보: 편의점 야간조
+
+```text
+Empty isometric Korean convenience store night-shift accident background, open freezer doors, frost cloud, knocked-over snack rack, soda spill, footprints, cashier counter, CCTV monitor, product crates, center area readable for small chibi characters, no characters, no UI, no readable brand text, no logo.
+Korean commercial indie party game background, fixed isometric diorama camera, dense accident scene full of readable props, cozy dark cinematic lighting, chunky clean outlines, polished game asset, high readability, no gore, no horror, no watermark
+```
+
+### `room_backdrop.png` 후보: 웨딩홀 대기실
+
+```text
+Empty isometric wedding hall waiting room accident background, collapsed wedding cake, cream splashes, flowers, gift boxes, signboard shapes without readable text, photographer area, ornate warm lighting, center area readable for small chibi characters, no characters, no UI, no readable text, no logo.
+Korean commercial indie party game background, fixed isometric diorama camera, dense accident scene full of readable props, warm wedding lighting, chunky clean outlines, polished game asset, high readability, no gore, no horror, no watermark
+```
+
+### `room_backdrop.png` 후보: 방송국 생방송 세트
+
+```text
+Empty isometric live broadcast studio accident background, broken set wall, ON AIR style light sign without readable text, cameras, microphone desk, scattered cue cards, white powder footprints, cleaning tools, studio lights, center area readable for small chibi characters, no characters, no UI, no readable text, no logo.
+Korean commercial indie party game background, fixed isometric diorama camera, dense accident scene full of readable props, dramatic studio lighting, chunky clean outlines, polished game asset, high readability, no gore, no horror, no watermark
+```
+
+## 캐릭터 파츠 슬롯
+
+각 파츠는 투명 배경 PNG 권장. 현재 런타임은 색상별 몸/머리 조합을 사용한다.
 
 ### `red_body.png`
 
 ```text
-Small red player body cutout for a Korean party game, guilty but pretending to be innocent, simple rounded body, no head, front-facing, centered, transparent background.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, comedic suspicious energy, game-ready asset, no text, no UI, no logo, no watermark
+Cute chibi party-game player body, red hoodie and red baseball cap, small backpack, guilty but pretending to help, no head or simplified face area, isometric game cutout, transparent background, centered.
+Korean commercial indie party game asset, cute chibi 2.5D character, chunky clean outlines, polished game-ready sprite, high readability, no watermark
 ```
 
 ### `red_head.png`
 
 ```text
-Small cartoon head for the red player, anxious innocent face, nervous eyes, tiny sweat drop, front-facing, centered, transparent background.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, comedic suspicious energy, game-ready asset, no text, no UI, no logo, no watermark
+Cute chibi head for red player, red cap, anxious guilty expression, sweat drops, big readable eyes, isometric game cutout, transparent background, centered.
+Korean commercial indie party game asset, cute chibi 2.5D character, chunky clean outlines, polished game-ready sprite, high readability, no watermark
 ```
 
 ### `blue_body.png`
 
 ```text
-Small blue player body cutout for a Korean party game, falsely accused but still suspicious, simple rounded body, no head, front-facing, centered, transparent background.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, comedic suspicious energy, game-ready asset, no text, no UI, no logo, no watermark
+Cute chibi party-game player body, blue work outfit and blue baseball cap, carrying cleanup tool or shard, no head or simplified face area, isometric game cutout, transparent background, centered.
+Korean commercial indie party game asset, cute chibi 2.5D character, chunky clean outlines, polished game-ready sprite, high readability, no watermark
 ```
 
 ### `blue_head.png`
 
 ```text
-Small cartoon head for the blue player, confused and accused expression, raised eyebrows, tiny sweat drop, front-facing, centered, transparent background.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, comedic suspicious energy, game-ready asset, no text, no UI, no logo, no watermark
+Cute chibi head for blue player, blue cap, worried falsely accused expression, sweat drops, big readable eyes, isometric game cutout, transparent background, centered.
+Korean commercial indie party game asset, cute chibi 2.5D character, chunky clean outlines, polished game-ready sprite, high readability, no watermark
 ```
 
-### `red_highlight.png` / `blue_highlight.png`
-
-```text
-Soft translucent suspicion highlight aura for a small party game character, rounded vertical glow, simple silhouette, transparent background, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
-```
-
-## 물증/재판 오브젝트
+## 물증/상호작용 슬롯
 
 ### `cream_spill.png`
 
 ```text
-Comedic cream spill evidence prop on a museum floor, pale yellow splat with chunky outline, readable from far away, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Readable cream or powder spill evidence on the floor, footprints crossing through it, cute chunky game prop, transparent background, centered, no text.
+Korean commercial indie party game asset, fixed isometric view, polished sprite, high readability, no watermark
 ```
 
 ### `broken_vase.png`
 
 ```text
-Broken museum vase pieces evidence prop, several ceramic shards arranged clearly, funny accident mood, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Broken porcelain vase evidence pile, blue-and-white ceramic shards, museum accident prop, readable from far away, transparent background, centered, no text.
+Korean commercial indie party game asset, fixed isometric view, polished sprite, high readability, no watermark
 ```
 
 ### `fixed_vase.png`
 
 ```text
-Fake repaired museum vase silhouette, obviously patched together but presentable from far away, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Fake repaired porcelain vase silhouette, cracked but assembled enough to fool visitors, cute museum cleanup prop, transparent background, centered, no text.
+Korean commercial indie party game asset, fixed isometric view, polished sprite, high readability, no watermark
 ```
 
 ### `shard_evidence.png`
 
 ```text
-Single incriminating ceramic shard evidence item, bright orange edge highlight, small but readable, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Single suspicious porcelain shard evidence item, blue-and-white ceramic fragment with bright outline, transparent background, centered, no text.
+Korean commercial indie party game asset, fixed isometric view, polished sprite, high readability, no watermark
 ```
 
 ### `blue_bag.png`
 
 ```text
-Small blue evidence bag or backpack prop, open enough to hide a shard, suspicious but cute, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Small backpack evidence socket, dark bag with blue accent, open pocket where suspicious item can be hidden, cute chunky game prop, transparent background, centered, no text.
+Korean commercial indie party game asset, fixed isometric view, polished sprite, high readability, no watermark
 ```
 
 ### `blue_name_tag.png`
 
 ```text
-Small blue name-tag evidence sticker without readable letters, rectangular label shape, strong blue color, transparent background, centered.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no text, no UI, no logo, no watermark
+Small blue name-tag or responsibility label without readable letters, sticker-like evidence prop, transparent background, centered, no text.
+Korean commercial indie party game asset, fixed isometric view, polished sprite, high readability, no watermark
 ```
 
 ### `cctv_cone.png`
 
 ```text
-Transparent CCTV vision cone effect, pale cyan beam, slightly hand-painted, clear directionality, transparent background, no text.
-Korean indie party game asset, clean readable effect, no UI, no logo, no watermark
+Transparent CCTV vision cone effect, pale cyan beam with slight red REC tension, fixed isometric directionality, transparent background, no text.
+Korean commercial indie party game effect asset, polished sprite, high readability, no watermark
 ```
 
 ### `prosecutor_bot.png`
 
 ```text
-Cute AI prosecutor robot judge, small floating security-camera bot, stern expression, comic courtroom energy, front-facing, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Cute AI prosecutor mascot bot, small security-camera judge character, stern but funny expression, black cap, speech-bubble friendly silhouette, transparent background, centered, no text.
+Korean commercial indie party game mascot asset, cute chibi 2.5D, polished sprite, high readability, no watermark
 ```
 
 ### `evidence_arrow.png`
 
 ```text
-Comic evidence replay arrow effect, orange-red directional arrow with motion streaks, transparent background, centered, no text.
-Korean indie party game asset, hand-painted 2D illustration, chunky clean outlines, readable silhouettes, game-ready asset, no UI, no logo, no watermark
+Comic evidence replay arrow, red-orange directional arrow with motion streaks, CCTV trial energy, transparent background, centered, no text.
+Korean commercial indie party game UI effect asset, polished sprite, high readability, no watermark
 ```
 
 ### `active_cursor.png`
 
 ```text
-Small active-player cursor underline, warm yellow glow strip, simple readable shape, transparent background, no text.
-Korean indie party game asset, clean readable effect, no UI, no logo, no watermark
+Active player cursor underline, soft yellow-white curved arrow or glow strip, controller-readable effect, transparent background, no text.
+Korean commercial indie party game UI effect asset, polished sprite, high readability, no watermark
 ```
+
+## 다음 구현용 추가 슬롯 제안
+
+현재는 문서상 제안이며, 다음 코드 패스에서 연결한다.
+
+- `scene_museum_night_gallery.png`
+- `scene_convenience_night_shift.png`
+- `scene_wedding_waiting_room.png`
+- `scene_live_broadcast_set.png`
+- `trial_board_background.png`
+- `task_panel_frame.png`
+- `witness_alert_panel.png`
+- `rec_panel.png`
+- `bottom_control_bar.png`
+- `jury_vote_portraits.png`
