@@ -33,6 +33,7 @@ namespace GamePrototype.EveryoneInnocent
         private readonly List<Button> actionButtons = new List<Button>();
         private readonly List<Text> actionLabels = new List<Text>();
         private readonly List<string> replayLines = new List<string>();
+        private readonly Dictionary<string, Sprite> spriteAssets = new Dictionary<string, Sprite>();
 
         private Sprite unitSprite;
         private Font uiFont;
@@ -196,6 +197,39 @@ namespace GamePrototype.EveryoneInnocent
             unitSprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
             unitSprite.name = "EI_RuntimeUnitSprite";
             uiFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Segoe UI", "Arial" }, 18);
+            LoadSpriteAssets();
+        }
+
+        private void LoadSpriteAssets()
+        {
+            spriteAssets.Clear();
+            string[] keys =
+            {
+                "room_backdrop", "cctv_frame_top", "cctv_frame_bottom", "work_table", "display_stand",
+                "red_body", "red_head", "blue_body", "blue_head", "red_highlight", "blue_highlight",
+                "cream_spill", "broken_vase", "fixed_vase", "shard_evidence", "blue_bag", "blue_name_tag",
+                "cctv_cone", "prosecutor_bot", "evidence_arrow", "active_cursor"
+            };
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                string key = keys[i];
+                var sprite = Resources.Load<Sprite>("EveryoneInnocentSprites/" + key);
+                if (sprite == null)
+                {
+                    var texture = Resources.Load<Texture2D>("EveryoneInnocentSprites/" + key);
+                    if (texture != null)
+                    {
+                        float pixelsPerUnit = Mathf.Max(texture.width, texture.height);
+                        sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+                    }
+                }
+
+                if (sprite != null)
+                {
+                    spriteAssets[key] = sprite;
+                }
+            }
         }
 
         private void BuildCamera()
@@ -810,7 +844,52 @@ namespace GamePrototype.EveryoneInnocent
             renderer.sprite = unitSprite;
             renderer.color = color;
             renderer.sortingOrder = sortingOrder;
+            ApplySpriteOrColor(renderer, SpriteKeyForObject(name), color);
             return box;
+        }
+
+        private void ApplySpriteOrColor(SpriteRenderer renderer, string spriteKey, Color fallbackColor)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(spriteKey) && spriteAssets.TryGetValue(spriteKey, out var sprite))
+            {
+                renderer.sprite = sprite;
+                renderer.color = Color.white;
+                return;
+            }
+
+            renderer.sprite = unitSprite;
+            renderer.color = fallbackColor;
+        }
+
+        private static string SpriteKeyForObject(string objectName)
+        {
+            if (objectName.Contains("MuseumRoom_Diorama_Backdrop")) return "room_backdrop";
+            if (objectName.Contains("CCTV_Frame_Border_Top")) return "cctv_frame_top";
+            if (objectName.Contains("CCTV_Frame_Border_Bottom")) return "cctv_frame_bottom";
+            if (objectName.Contains("Evidence_WorkTable")) return "work_table";
+            if (objectName.Contains("RepairSlot_DisplayStand")) return "display_stand";
+            if (objectName.Contains("Player_Red") && objectName.Contains("_Body")) return "red_body";
+            if (objectName.Contains("Player_Red") && objectName.Contains("_Head")) return "red_head";
+            if (objectName.Contains("Player_Blue") && objectName.Contains("_Body")) return "blue_body";
+            if (objectName.Contains("Player_Blue") && objectName.Contains("_Head")) return "blue_head";
+            if (objectName.Contains("Red_SuspicionHighlight")) return "red_highlight";
+            if (objectName.Contains("Blue_SuspicionHighlight")) return "blue_highlight";
+            if (objectName.Contains("CleanupTask_CreamSpill")) return "cream_spill";
+            if (objectName.Contains("CleanupTask_BrokenVasePieces")) return "broken_vase";
+            if (objectName.Contains("CleanupTask_FixedVaseSilhouette")) return "fixed_vase";
+            if (objectName.Contains("Evidence_Shard_ToPlant")) return "shard_evidence";
+            if (objectName.Contains("Blue_Bag_EvidenceSocket")) return "blue_bag";
+            if (objectName.Contains("Evidence_BlueNameTag_ToSwap")) return "blue_name_tag";
+            if (objectName.Contains("CCTV_Cone_RotatableEvidence")) return "cctv_cone";
+            if (objectName.Contains("AI_ProsecutorBot_ReplayJudge")) return "prosecutor_bot";
+            if (objectName.Contains("Trial_EvidenceArrow")) return "evidence_arrow";
+            if (objectName.Contains("ActivePlayer_ControlCursor")) return "active_cursor";
+            return null;
         }
 
         private TextMesh CreateWorldLabel(string text, Vector2 position, float size, Color color)

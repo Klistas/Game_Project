@@ -27,6 +27,7 @@ namespace GamePrototype.IntendedFeature
         private readonly List<PatchCard> appliedCards = new List<PatchCard>();
         private readonly List<Button> cardButtons = new List<Button>();
         private readonly List<Text> cardLabels = new List<Text>();
+        private readonly Dictionary<string, Sprite> spriteAssets = new Dictionary<string, Sprite>();
 
         private Sprite unitSprite;
         private Font uiFont;
@@ -191,6 +192,39 @@ namespace GamePrototype.IntendedFeature
             unitSprite.name = "IF_RuntimeUnitSprite";
 
             uiFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Segoe UI", "Arial" }, 18);
+            LoadSpriteAssets();
+        }
+
+        private void LoadSpriteAssets()
+        {
+            spriteAssets.Clear();
+            string[] keys =
+            {
+                "debug_floor", "debug_wall", "start_zone", "report_zone", "goal_zone", "route_line",
+                "bug_avatar", "overfixed_wall", "high_token_ledge", "small_step", "regression_token",
+                "approval_gate", "low_platform", "locked_door", "left_floor", "right_floor",
+                "floating_warning", "ui_token", "tooltip_platform", "patch_note_platform"
+            };
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                string key = keys[i];
+                var sprite = Resources.Load<Sprite>("IntendedFeatureSprites/" + key);
+                if (sprite == null)
+                {
+                    var texture = Resources.Load<Texture2D>("IntendedFeatureSprites/" + key);
+                    if (texture != null)
+                    {
+                        float pixelsPerUnit = Mathf.Max(texture.width, texture.height);
+                        sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+                    }
+                }
+
+                if (sprite != null)
+                {
+                    spriteAssets[key] = sprite;
+                }
+            }
         }
 
         private void BuildCardDatabase()
@@ -518,12 +552,56 @@ namespace GamePrototype.IntendedFeature
             renderer.sprite = unitSprite;
             renderer.color = color;
             renderer.sortingOrder = sortingOrder;
+            ApplySpriteOrColor(renderer, SpriteKeyForObject(name), color);
             if (solid)
             {
                 box.AddComponent<BoxCollider2D>();
             }
 
             return box;
+        }
+
+        private void ApplySpriteOrColor(SpriteRenderer renderer, string spriteKey, Color fallbackColor)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(spriteKey) && spriteAssets.TryGetValue(spriteKey, out var sprite))
+            {
+                renderer.sprite = sprite;
+                renderer.color = Color.white;
+                return;
+            }
+
+            renderer.sprite = unitSprite;
+            renderer.color = fallbackColor;
+        }
+
+        private static string SpriteKeyForObject(string objectName)
+        {
+            if (objectName == "Floor") return "debug_floor";
+            if (objectName == "LeftWall" || objectName == "RightWall") return "debug_wall";
+            if (objectName == "FirstRead_StartZone") return "start_zone";
+            if (objectName == "FirstRead_ReportZone") return "report_zone";
+            if (objectName == "FirstRead_GoalZone") return "goal_zone";
+            if (objectName == "FirstRead_RouteLine") return "route_line";
+            if (objectName == "BugAvatar_Replaceable") return "bug_avatar";
+            if (objectName == "OverfixedWallCandidate") return "overfixed_wall";
+            if (objectName == "HighTokenLedge") return "high_token_ledge";
+            if (objectName == "SmallStep") return "small_step";
+            if (objectName == "RegressionToken" || objectName == "EvidenceTokenBehindDoor") return "regression_token";
+            if (objectName == "Exit_ApprovalGate") return "approval_gate";
+            if (objectName == "LowPlatform") return "low_platform";
+            if (objectName == "LockedDoor_CollisionTarget") return "locked_door";
+            if (objectName == "LeftFloor") return "left_floor";
+            if (objectName == "RightFloor") return "right_floor";
+            if (objectName == "FloatingWarning") return "floating_warning";
+            if (objectName == "UiToken") return "ui_token";
+            if (objectName == "TooltipSolid_Platform") return "tooltip_platform";
+            if (objectName == "PatchNotePlatform") return "patch_note_platform";
+            return null;
         }
 
         private TextMesh CreateWorldLabel(string text, Vector2 position, float size, Color color, Transform parent = null)
