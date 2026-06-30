@@ -1,0 +1,23 @@
+{
+  "project_name": "VARCO API Batch Export",
+  "generated_at": "2026-06-30T10:34:49",
+  "input_file": "inputs/batch_plan.csv",
+  "by_type": {
+    "image_to_3d": [
+      {
+        "id": "sample_model",
+        "type": "image_to_3d",
+        "status": "ok",
+        "unity_path": "outputs/batch/unity_export/Models/sample_model.glb"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "sample_model",
+      "type": "image_to_3d",
+      "status": "ok",
+      "unity_path": "outputs/batch/unity_export/Models/sample_model.glb"
+    }
+  ]
+}

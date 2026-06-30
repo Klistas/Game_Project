@@ -1,0 +1,10 @@
+{
+  "TID": "b50914a9-de0c-4841-b51b-1faf2e6ddd7b",
+  "target_lang": "en",
+  "source_lang": "ko",
+  "game_code": "varco-translation",
+  "svc": "varco-translation",
+  "provider": "content",
+  "source_text": "안녕하세요. 이 던전에 들어온 것을 환영합니다.",
+  "target_text": "Hello. Welcome to this dungeon."
+}

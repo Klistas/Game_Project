@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace GamePrototype.EveryoneInnocent
@@ -42,18 +43,23 @@ namespace GamePrototype.EveryoneInnocent
 
         private Transform redPlayer;
         private Transform bluePlayer;
-        private SpriteRenderer spill;
-        private SpriteRenderer brokenVase;
-        private SpriteRenderer fixedVase;
-        private SpriteRenderer shardEvidence;
-        private SpriteRenderer blueBag;
-        private SpriteRenderer blueNameTag;
-        private SpriteRenderer cctvCone;
-        private SpriteRenderer redHighlight;
-        private SpriteRenderer blueHighlight;
-        private SpriteRenderer prosecutorBot;
-        private SpriteRenderer evidenceArrow;
-        private SpriteRenderer activePlayerCursor;
+        private Renderer spill;
+        private Renderer brokenVase;
+        private Renderer fixedVase;
+        private Renderer shardEvidence;
+        private Renderer blueBag;
+        private Renderer blueNameTag;
+        private Renderer cctvCone;
+        private Renderer redHighlight;
+        private Renderer blueHighlight;
+        private Renderer prosecutorBot;
+        private Renderer evidenceArrow;
+        private Renderer activePlayerCursor;
+        private Renderer cleanupReadHalo;
+        private Renderer evidenceReadHalo;
+        private Renderer trialReadHalo;
+        private Renderer blameRouteLine;
+        private Renderer trialRouteLine;
 
         private Text titleText;
         private Text statusText;
@@ -61,9 +67,12 @@ namespace GamePrototype.EveryoneInnocent
         private Text logText;
         private Text hintText;
         private Text trialText;
+        private Text firstReadText;
+        private Text firstReadChecklistText;
         private GameObject actionPanel;
         private GameObject trialPanel;
         private GameObject launcherPanel;
+        private GameObject firstReadPanel;
 
         private int normalcy;
         private int witnessAlarm;
@@ -125,7 +134,7 @@ namespace GamePrototype.EveryoneInnocent
 
             var root = new GameObject(RuntimeRootName);
             root.AddComponent<EveryoneInnocentPrototype>();
-            Debug.Log("Everyone Innocent prototype bootstrapped.");
+            Debug.Log("모두 결백 프로토타입이 시작되었습니다.");
         }
 
         private void Awake()
@@ -242,10 +251,30 @@ namespace GamePrototype.EveryoneInnocent
             var cameraObject = new GameObject("EI_PrototypeCamera");
             prototypeCamera = cameraObject.AddComponent<Camera>();
             prototypeCamera.orthographic = true;
-            prototypeCamera.orthographicSize = 5.8f;
+            prototypeCamera.orthographicSize = 5.35f;
             prototypeCamera.backgroundColor = new Color(0.055f, 0.06f, 0.07f);
-            prototypeCamera.transform.position = new Vector3(0f, 0f, -10f);
+            prototypeCamera.transform.position = new Vector3(0f, 7.8f, -8.6f);
+            prototypeCamera.transform.rotation = Quaternion.Euler(58f, 0f, 0f);
             cameraObject.tag = "MainCamera";
+
+            RenderSettings.ambientLight = new Color(0.38f, 0.42f, 0.48f);
+
+            var keyLightObject = new GameObject("EI_Prototype_KeyLight");
+            keyLightObject.transform.SetParent(transform);
+            keyLightObject.transform.rotation = Quaternion.Euler(48f, -38f, 22f);
+            var keyLight = keyLightObject.AddComponent<Light>();
+            keyLight.type = LightType.Directional;
+            keyLight.intensity = 1.35f;
+            keyLight.color = new Color(1f, 0.93f, 0.82f);
+
+            var rimLightObject = new GameObject("EI_Prototype_RimLight");
+            rimLightObject.transform.SetParent(transform);
+            rimLightObject.transform.position = new Vector3(0f, 3.2f, 2.8f);
+            var rimLight = rimLightObject.AddComponent<Light>();
+            rimLight.type = LightType.Point;
+            rimLight.intensity = 2.2f;
+            rimLight.range = 7.5f;
+            rimLight.color = new Color(0.45f, 0.7f, 1f);
         }
 
         private void BuildWorld()
@@ -254,36 +283,67 @@ namespace GamePrototype.EveryoneInnocent
             worldRoot.SetParent(transform);
 
             CreateBox("MuseumRoom_Diorama_Backdrop", new Vector2(0f, -0.18f), new Vector2(7.4f, 8.0f), new Color(0.14f, 0.15f, 0.17f), -10);
+            CreateBox("MuseumRoom_BackWall", new Vector2(0f, 2.38f), new Vector2(7.1f, 1.85f), new Color(0.1f, 0.115f, 0.135f), -9);
+            CreateBox("MuseumRoom_Floor", new Vector2(0f, -1.2f), new Vector2(7.1f, 4.65f), new Color(0.19f, 0.185f, 0.17f), -9);
+            CreateBox("MuseumRoom_FloorPath", new Vector2(0f, -1.0f), new Vector2(5.25f, 1.0f), new Color(0.25f, 0.23f, 0.2f), -8);
+            CreateBox("MuseumRoom_LeftWallShadow", new Vector2(-3.34f, -0.1f), new Vector2(0.16f, 7.2f), new Color(0.04f, 0.045f, 0.055f, 0.85f), -7);
+            CreateBox("MuseumRoom_RightWallShadow", new Vector2(3.34f, -0.1f), new Vector2(0.16f, 7.2f), new Color(0.04f, 0.045f, 0.055f, 0.85f), -7);
             CreateBox("CCTV_Frame_Border_Top", new Vector2(0f, 3.78f), new Vector2(7.4f, 0.24f), new Color(0.34f, 0.38f, 0.42f), -5);
             CreateBox("CCTV_Frame_Border_Bottom", new Vector2(0f, -3.78f), new Vector2(7.4f, 0.24f), new Color(0.34f, 0.38f, 0.42f), -5);
+            CreateBox("CCTV_CameraMount", new Vector2(0f, 2.92f), new Vector2(1.05f, 0.18f), new Color(0.12f, 0.16f, 0.19f), 3);
+            CreateBox("CCTV_CameraBody", new Vector2(0f, 2.73f), new Vector2(0.62f, 0.34f), new Color(0.72f, 0.78f, 0.82f), 4);
+            CreateBox("CCTV_CameraLens", new Vector2(0f, 2.68f), new Vector2(0.24f, 0.12f), new Color(0.08f, 0.1f, 0.12f), 5);
+            CreateBox("WitnessDoor_FinalExit", new Vector2(3.05f, 0.88f), new Vector2(0.54f, 1.72f), new Color(0.11f, 0.125f, 0.145f), -1);
+            CreateBox("WitnessDoor_Handle", new Vector2(2.84f, 0.86f), new Vector2(0.08f, 0.08f), new Color(1f, 0.8f, 0.35f), 2);
+            CreateBox("DisplayLight_Left", new Vector2(-1.95f, 1.58f), new Vector2(1.4f, 0.06f), new Color(1f, 0.85f, 0.55f, 0.5f), -2);
+            CreateBox("DisplayLight_Right", new Vector2(1.82f, 1.58f), new Vector2(1.4f, 0.06f), new Color(0.65f, 0.82f, 1f, 0.45f), -2);
+            CreateBox("Evidence_WorkTable_Shadow", new Vector2(0f, -1.82f), new Vector2(4.35f, 0.22f), new Color(0f, 0f, 0f, 0.32f), -1);
             CreateBox("Evidence_WorkTable", new Vector2(0f, -1.65f), new Vector2(4.1f, 0.34f), new Color(0.38f, 0.32f, 0.28f), 0);
+            CreateBox("Evidence_WorkTable_Edge", new Vector2(0f, -1.45f), new Vector2(4.12f, 0.08f), new Color(0.62f, 0.52f, 0.4f), 1);
+            CreateBox("RepairSlot_Glass", new Vector2(1.72f, 0.26f), new Vector2(1.54f, 1.48f), new Color(0.5f, 0.75f, 1f, 0.12f), 1);
             CreateBox("RepairSlot_DisplayStand", new Vector2(1.72f, -0.15f), new Vector2(1.45f, 1.0f), new Color(0.28f, 0.31f, 0.35f), 0);
+            CreateBox("RepairSlot_LabelPlate", new Vector2(1.72f, -0.78f), new Vector2(1.18f, 0.16f), new Color(0.08f, 0.09f, 0.1f), 2);
 
             redPlayer = CreatePlayer("Player_Red_LocalSuspect", new Vector2(-1.8f, -1.1f), new Color(1f, 0.32f, 0.28f));
             bluePlayer = CreatePlayer("Player_Blue_LocalSuspect", new Vector2(1.8f, -1.1f), new Color(0.34f, 0.58f, 1f));
 
-            redHighlight = CreateBox("Red_SuspicionHighlight", new Vector2(-1.8f, -1.1f), new Vector2(1.2f, 1.45f), new Color(1f, 0.32f, 0.28f, 0.22f), -1).GetComponent<SpriteRenderer>();
-            blueHighlight = CreateBox("Blue_SuspicionHighlight", new Vector2(1.8f, -1.1f), new Vector2(1.2f, 1.45f), new Color(0.34f, 0.58f, 1f, 0.22f), -1).GetComponent<SpriteRenderer>();
+            redHighlight = CreateBox("Red_SuspicionHighlight", new Vector2(-1.8f, -1.1f), new Vector2(1.2f, 1.45f), new Color(1f, 0.32f, 0.28f, 0.22f), -1).GetComponent<Renderer>();
+            blueHighlight = CreateBox("Blue_SuspicionHighlight", new Vector2(1.8f, -1.1f), new Vector2(1.2f, 1.45f), new Color(0.34f, 0.58f, 1f, 0.22f), -1).GetComponent<Renderer>();
             redHighlight.gameObject.SetActive(false);
             blueHighlight.gameObject.SetActive(false);
 
-            spill = CreateBox("CleanupTask_CreamSpill", new Vector2(-2.15f, 0.65f), new Vector2(1.2f, 0.48f), new Color(1f, 0.92f, 0.58f), 2).GetComponent<SpriteRenderer>();
-            brokenVase = CreateBox("CleanupTask_BrokenVasePieces", new Vector2(1.72f, 0.55f), new Vector2(0.95f, 0.55f), new Color(0.78f, 0.86f, 0.92f), 2).GetComponent<SpriteRenderer>();
-            fixedVase = CreateBox("CleanupTask_FixedVaseSilhouette", new Vector2(1.72f, 0.78f), new Vector2(0.55f, 1.15f), new Color(0.62f, 0.86f, 1f), 2).GetComponent<SpriteRenderer>();
-            shardEvidence = CreateBox("Evidence_Shard_ToPlant", new Vector2(-0.2f, -1.18f), new Vector2(0.34f, 0.34f), new Color(1f, 0.68f, 0.22f), 4).GetComponent<SpriteRenderer>();
-            blueBag = CreateBox("Blue_Bag_EvidenceSocket", new Vector2(2.32f, -1.54f), new Vector2(0.56f, 0.45f), new Color(0.08f, 0.1f, 0.16f), 4).GetComponent<SpriteRenderer>();
-            blueNameTag = CreateBox("Evidence_BlueNameTag_ToSwap", new Vector2(-1.05f, -1.5f), new Vector2(0.58f, 0.22f), new Color(0.34f, 0.58f, 1f), 4).GetComponent<SpriteRenderer>();
-            cctvCone = CreateBox("CCTV_Cone_RotatableEvidence", new Vector2(0f, 2.05f), new Vector2(2.2f, 0.18f), new Color(0.5f, 0.8f, 1f, 0.38f), 1).GetComponent<SpriteRenderer>();
-            prosecutorBot = CreateBox("AI_ProsecutorBot_ReplayJudge", new Vector2(0f, 2.7f), new Vector2(0.72f, 0.52f), new Color(0.8f, 0.92f, 1f), 5).GetComponent<SpriteRenderer>();
-            evidenceArrow = CreateBox("Trial_EvidenceArrow", new Vector2(0.9f, -1.35f), new Vector2(1.75f, 0.16f), new Color(1f, 0.45f, 0.24f, 0.8f), 5).GetComponent<SpriteRenderer>();
+            spill = CreateBox("CleanupTask_CreamSpill", new Vector2(-2.15f, 0.65f), new Vector2(1.2f, 0.48f), new Color(1f, 0.92f, 0.58f), 2).GetComponent<Renderer>();
+            brokenVase = CreateBox("CleanupTask_BrokenVasePieces", new Vector2(1.72f, 0.55f), new Vector2(0.95f, 0.55f), new Color(0.78f, 0.86f, 0.92f), 2).GetComponent<Renderer>();
+            fixedVase = CreateBox("CleanupTask_FixedVaseSilhouette", new Vector2(1.72f, 0.78f), new Vector2(0.55f, 1.15f), new Color(0.62f, 0.86f, 1f), 2).GetComponent<Renderer>();
+            CreateRotatedBox("CleanupTask_SpillDroplet_A", new Vector2(-2.62f, 0.42f), new Vector2(0.25f, 0.09f), new Color(1f, 0.86f, 0.45f), 2, 12f);
+            CreateRotatedBox("CleanupTask_SpillDroplet_B", new Vector2(-1.72f, 0.88f), new Vector2(0.3f, 0.1f), new Color(1f, 0.95f, 0.66f), 2, -18f);
+            CreateRotatedBox("BrokenVaseShard_A", new Vector2(1.34f, 0.42f), new Vector2(0.36f, 0.11f), new Color(0.84f, 0.92f, 0.96f), 3, 24f);
+            CreateRotatedBox("BrokenVaseShard_B", new Vector2(2.05f, 0.38f), new Vector2(0.3f, 0.1f), new Color(0.7f, 0.78f, 0.84f), 3, -30f);
+            shardEvidence = CreateBox("Evidence_Shard_ToPlant", new Vector2(-0.2f, -1.18f), new Vector2(0.34f, 0.34f), new Color(1f, 0.68f, 0.22f), 4).GetComponent<Renderer>();
+            blueBag = CreateBox("Blue_Bag_EvidenceSocket", new Vector2(2.32f, -1.54f), new Vector2(0.56f, 0.45f), new Color(0.08f, 0.1f, 0.16f), 4).GetComponent<Renderer>();
+            blueNameTag = CreateBox("Evidence_BlueNameTag_ToSwap", new Vector2(-1.05f, -1.5f), new Vector2(0.58f, 0.22f), new Color(0.34f, 0.58f, 1f), 4).GetComponent<Renderer>();
+            cctvCone = CreateBox("CCTV_Cone_RotatableEvidence", new Vector2(0f, 2.05f), new Vector2(2.2f, 0.18f), new Color(0.5f, 0.8f, 1f, 0.38f), 1).GetComponent<Renderer>();
+            prosecutorBot = CreateBox("AI_ProsecutorBot_ReplayJudge", new Vector2(0f, 2.7f), new Vector2(0.72f, 0.52f), new Color(0.8f, 0.92f, 1f), 5).GetComponent<Renderer>();
+            evidenceArrow = CreateBox("Trial_EvidenceArrow", new Vector2(0.9f, -1.35f), new Vector2(1.75f, 0.16f), new Color(1f, 0.45f, 0.24f, 0.8f), 5).GetComponent<Renderer>();
             evidenceArrow.gameObject.SetActive(false);
-            activePlayerCursor = CreateBox("ActivePlayer_ControlCursor", new Vector2(-1.8f, -1.82f), new Vector2(1.08f, 0.16f), new Color(1f, 0.9f, 0.45f, 0.95f), 8).GetComponent<SpriteRenderer>();
+            activePlayerCursor = CreateBox("ActivePlayer_ControlCursor", new Vector2(-1.8f, -1.82f), new Vector2(1.08f, 0.16f), new Color(1f, 0.9f, 0.45f, 0.95f), 8).GetComponent<Renderer>();
 
-            CreateWorldLabel("RED", new Vector2(-1.8f, -0.18f), 0.17f, new Color(1f, 0.68f, 0.64f));
-            CreateWorldLabel("BLUE", new Vector2(1.8f, -0.18f), 0.17f, new Color(0.7f, 0.86f, 1f));
-            CreateWorldLabel("REC", new Vector2(-3.05f, 3.22f), 0.18f, new Color(1f, 0.35f, 0.28f));
-            CreateWorldLabel("SHARD", new Vector2(-0.2f, -0.74f), 0.13f, new Color(1f, 0.78f, 0.36f));
-            CreateWorldLabel("BLUE TAG", new Vector2(-1.05f, -1.16f), 0.12f, new Color(0.7f, 0.86f, 1f));
+            cleanupReadHalo = CreateBox("FirstRead_CleanupZone", new Vector2(-0.2f, 0.62f), new Vector2(4.75f, 1.26f), new Color(0.26f, 1f, 0.62f, 0.18f), 1).GetComponent<Renderer>();
+            evidenceReadHalo = CreateBox("FirstRead_BlameEvidenceZone", new Vector2(0.62f, -1.33f), new Vector2(3.6f, 0.82f), new Color(1f, 0.62f, 0.18f, 0.2f), 1).GetComponent<Renderer>();
+            trialReadHalo = CreateBox("FirstRead_CctvTrialZone", new Vector2(0.36f, 2.45f), new Vector2(3.35f, 1.08f), new Color(0.5f, 0.82f, 1f, 0.16f), 1).GetComponent<Renderer>();
+            blameRouteLine = CreateBox("FirstRead_Route_ShardToBlueBag", new Vector2(1.08f, -1.14f), new Vector2(2.45f, 0.06f), new Color(1f, 0.72f, 0.18f, 0.82f), 6).GetComponent<Renderer>();
+            blameRouteLine.transform.rotation = Quaternion.Euler(0f, 2f, 0f);
+            trialRouteLine = CreateBox("FirstRead_Route_CctvToBlue", new Vector2(1.15f, 1.66f), new Vector2(2.1f, 0.06f), new Color(0.52f, 0.85f, 1f, 0.7f), 6).GetComponent<Renderer>();
+            trialRouteLine.transform.rotation = Quaternion.Euler(0f, -52f, 0f);
+
+            CreateWorldLabel("빨강", new Vector2(-1.8f, -0.18f), 0.17f, new Color(1f, 0.68f, 0.64f));
+            CreateWorldLabel("파랑", new Vector2(1.8f, -0.18f), 0.17f, new Color(0.7f, 0.86f, 1f));
+            CreateWorldLabel("녹화중", new Vector2(-3.0f, 3.22f), 0.16f, new Color(1f, 0.35f, 0.28f));
+            CreateWorldLabel("파편", new Vector2(-0.2f, -0.74f), 0.13f, new Color(1f, 0.78f, 0.36f));
+            CreateWorldLabel("파랑 명찰", new Vector2(-1.05f, -1.16f), 0.12f, new Color(0.7f, 0.86f, 1f));
+            CreateWorldLabel("1 현장 정리", new Vector2(-1.25f, 1.32f), 0.14f, new Color(0.7f, 1f, 0.82f));
+            CreateWorldLabel("2 파랑에게 단서 연결", new Vector2(0.52f, -2.05f), 0.12f, new Color(1f, 0.82f, 0.45f));
+            CreateWorldLabel("3 CCTV 재판", new Vector2(1.08f, 3.12f), 0.14f, new Color(0.72f, 0.9f, 1f));
         }
 
         private void BuildEventSystem()
@@ -304,7 +364,10 @@ namespace GamePrototype.EveryoneInnocent
             canvasObject.transform.SetParent(transform);
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            var scaler = canvasObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1280f, 720f);
+            scaler.matchWidthOrHeight = 0.5f;
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var topPanel = CreatePanel(canvasObject.transform, "TopPanel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -92f), Vector2.zero, new Color(0.018f, 0.022f, 0.032f, 0.94f));
@@ -312,6 +375,9 @@ namespace GamePrototype.EveryoneInnocent
             statusText = CreateText(topPanel.transform, "Status", new Vector2(0.45f, 0f), new Vector2(1f, 1f), new Vector2(8f, 8f), new Vector2(-16f, -8f), 17, TextAnchor.MiddleRight, new Color(0.86f, 0.94f, 1f));
 
             phaseText = CreateText(canvasObject.transform, "Phase", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(26f, -174f), new Vector2(-26f, -98f), 18, TextAnchor.MiddleCenter, new Color(0.92f, 0.96f, 1f));
+            firstReadPanel = CreatePanel(canvasObject.transform, "FirstReadPanel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -252f), new Vector2(-18f, -184f), new Color(0.035f, 0.045f, 0.056f, 0.9f));
+            firstReadText = CreateText(firstReadPanel.transform, "FirstReadGoal", new Vector2(0f, 0f), new Vector2(0.62f, 1f), new Vector2(14f, 6f), new Vector2(-8f, -6f), 16, TextAnchor.MiddleLeft, Color.white);
+            firstReadChecklistText = CreateText(firstReadPanel.transform, "FirstReadChecklist", new Vector2(0.62f, 0f), new Vector2(1f, 1f), new Vector2(8f, 6f), new Vector2(-14f, -6f), 15, TextAnchor.MiddleRight, new Color(0.86f, 0.94f, 1f));
             logText = CreateText(canvasObject.transform, "Log", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 178f), new Vector2(-24f, 270f), 17, TextAnchor.MiddleCenter, Color.white);
             hintText = CreateText(canvasObject.transform, "Hint", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(28f, 8f), new Vector2(-28f, 42f), 15, TextAnchor.MiddleCenter, new Color(0.76f, 0.82f, 0.9f));
 
@@ -324,12 +390,12 @@ namespace GamePrototype.EveryoneInnocent
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = true;
 
-            AddActionButton(0, "1 Clean\ncream spill", CleanSpill);
-            AddActionButton(1, "2 Repair\nfake vase", RepairVase);
-            AddActionButton(2, "3 Plant\nshard in BLUE bag", PlantShard);
-            AddActionButton(3, "4 Rotate\nCCTV to BLUE", RotateCctv);
-            AddActionButton(4, "5 Swap\nBLUE name tag", SwapNameTag);
-            AddActionButton(5, "6 Freeze\nstart trial", StartTrial);
+            AddActionButton(0, "1 크림 닦기\n정리도 +25", CleanSpill);
+            AddActionButton(1, "2 화병 수리\n정리도 +30", RepairVase);
+            AddActionButton(2, "3 파편 심기\n파랑 의심", PlantShard);
+            AddActionButton(3, "4 CCTV 돌리기\n파랑 의심", RotateCctv);
+            AddActionButton(4, "5 명찰 바꾸기\n파랑 의심", SwapNameTag);
+            AddActionButton(5, "6 재판 시작\n폭로", StartTrial);
 
             trialPanel = CreatePanel(canvasObject.transform, "TrialPanel", new Vector2(0.5f, 0.56f), new Vector2(0.5f, 0.56f), new Vector2(-340f, -88f), new Vector2(340f, 88f), new Color(0.05f, 0.06f, 0.075f, 0.96f));
             trialText = CreateText(trialPanel.transform, "TrialText", Vector2.zero, Vector2.one, new Vector2(16f, 12f), new Vector2(-16f, -12f), 20, TextAnchor.MiddleCenter, Color.white);
@@ -351,11 +417,11 @@ namespace GamePrototype.EveryoneInnocent
 
         private void BuildLauncherPanel(Transform canvasTransform)
         {
-            launcherPanel = CreatePanel(canvasTransform, "ExternalTestLauncherPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-350f, -166f), new Vector2(350f, 166f), new Color(0.035f, 0.04f, 0.052f, 0.97f));
-            CreateText(launcherPanel.transform, "LauncherTitle", new Vector2(0f, 0.68f), new Vector2(1f, 1f), new Vector2(22f, 2f), new Vector2(-22f, -12f), 24, TextAnchor.MiddleCenter, Color.white).text = "Everyone Innocent";
-            CreateText(launcherPanel.transform, "LauncherDetail", new Vector2(0f, 0.36f), new Vector2(1f, 0.72f), new Vector2(26f, 0f), new Vector2(-26f, -8f), 17, TextAnchor.MiddleCenter, new Color(0.84f, 0.9f, 0.98f)).text = "External local-room test candidate. Run one clean manual pass, then record whether the final blame reveal reads in under 3 minutes.";
-            CreateLauncherButton("LauncherStartButton", "Start 3-Minute Test", new Vector2(0.07f, 0.09f), new Vector2(0.49f, 0.31f), StartRound);
-            CreateLauncherButton("LauncherScriptedDemoButton", "Scripted Demo", new Vector2(0.51f, 0.09f), new Vector2(0.93f, 0.31f), RunScriptedDemo);
+            launcherPanel = CreatePanel(canvasTransform, "ExternalTestLauncherPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-390f, -178f), new Vector2(390f, 178f), new Color(0.035f, 0.04f, 0.052f, 0.97f));
+            CreateText(launcherPanel.transform, "LauncherTitle", new Vector2(0f, 0.7f), new Vector2(1f, 1f), new Vector2(22f, 2f), new Vector2(-22f, -12f), 24, TextAnchor.MiddleCenter, Color.white).text = "모두 결백";
+            CreateText(launcherPanel.transform, "LauncherDetail", new Vector2(0f, 0.36f), new Vector2(1f, 0.72f), new Vector2(34f, 0f), new Vector2(-34f, -8f), 17, TextAnchor.MiddleCenter, new Color(0.84f, 0.9f, 0.98f)).text = "망가진 전시실을 함께 정리하세요.\n빨강은 파편, CCTV, 명찰을 파랑에게 연결하고 마지막에 CCTV 재판을 엽니다.";
+            CreateLauncherButton("LauncherStartButton", "3분 테스트 시작", new Vector2(0.07f, 0.1f), new Vector2(0.49f, 0.31f), StartRound);
+            CreateLauncherButton("LauncherScriptedDemoButton", "자동 시연", new Vector2(0.51f, 0.1f), new Vector2(0.93f, 0.31f), RunScriptedDemo);
             launcherPanel.SetActive(false);
         }
 
@@ -377,10 +443,16 @@ namespace GamePrototype.EveryoneInnocent
             roundRunning = false;
             actionPanel.SetActive(false);
             launcherPanel.SetActive(true);
-            phaseText.text = "External test launcher: choose a manual clarity pass or a scripted proof pass.";
-            logText.text = "Manual pass checks first-read fun. Scripted demo verifies that both cleanup and blame evidence resolve correctly.";
-            hintText.text = "Click a launcher button. Press L anytime to reopen this screen.";
-            Debug.Log("Everyone Innocent external test launcher ready.");
+            if (firstReadPanel != null)
+            {
+                firstReadPanel.SetActive(false);
+            }
+
+            phaseText.text = "외부 테스트 런처: 직접 플레이하거나 자동 시연으로 흐름을 확인하세요.";
+            logText.text = "";
+            hintText.text = "버튼을 클릭하세요. 언제든 L 키로 이 화면을 다시 열 수 있습니다.";
+            UpdateFirstReadClarity();
+            Debug.Log("모두 결백 외부 테스트 런처 준비 완료.");
             RecordRuntimeEvent("launcher_ready", "External test launcher is visible.");
         }
 
@@ -424,39 +496,50 @@ namespace GamePrototype.EveryoneInnocent
                 launcherPanel.SetActive(false);
             }
 
-            redPlayer.position = new Vector3(-1.8f, -1.1f, 0f);
-            bluePlayer.position = new Vector3(1.8f, -1.1f, 0f);
+            MoveOnFloor(redPlayer, new Vector2(-1.8f, -1.1f));
+            MoveOnFloor(bluePlayer, new Vector2(1.8f, -1.1f));
             spill.gameObject.SetActive(true);
             SetAlpha(spill, 1f);
-            spill.transform.localScale = new Vector3(1.2f, 0.48f, 1f);
+            SetFlatScale(spill.transform, new Vector2(1.2f, 0.48f));
             brokenVase.gameObject.SetActive(true);
             fixedVase.gameObject.SetActive(false);
-            fixedVase.transform.localScale = new Vector3(0.55f, 1.15f, 1f);
+            fixedVase.transform.localScale = new Vector3(0.55f, 1.15f, 0.55f);
             shardEvidence.gameObject.SetActive(true);
-            shardEvidence.transform.position = new Vector3(-0.2f, -1.18f, 0f);
-            shardEvidence.transform.localScale = new Vector3(0.34f, 0.34f, 1f);
-            blueBag.transform.localScale = new Vector3(0.56f, 0.45f, 1f);
+            MoveOnFloor(shardEvidence.transform, new Vector2(-0.2f, -1.18f));
+            SetFlatScale(shardEvidence.transform, new Vector2(0.34f, 0.34f));
+            blueBag.transform.localScale = new Vector3(0.56f, 0.34f, 0.45f);
             blueNameTag.gameObject.SetActive(true);
-            blueNameTag.transform.position = new Vector3(-1.05f, -1.5f, 0f);
-            blueNameTag.transform.localScale = new Vector3(0.58f, 0.22f, 1f);
-            cctvCone.transform.position = new Vector3(0f, 2.05f, 0f);
+            MoveOnFloor(blueNameTag.transform, new Vector2(-1.05f, -1.5f));
+            SetFlatScale(blueNameTag.transform, new Vector2(0.58f, 0.22f));
+            MoveOnFloor(cctvCone.transform, new Vector2(0f, 2.05f));
             cctvCone.transform.rotation = Quaternion.identity;
-            cctvCone.transform.localScale = new Vector3(2.2f, 0.18f, 1f);
-            redHighlight.transform.localScale = new Vector3(1.2f, 1.45f, 1f);
-            blueHighlight.transform.localScale = new Vector3(1.2f, 1.45f, 1f);
+            SetFlatScale(cctvCone.transform, new Vector2(2.2f, 0.18f));
+            SetFlatScale(redHighlight.transform, new Vector2(1.2f, 1.45f));
+            SetFlatScale(blueHighlight.transform, new Vector2(1.2f, 1.45f));
             redHighlight.gameObject.SetActive(false);
             blueHighlight.gameObject.SetActive(false);
-            prosecutorBot.transform.localScale = new Vector3(0.72f, 0.52f, 1f);
-            prosecutorBot.color = new Color(0.8f, 0.92f, 1f);
-            evidenceArrow.transform.localScale = new Vector3(1.75f, 0.16f, 1f);
+            prosecutorBot.transform.localScale = new Vector3(0.72f, 0.52f, 0.72f);
+            SetRendererColor(prosecutorBot, new Color(0.8f, 0.92f, 1f));
+            SetFlatScale(evidenceArrow.transform, new Vector2(1.75f, 0.16f));
             evidenceArrow.gameObject.SetActive(false);
             activePlayerCursor.gameObject.SetActive(true);
+            cleanupReadHalo.gameObject.SetActive(true);
+            evidenceReadHalo.gameObject.SetActive(true);
+            trialReadHalo.gameObject.SetActive(true);
+            blameRouteLine.gameObject.SetActive(true);
+            trialRouteLine.gameObject.SetActive(true);
+            if (firstReadPanel != null)
+            {
+                firstReadPanel.SetActive(true);
+            }
+
             UpdateActivePlayerCursor();
 
-            titleText.text = "Everyone Innocent - Local Room" + BuildSessionBadge();
-            phaseText.text = "Museum accident. Restore the room together, then quietly connect evidence to BLUE.";
-            logText.text = "Team goal: Normalcy 80+. Personal goal: make the replay blame someone else.";
-            hintText.text = BuildSessionHint("Move with WASD/arrows. TAB swaps RED/BLUE. Press E near an object, or use 1-6. T starts trial.");
+            titleText.text = "모두 결백 - 전시실 현장" + BuildSessionBadge();
+            phaseText.text = "첫 이해 루프: 보이는 난장판을 정리하고, 단서를 파랑에게 연결한 뒤 CCTV 재판을 시작하세요.";
+            logText.text = "먼저 1-2번으로 팀 정리도를 올리세요. 그 다음 빨강으로 3-5번 단서를 몰래 심습니다.";
+            hintText.text = BuildSessionHint("WASD/방향키 이동. Tab으로 빨강/파랑 전환. E는 근처 상호작용. 1-6은 테스트용 바로 실행.");
+            UpdateFirstReadClarity();
             RecordRuntimeEvent("round_started", "Manual test round reset.");
         }
 
@@ -469,12 +552,12 @@ namespace GamePrototype.EveryoneInnocent
 
             spillCleaned = true;
             normalcy = Mathf.Clamp(normalcy + 25, 0, 100);
-            redPlayer.position = new Vector3(-2.15f, 0.12f, 0f);
+            MoveOnFloor(redPlayer, new Vector2(-2.15f, 0.12f));
             SetAlpha(spill, 0.22f);
             reactionMode = 1;
             reactionTimer = 1.3f;
-            replayLines.Add("RED cleaned the cream spill. Team normalcy rose.");
-            logText.text = "RED cleaned the spill. The room looks less criminal.";
+            replayLines.Add("빨강이 크림 자국을 닦았다. 현장이 조금 정상처럼 보인다.");
+            logText.text = "팀 정리 성공: 빨강이 크림 자국을 닦았습니다. 이제 깨진 전시품을 고치면 됩니다.";
             runtimeActionCount++;
             RecordRuntimeEvent("action_clean_spill", "RED cleaned the cream spill.");
         }
@@ -488,13 +571,13 @@ namespace GamePrototype.EveryoneInnocent
 
             vaseFixed = true;
             normalcy = Mathf.Clamp(normalcy + 30, 0, 100);
-            bluePlayer.position = new Vector3(1.72f, 0.08f, 0f);
+            MoveOnFloor(bluePlayer, new Vector2(1.72f, 0.08f));
             brokenVase.gameObject.SetActive(false);
             fixedVase.gameObject.SetActive(true);
             reactionMode = 2;
             reactionTimer = 1.3f;
-            replayLines.Add("BLUE rebuilt a fake vase silhouette. Team normalcy rose.");
-            logText.text = "BLUE repaired the display. The crime scene now has plausible interior design.";
+            replayLines.Add("파랑이 깨진 화병을 그럴듯하게 복구했다.");
+            logText.text = "팀 정리 성공: 파랑이 전시품을 복구했습니다. 이제 재판에서 살아남을 정도로 방이 정리됐습니다.";
             runtimeActionCount++;
             RecordRuntimeEvent("action_repair_vase", "BLUE repaired the display.");
         }
@@ -509,14 +592,14 @@ namespace GamePrototype.EveryoneInnocent
             shardPlanted = true;
             blueSuspicion += 42;
             creativeBlame += 1;
-            redPlayer.position = new Vector3(0.55f, -1.05f, 0f);
-            shardEvidence.transform.position = new Vector3(2.32f, -1.1f, 0f);
-            shardEvidence.transform.localScale = new Vector3(0.24f, 0.24f, 1f);
+            MoveOnFloor(redPlayer, new Vector2(0.55f, -1.05f));
+            MoveOnFloor(shardEvidence.transform, new Vector2(2.32f, -1.1f));
+            SetFlatScale(shardEvidence.transform, new Vector2(0.24f, 0.24f));
             blueHighlight.gameObject.SetActive(true);
             reactionMode = 3;
             reactionTimer = 1.5f;
-            replayLines.Add("Hidden clip: RED slipped the shard into BLUE's bag.");
-            logText.text = "Hidden blame planted: shard moved into BLUE bag. The team can still win.";
+            replayLines.Add("숨은 장면: 빨강이 파편을 파랑의 가방에 넣었다.");
+            logText.text = "의심 루트 생성: 파편이 파랑의 가방으로 이동했습니다. 파랑 의심도가 크게 올랐습니다.";
             runtimeActionCount++;
             RecordRuntimeEvent("action_plant_shard", "Shard evidence moved into BLUE bag.");
         }
@@ -532,13 +615,13 @@ namespace GamePrototype.EveryoneInnocent
             witnessAlarm += 1;
             blueSuspicion += 28;
             creativeBlame += 1;
-            cctvCone.transform.position = new Vector3(1.42f, 2.02f, 0f);
-            cctvCone.transform.rotation = Quaternion.Euler(0f, 0f, -16f);
+            MoveOnFloor(cctvCone.transform, new Vector2(1.42f, 2.02f));
+            cctvCone.transform.rotation = Quaternion.Euler(0f, -16f, 0f);
             blueHighlight.gameObject.SetActive(true);
             reactionMode = 4;
             reactionTimer = 1.5f;
-            replayLines.Add("Hidden clip: CCTV was rotated so BLUE owned the frame.");
-            logText.text = "CCTV now favors BLUE as the last suspicious person. Alarm +1.";
+            replayLines.Add("숨은 장면: CCTV 각도가 파랑을 수상하게 잡도록 돌아갔다.");
+            logText.text = "의심 루트 생성: CCTV가 파랑을 용의자처럼 비춥니다. 경보 +1.";
             runtimeActionCount++;
             RecordRuntimeEvent("action_rotate_cctv", "CCTV cone now favors BLUE.");
         }
@@ -553,14 +636,14 @@ namespace GamePrototype.EveryoneInnocent
             nameTagSwapped = true;
             blueSuspicion += 24;
             creativeBlame += 1;
-            redPlayer.position = new Vector3(0.72f, -1.05f, 0f);
-            blueNameTag.transform.position = new Vector3(1.72f, 0.02f, 0f);
-            blueNameTag.transform.localScale = new Vector3(0.72f, 0.24f, 1f);
+            MoveOnFloor(redPlayer, new Vector2(0.72f, -1.05f));
+            MoveOnFloor(blueNameTag.transform, new Vector2(1.72f, 0.02f));
+            SetFlatScale(blueNameTag.transform, new Vector2(0.72f, 0.24f));
             blueHighlight.gameObject.SetActive(true);
             reactionMode = 6;
             reactionTimer = 1.5f;
-            replayLines.Add("Hidden clip: RED swapped the display name tag to BLUE.");
-            logText.text = "Identity evidence changed: the repaired display now points to BLUE.";
+            replayLines.Add("숨은 장면: 빨강이 전시 명찰을 파랑 이름으로 바꿨다.");
+            logText.text = "의심 루트 생성: 전시 명찰이 파랑을 가리키게 됐습니다.";
             runtimeActionCount++;
             RecordRuntimeEvent("action_swap_name_tag", "Display name tag now points to BLUE.");
         }
@@ -580,19 +663,20 @@ namespace GamePrototype.EveryoneInnocent
             activePlayerCursor.gameObject.SetActive(false);
             blueHighlight.gameObject.SetActive(true);
             redHighlight.gameObject.SetActive(false);
-            prosecutorBot.color = new Color(1f, 0.9f, 0.42f);
+            SetRendererColor(prosecutorBot, new Color(1f, 0.9f, 0.42f));
             reactionMode = 5;
             reactionTimer = 4.0f;
 
             bool teamWin = normalcy >= 80 && witnessAlarm < 3;
-            string verdict = teamWin ? "TEAM SURVIVED. BLUE IS CHARGED." : "ROOM FAILED. EVERYONE LOSES.";
+            string verdict = teamWin ? "팀은 살아남았다. 파랑이 몰렸다." : "현장 정리에 실패했다. 모두 들켰다.";
             int suspicion = Mathf.Clamp(blueSuspicion, 0, 100);
-            string teamScore = teamWin ? "PASS" : "FAIL";
-            trialText.text = verdict + "\nTeam " + teamScore + " / Normalcy " + normalcy + " / Alarm " + witnessAlarm + "\nBLUE suspicion " + suspicion + "% / Creative blame " + creativeBlame + "\n" + BuildReplaySummary();
-            phaseText.text = "CCTV Trial: the room freezes and the planted evidence chain is revealed.";
-            logText.text = "The joke should land here: cooperation saved the room, but the replay exposes the blame chain.";
-            hintText.text = "Press R, Enter, or 6 to reset. Press L for launcher. Test question: did the evidence movement make sense on screen?";
+            string teamScore = teamWin ? "통과" : "실패";
+            trialText.text = verdict + "\n팀 판정 " + teamScore + " / 정리도 " + normalcy + " / 경보 " + witnessAlarm + "\n파랑 의심도 " + suspicion + "% / 조작 단서 " + creativeBlame + "\n" + BuildReplaySummary();
+            phaseText.text = "CCTV 재판: 방이 멈추고, 심어 둔 증거 사슬이 공개됩니다.";
+            logText.text = "웃음 포인트는 여기입니다. 협동으로 방은 살렸지만, 리플레이는 파랑에게 불리하게 돌아갑니다.";
+            hintText.text = "R, Enter, 6으로 재시작. L로 런처. 테스트 질문: 단서 이동이 화면에서 이해됐나요?";
             runtimeTrialReached = true;
+            UpdateFirstReadClarity();
             RecordRuntimeEvent("trial_reached", verdict);
         }
 
@@ -621,10 +705,10 @@ namespace GamePrototype.EveryoneInnocent
             }
 
             var player = ActivePlayer;
-            var next = (Vector2)player.position + move.normalized * PlayerMoveSpeed * Time.deltaTime;
+            var next = GameplayPosition(player) + move.normalized * PlayerMoveSpeed * Time.deltaTime;
             next.x = Mathf.Clamp(next.x, RoomMinX, RoomMaxX);
             next.y = Mathf.Clamp(next.y, RoomMinY, RoomMaxY);
-            player.position = new Vector3(next.x, next.y, 0f);
+            MoveOnFloor(player, next);
         }
 
         private void UpdateRoundTimer()
@@ -638,7 +722,7 @@ namespace GamePrototype.EveryoneInnocent
             if (!timerWarningLogged && roundTimer <= 30f)
             {
                 timerWarningLogged = true;
-                logText.text = "30 seconds left. Freeze the room soon or the CCTV trial starts without mercy.";
+                logText.text = "30초 남았습니다. 곧 재판을 시작하지 않으면 CCTV가 자비 없이 방을 멈춥니다.";
                 RecordRuntimeEvent("timer_warning_30", "Round timer reached 30 seconds.");
             }
 
@@ -657,7 +741,7 @@ namespace GamePrototype.EveryoneInnocent
             }
 
             activePlayerIsRed = !activePlayerIsRed;
-            logText.text = ActivePlayerName + " is now under local control. Keep the cleanup believable and the blame physical.";
+            logText.text = ActivePlayerName + " 조작 중입니다. 정리는 그럴듯하게, 의심은 물리적인 증거로 남기세요.";
             RecordRuntimeEvent("active_player_swapped", ActivePlayerName + " selected.");
         }
 
@@ -704,12 +788,12 @@ namespace GamePrototype.EveryoneInnocent
                 return;
             }
 
-            logText.text = ActivePlayerName + " has no clean interaction here. Move to the spill, vase, shard, CCTV, tag, or prosecutor bot.";
+            logText.text = ActivePlayerName + "이 할 수 있는 행동이 없습니다. 크림, 화병, 파편, CCTV, 명찰, 재판 봇 근처로 이동하세요.";
         }
 
         private bool IsNear(Transform target)
         {
-            return target != null && Vector2.Distance(ActivePlayer.position, target.position) <= InteractDistance;
+            return target != null && Vector2.Distance(GameplayPosition(ActivePlayer), GameplayPosition(target)) <= InteractDistance;
         }
 
         private void UpdateActivePlayerCursor()
@@ -727,8 +811,8 @@ namespace GamePrototype.EveryoneInnocent
             }
 
             var player = ActivePlayer;
-            activePlayerCursor.transform.position = player.position + new Vector3(0f, -0.82f, 0f);
-            activePlayerCursor.color = activePlayerIsRed ? new Color(1f, 0.9f, 0.45f, 0.95f) : new Color(0.48f, 0.78f, 1f, 0.95f);
+            MoveOnFloor(activePlayerCursor.transform, GameplayPosition(player) + new Vector2(0f, -0.82f));
+            SetRendererColor(activePlayerCursor, activePlayerIsRed ? new Color(1f, 0.9f, 0.45f, 0.95f) : new Color(0.48f, 0.78f, 1f, 0.95f));
         }
 
         private Transform ActivePlayer
@@ -738,7 +822,7 @@ namespace GamePrototype.EveryoneInnocent
 
         private string ActivePlayerName
         {
-            get { return activePlayerIsRed ? "RED" : "BLUE"; }
+            get { return activePlayerIsRed ? "빨강" : "파랑"; }
         }
 
         private bool IsLauncherVisible()
@@ -750,7 +834,7 @@ namespace GamePrototype.EveryoneInnocent
         {
             if (replayLines.Count == 0)
             {
-                return "No usable evidence. The prosecutor bot is disappointed.";
+                return "쓸 만한 증거가 없습니다. 재판 봇이 실망했습니다.";
             }
 
             int count = Mathf.Min(3, replayLines.Count);
@@ -780,31 +864,31 @@ namespace GamePrototype.EveryoneInnocent
 
             if (reactionMode == 1)
             {
-                spill.transform.localScale = new Vector3(1.2f * pulse, 0.48f, 1f);
+                SetFlatScale(spill.transform, new Vector2(1.2f * pulse, 0.48f));
             }
             else if (reactionMode == 2)
             {
-                fixedVase.transform.localScale = new Vector3(0.55f * pulse, 1.15f * pulse, 1f);
+                fixedVase.transform.localScale = new Vector3(0.55f * pulse, 1.15f * pulse, 0.55f * pulse);
             }
             else if (reactionMode == 3)
             {
-                shardEvidence.transform.position = new Vector3(2.32f + shake, -1.1f, 0f);
-                blueBag.transform.localScale = new Vector3(pulse, pulse, 1f);
+                MoveOnFloor(shardEvidence.transform, new Vector2(2.32f + shake, -1.1f));
+                blueBag.transform.localScale = new Vector3(0.56f * pulse, 0.34f * pulse, 0.45f * pulse);
             }
             else if (reactionMode == 4)
             {
-                cctvCone.transform.localScale = new Vector3(2.2f * pulse, 0.18f, 1f);
-                blueHighlight.transform.localScale = new Vector3(1.2f * pulse, 1.45f * pulse, 1f);
+                SetFlatScale(cctvCone.transform, new Vector2(2.2f * pulse, 0.18f));
+                SetFlatScale(blueHighlight.transform, new Vector2(1.2f * pulse, 1.45f * pulse));
             }
             else if (reactionMode == 5)
             {
-                evidenceArrow.transform.localScale = new Vector3(1.75f * pulse, 0.16f, 1f);
-                prosecutorBot.transform.localScale = new Vector3(pulse, pulse, 1f);
+                SetFlatScale(evidenceArrow.transform, new Vector2(1.75f * pulse, 0.16f));
+                prosecutorBot.transform.localScale = new Vector3(0.72f * pulse, 0.52f * pulse, 0.72f * pulse);
             }
             else if (reactionMode == 6)
             {
-                blueNameTag.transform.localScale = new Vector3(0.72f * pulse, 0.24f * pulse, 1f);
-                fixedVase.transform.localScale = new Vector3(0.55f + Mathf.Abs(shake), 1.15f, 1f);
+                SetFlatScale(blueNameTag.transform, new Vector2(0.72f * pulse, 0.24f * pulse));
+                fixedVase.transform.localScale = new Vector3(0.55f + Mathf.Abs(shake), 1.15f, 0.55f + Mathf.Abs(shake));
             }
         }
 
@@ -815,88 +899,254 @@ namespace GamePrototype.EveryoneInnocent
                 return;
             }
 
-            string blameText = inTrial ? " | BLUE Suspicion " + Mathf.Clamp(blueSuspicion, 0, 100) : " | Blame hidden";
+            string blameText = inTrial ? " | 파랑 의심도 " + Mathf.Clamp(blueSuspicion, 0, 100) : " | 의심 숨김";
             int seconds = Mathf.CeilToInt(roundTimer);
-            statusText.text = "Time " + seconds + "s  | Control " + ActivePlayerName + "  | Normalcy " + normalcy + "  | Alarm " + witnessAlarm + blameText + "  | Creative " + creativeBlame;
+            statusText.text = "시간 " + seconds + "초  | 조작 " + ActivePlayerName + "  | 정리도 " + normalcy + "  | 경보 " + witnessAlarm + blameText + "  | 단서 " + Mathf.Clamp(creativeBlame, 0, 3) + "/3";
+            UpdateFirstReadClarity();
         }
 
-        private Transform CreatePlayer(string objectName, Vector2 position, Color color)
+        private void UpdateFirstReadClarity()
         {
-            var root = new GameObject(objectName).transform;
-            root.SetParent(worldRoot);
-            root.position = new Vector3(position.x, position.y, 0f);
-            var body = CreateBox(objectName + "_Body", position, new Vector2(0.74f, 1.0f), color, 3);
-            body.transform.SetParent(root);
-            body.transform.localPosition = Vector3.zero;
-            var head = CreateBox(objectName + "_Head", position + new Vector2(0f, 0.72f), new Vector2(0.62f, 0.48f), new Color(0.96f, 0.78f, 0.58f), 4);
-            head.transform.SetParent(root);
-            head.transform.localPosition = new Vector3(0f, 0.72f, 0f);
-            return root;
+            int cleanCount = (spillCleaned ? 1 : 0) + (vaseFixed ? 1 : 0);
+            int clueCount = Mathf.Clamp(creativeBlame, 0, 3);
+            bool cleanDone = cleanCount >= 2;
+            bool clueStarted = clueCount > 0;
+            bool clueDone = clueCount >= 3;
+
+            if (firstReadText != null)
+            {
+                firstReadText.text = inTrial
+                    ? "리플레이 판독: 방은 정리됐지만, 증거 사슬은 파랑을 가리킵니다."
+                    : "5초 이해: 현장 정리 -> 파랑에게 단서 연결 -> CCTV 재판 확인";
+            }
+
+            if (firstReadChecklistText != null)
+            {
+                firstReadChecklistText.text =
+                    "정리 " + cleanCount + "/2  |  단서 " + clueCount + "/3  |  재판 " + (inTrial ? "진행중" : "대기");
+            }
+
+            float pulse = 0.55f + Mathf.Abs(Mathf.Sin(Time.time * 4.5f)) * 0.35f;
+            SetReadMarker(cleanupReadHalo, !inTrial && !cleanDone, new Color(0.26f, 1f, 0.62f, 0.12f + 0.1f * pulse));
+            SetReadMarker(evidenceReadHalo, !inTrial && !clueDone, new Color(1f, 0.62f, 0.18f, clueStarted ? 0.12f : 0.16f + 0.12f * pulse));
+            SetReadMarker(trialReadHalo, !inTrial || clueStarted, new Color(0.5f, 0.82f, 1f, inTrial ? 0.28f : 0.1f + 0.08f * pulse));
+            SetReadMarker(blameRouteLine, !inTrial && !shardPlanted, new Color(1f, 0.72f, 0.18f, 0.55f + 0.25f * pulse));
+            SetReadMarker(trialRouteLine, !inTrial && (cctvRotated || clueStarted), new Color(0.52f, 0.85f, 1f, 0.38f + 0.22f * pulse));
         }
 
-        private GameObject CreateBox(string name, Vector2 position, Vector2 size, Color color, int sortingOrder)
-        {
-            var box = new GameObject(name);
-            box.transform.SetParent(worldRoot);
-            box.transform.position = new Vector3(position.x, position.y, 0f);
-            box.transform.localScale = new Vector3(size.x, size.y, 1f);
-            var renderer = box.AddComponent<SpriteRenderer>();
-            renderer.sprite = unitSprite;
-            renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
-            ApplySpriteOrColor(renderer, SpriteKeyForObject(name), color);
-            return box;
-        }
-
-        private void ApplySpriteOrColor(SpriteRenderer renderer, string spriteKey, Color fallbackColor)
+        private static void SetReadMarker(Renderer renderer, bool visible, Color color)
         {
             if (renderer == null)
             {
                 return;
             }
 
-            if (!string.IsNullOrEmpty(spriteKey) && spriteAssets.TryGetValue(spriteKey, out var sprite))
+            renderer.gameObject.SetActive(visible);
+            SetRendererColor(renderer, color);
+        }
+
+        private Transform CreatePlayer(string objectName, Vector2 position, Color color)
+        {
+            var root = new GameObject(objectName).transform;
+            root.SetParent(worldRoot);
+            root.position = FloorPosition(position);
+
+            var shadow = CreatePrimitive(objectName + "_FloorShadow", PrimitiveType.Cylinder, new Vector3(0.88f, 0.018f, 0.42f), new Color(0f, 0f, 0f, 0.35f));
+            shadow.transform.SetParent(root);
+            shadow.transform.localPosition = new Vector3(0f, 0.02f, 0f);
+
+            var body = CreatePrimitive(objectName + "_Body", PrimitiveType.Capsule, new Vector3(0.52f, 0.58f, 0.52f), color);
+            body.transform.SetParent(root);
+            body.transform.localPosition = new Vector3(0f, 0.62f, 0f);
+
+            var chest = CreatePrimitive(objectName + "_ChestStripe", PrimitiveType.Cube, new Vector3(0.42f, 0.1f, 0.05f), new Color(1f, 1f, 1f, 0.34f));
+            chest.transform.SetParent(root);
+            chest.transform.localPosition = new Vector3(0f, 0.64f, -0.28f);
+
+            var head = CreatePrimitive(objectName + "_Head", PrimitiveType.Sphere, new Vector3(0.44f, 0.44f, 0.44f), new Color(0.96f, 0.78f, 0.58f));
+            head.transform.SetParent(root);
+            head.transform.localPosition = new Vector3(0f, 1.26f, 0f);
+            return root;
+        }
+
+        private GameObject CreateBox(string name, Vector2 position, Vector2 size, Color color, int sortingOrder)
+        {
+            var box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            box.name = name;
+            box.transform.SetParent(worldRoot);
+            var scale = ScaleForBox(name, size);
+            box.transform.localScale = scale;
+            box.transform.position = FloorPosition(position, HeightForBox(name, scale, sortingOrder));
+            ApplyPrimitiveMaterial(box.GetComponent<Renderer>(), color);
+            return box;
+        }
+
+        private GameObject CreateRotatedBox(string name, Vector2 position, Vector2 size, Color color, int sortingOrder, float zRotation)
+        {
+            var box = CreateBox(name, position, size, color, sortingOrder);
+            box.transform.rotation = Quaternion.Euler(0f, zRotation, 0f);
+            return box;
+        }
+
+        private static GameObject CreatePrimitive(string name, PrimitiveType primitiveType, Vector3 scale, Color color)
+        {
+            var primitive = GameObject.CreatePrimitive(primitiveType);
+            primitive.name = name;
+            primitive.transform.localScale = scale;
+            ApplyPrimitiveMaterial(primitive.GetComponent<Renderer>(), color);
+            return primitive;
+        }
+
+        private static Vector3 FloorPosition(Vector2 position, float y = 0f)
+        {
+            return new Vector3(position.x, y, position.y);
+        }
+
+        private static Vector2 GameplayPosition(Transform target)
+        {
+            var position = target.position;
+            return new Vector2(position.x, position.z);
+        }
+
+        private static void MoveOnFloor(Transform target, Vector2 position)
+        {
+            if (target == null)
             {
-                renderer.sprite = sprite;
-                renderer.color = Color.white;
                 return;
             }
 
-            renderer.sprite = unitSprite;
-            renderer.color = fallbackColor;
+            var current = target.position;
+            target.position = FloorPosition(position, current.y);
         }
 
-        private static string SpriteKeyForObject(string objectName)
+        private static void SetFlatScale(Transform target, Vector2 size)
         {
-            if (objectName.Contains("MuseumRoom_Diorama_Backdrop")) return "room_backdrop";
-            if (objectName.Contains("CCTV_Frame_Border_Top")) return "cctv_frame_top";
-            if (objectName.Contains("CCTV_Frame_Border_Bottom")) return "cctv_frame_bottom";
-            if (objectName.Contains("Evidence_WorkTable")) return "work_table";
-            if (objectName.Contains("RepairSlot_DisplayStand")) return "display_stand";
-            if (objectName.Contains("Player_Red") && objectName.Contains("_Body")) return "red_body";
-            if (objectName.Contains("Player_Red") && objectName.Contains("_Head")) return "red_head";
-            if (objectName.Contains("Player_Blue") && objectName.Contains("_Body")) return "blue_body";
-            if (objectName.Contains("Player_Blue") && objectName.Contains("_Head")) return "blue_head";
-            if (objectName.Contains("Red_SuspicionHighlight")) return "red_highlight";
-            if (objectName.Contains("Blue_SuspicionHighlight")) return "blue_highlight";
-            if (objectName.Contains("CleanupTask_CreamSpill")) return "cream_spill";
-            if (objectName.Contains("CleanupTask_BrokenVasePieces")) return "broken_vase";
-            if (objectName.Contains("CleanupTask_FixedVaseSilhouette")) return "fixed_vase";
-            if (objectName.Contains("Evidence_Shard_ToPlant")) return "shard_evidence";
-            if (objectName.Contains("Blue_Bag_EvidenceSocket")) return "blue_bag";
-            if (objectName.Contains("Evidence_BlueNameTag_ToSwap")) return "blue_name_tag";
-            if (objectName.Contains("CCTV_Cone_RotatableEvidence")) return "cctv_cone";
-            if (objectName.Contains("AI_ProsecutorBot_ReplayJudge")) return "prosecutor_bot";
-            if (objectName.Contains("Trial_EvidenceArrow")) return "evidence_arrow";
-            if (objectName.Contains("ActivePlayer_ControlCursor")) return "active_cursor";
-            return null;
+            if (target == null)
+            {
+                return;
+            }
+
+            var scale = target.localScale;
+            target.localScale = new Vector3(size.x, scale.y, size.y);
+        }
+
+        private static Vector3 ScaleForBox(string name, Vector2 size)
+        {
+            if (name.Contains("BackWall")) return new Vector3(size.x, 1.55f, 0.16f);
+            if (name.Contains("LeftWallShadow") || name.Contains("RightWallShadow")) return new Vector3(size.x, 1.3f, size.y);
+            if (name.Contains("WitnessDoor_FinalExit")) return new Vector3(size.x, 1.55f, 0.14f);
+            if (name.Contains("WitnessDoor_Handle")) return new Vector3(size.x, size.x, size.x);
+            if (name.Contains("CCTV_CameraMount")) return new Vector3(size.x, 0.16f, 0.24f);
+            if (name.Contains("CCTV_CameraBody")) return new Vector3(size.x, 0.32f, 0.34f);
+            if (name.Contains("CCTV_CameraLens")) return new Vector3(size.x, 0.12f, 0.16f);
+            if (name.Contains("DisplayLight")) return new Vector3(size.x, 0.04f, 0.08f);
+            if (name.Contains("Evidence_WorkTable") && !name.Contains("Shadow")) return new Vector3(size.x, 0.32f, size.y);
+            if (name.Contains("RepairSlot_DisplayStand")) return new Vector3(size.x, 0.58f, size.y);
+            if (name.Contains("CleanupTask_FixedVaseSilhouette")) return new Vector3(size.x, 1.15f, size.x);
+            if (name.Contains("CleanupTask_BrokenVasePieces")) return new Vector3(size.x, 0.16f, size.y);
+            if (name.Contains("Blue_Bag_EvidenceSocket")) return new Vector3(size.x, 0.34f, size.y);
+            if (name.Contains("AI_ProsecutorBot_ReplayJudge")) return new Vector3(size.x, 0.52f, size.x);
+            return new Vector3(size.x, 0.055f, size.y);
+        }
+
+        private static float HeightForBox(string name, Vector3 scale, int sortingOrder)
+        {
+            if (name.Contains("CCTV_Camera")) return 1.82f;
+            if (name.Contains("DisplayLight")) return 1.34f;
+            if (name.Contains("BackWall") || name.Contains("LeftWallShadow") || name.Contains("RightWallShadow") || name.Contains("WitnessDoor_FinalExit"))
+            {
+                return scale.y * 0.5f;
+            }
+
+            if (name.Contains("AI_ProsecutorBot_ReplayJudge")) return 1.05f;
+            if (name.Contains("CleanupTask_FixedVaseSilhouette")) return scale.y * 0.5f + 0.05f;
+            if (name.Contains("RepairSlot_DisplayStand")) return scale.y * 0.5f;
+            return scale.y * 0.5f + Mathf.Max(0, sortingOrder) * 0.012f;
+        }
+
+        private static void ApplyPrimitiveMaterial(Renderer renderer, Color color)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            renderer.material = CreateRuntimeMaterial(color);
+        }
+
+        private static Material CreateRuntimeMaterial(Color color)
+        {
+            var shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null) shader = Shader.Find("Standard");
+            if (shader == null) shader = Shader.Find("Diffuse");
+
+            var material = new Material(shader);
+            SetMaterialColor(material, color);
+            ConfigureMaterialSurface(material, color.a);
+            return material;
+        }
+
+        private static void SetRendererColor(Renderer renderer, Color color)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            if (renderer.material == null)
+            {
+                renderer.material = CreateRuntimeMaterial(color);
+                return;
+            }
+
+            SetMaterialColor(renderer.material, color);
+            ConfigureMaterialSurface(renderer.material, color.a);
+        }
+
+        private static Color GetRendererColor(Renderer renderer)
+        {
+            if (renderer == null || renderer.material == null)
+            {
+                return Color.white;
+            }
+
+            if (renderer.material.HasProperty("_BaseColor")) return renderer.material.GetColor("_BaseColor");
+            return renderer.material.HasProperty("_Color") ? renderer.material.GetColor("_Color") : Color.white;
+        }
+
+        private static void SetMaterialColor(Material material, Color color)
+        {
+            if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
+            if (material.HasProperty("_Color")) material.SetColor("_Color", color);
+        }
+
+        private static void ConfigureMaterialSurface(Material material, float alpha)
+        {
+            bool transparent = alpha < 0.99f;
+            if (material.HasProperty("_Surface")) material.SetFloat("_Surface", transparent ? 1f : 0f);
+            if (material.HasProperty("_AlphaClip")) material.SetFloat("_AlphaClip", 0f);
+            if (material.HasProperty("_SrcBlend")) material.SetFloat("_SrcBlend", transparent ? (float)BlendMode.SrcAlpha : (float)BlendMode.One);
+            if (material.HasProperty("_DstBlend")) material.SetFloat("_DstBlend", transparent ? (float)BlendMode.OneMinusSrcAlpha : (float)BlendMode.Zero);
+            if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", transparent ? 0f : 1f);
+            material.renderQueue = transparent ? 3000 : -1;
+
+            if (transparent)
+            {
+                material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            }
+            else
+            {
+                material.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            }
         }
 
         private TextMesh CreateWorldLabel(string text, Vector2 position, float size, Color color)
         {
             var labelObject = new GameObject("WorldLabel");
             labelObject.transform.SetParent(worldRoot);
-            labelObject.transform.position = new Vector3(position.x, position.y, -0.1f);
+            labelObject.transform.position = FloorPosition(position, 0.16f);
+            labelObject.transform.rotation = Quaternion.Euler(58f, 0f, 0f);
             var label = labelObject.AddComponent<TextMesh>();
             label.text = text;
             label.font = uiFont;
@@ -940,14 +1190,17 @@ namespace GamePrototype.EveryoneInnocent
             text.color = color;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = Mathf.Max(10, fontSize - 6);
+            text.resizeTextMaxSize = fontSize;
             return text;
         }
 
-        private static void SetAlpha(SpriteRenderer renderer, float alpha)
+        private static void SetAlpha(Renderer renderer, float alpha)
         {
-            var color = renderer.color;
+            var color = GetRendererColor(renderer);
             color.a = alpha;
-            renderer.color = color;
+            SetRendererColor(renderer, color);
         }
 
         private void OnApplicationQuit()
@@ -1089,7 +1342,7 @@ namespace GamePrototype.EveryoneInnocent
                 return fallback;
             }
 
-            return "Session " + externalSessionId + ". " + fallback;
+            return "세션 " + externalSessionId + ". " + fallback;
         }
 
         private void RecordRuntimeEvent(string eventName, string note)
