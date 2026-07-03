@@ -30,6 +30,11 @@ namespace GamePrototype.EveryoneInnocent
         private const float RoomMaxX = 3.25f;
         private const float RoomMinY = -2.9f;
         private const float RoomMaxY = 2.6f;
+        private const float TpsCameraHeight = 2.35f;
+        private const float TpsCameraBack = 4.6f;
+        private const float TpsCameraLookHeight = 0.95f;
+        private const float TpsCameraLookAhead = 1.05f;
+        private const float TpsCameraSmooth = 8.5f;
 
         private readonly List<Button> actionButtons = new List<Button>();
         private readonly List<Text> actionLabels = new List<Text>();
@@ -60,6 +65,15 @@ namespace GamePrototype.EveryoneInnocent
         private Renderer trialReadHalo;
         private Renderer blameRouteLine;
         private Renderer trialRouteLine;
+        private Renderer roomNormalcyMeterBack;
+        private Renderer roomNormalcyMeterFill;
+        private Renderer roomRecoveredGlow;
+        private Renderer evidenceLinkShardToBag;
+        private Renderer evidenceLinkCctvToBlue;
+        private Renderer evidenceLinkNameTagToBlue;
+        private Renderer blueEvidenceCaseHalo;
+        private TextMesh roomStateLabel;
+        private TextMesh evidenceStateLabel;
 
         private Text titleText;
         private Text statusText;
@@ -144,6 +158,7 @@ namespace GamePrototype.EveryoneInnocent
             BuildRuntimeAssets();
             BuildCamera();
             BuildWorld();
+            SnapPrototypeCamera();
             BuildEventSystem();
             BuildHud();
             RecordRuntimeEvent("prototype_awake", "Runtime created.");
@@ -190,6 +205,7 @@ namespace GamePrototype.EveryoneInnocent
             }
 
             UpdatePlayableControls();
+            UpdatePrototypeCamera(false);
             UpdateRoundTimer();
             UpdateReactionAnimation();
             UpdateActivePlayerCursor();
@@ -250,11 +266,13 @@ namespace GamePrototype.EveryoneInnocent
 
             var cameraObject = new GameObject("EI_PrototypeCamera");
             prototypeCamera = cameraObject.AddComponent<Camera>();
-            prototypeCamera.orthographic = true;
-            prototypeCamera.orthographicSize = 5.35f;
+            prototypeCamera.orthographic = false;
+            prototypeCamera.fieldOfView = 54f;
+            prototypeCamera.nearClipPlane = 0.05f;
+            prototypeCamera.farClipPlane = 80f;
             prototypeCamera.backgroundColor = new Color(0.055f, 0.06f, 0.07f);
-            prototypeCamera.transform.position = new Vector3(0f, 7.8f, -8.6f);
-            prototypeCamera.transform.rotation = Quaternion.Euler(58f, 0f, 0f);
+            prototypeCamera.transform.position = new Vector3(0f, TpsCameraHeight, -TpsCameraBack);
+            prototypeCamera.transform.rotation = Quaternion.Euler(16f, 0f, 0f);
             cameraObject.tag = "MainCamera";
 
             RenderSettings.ambientLight = new Color(0.38f, 0.42f, 0.48f);
@@ -275,6 +293,59 @@ namespace GamePrototype.EveryoneInnocent
             rimLight.intensity = 2.2f;
             rimLight.range = 7.5f;
             rimLight.color = new Color(0.45f, 0.7f, 1f);
+        }
+
+        private void SnapPrototypeCamera()
+        {
+            UpdatePrototypeCamera(true);
+        }
+
+        private void UpdatePrototypeCamera(bool immediate)
+        {
+            if (prototypeCamera == null)
+            {
+                return;
+            }
+
+            Vector3 targetPosition;
+            Vector3 lookTarget;
+
+            if (inTrial)
+            {
+                targetPosition = new Vector3(0.35f, 3.05f, -5.35f);
+                lookTarget = new Vector3(0.75f, 0.95f, -0.35f);
+            }
+            else if (!roundRunning || IsLauncherVisible() || ActivePlayer == null)
+            {
+                targetPosition = new Vector3(0f, 3.0f, -5.6f);
+                lookTarget = new Vector3(0f, 0.9f, -0.1f);
+            }
+            else
+            {
+                var playerPosition = ActivePlayer.position;
+                targetPosition = playerPosition + new Vector3(0f, TpsCameraHeight, -TpsCameraBack);
+                targetPosition.x = Mathf.Clamp(targetPosition.x, -2.45f, 2.45f);
+                targetPosition.z = Mathf.Clamp(targetPosition.z, -5.85f, -2.15f);
+                lookTarget = playerPosition + new Vector3(0f, TpsCameraLookHeight, TpsCameraLookAhead);
+            }
+
+            var lookDirection = lookTarget - targetPosition;
+            if (lookDirection.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            var targetRotation = Quaternion.LookRotation(lookDirection.normalized, Vector3.up);
+            if (immediate || !Application.isPlaying)
+            {
+                prototypeCamera.transform.position = targetPosition;
+                prototypeCamera.transform.rotation = targetRotation;
+                return;
+            }
+
+            float t = 1f - Mathf.Exp(-TpsCameraSmooth * Time.deltaTime);
+            prototypeCamera.transform.position = Vector3.Lerp(prototypeCamera.transform.position, targetPosition, t);
+            prototypeCamera.transform.rotation = Quaternion.Slerp(prototypeCamera.transform.rotation, targetRotation, t);
         }
 
         private void BuildWorld()
@@ -336,6 +407,24 @@ namespace GamePrototype.EveryoneInnocent
             trialRouteLine = CreateBox("FirstRead_Route_CctvToBlue", new Vector2(1.15f, 1.66f), new Vector2(2.1f, 0.06f), new Color(0.52f, 0.85f, 1f, 0.7f), 6).GetComponent<Renderer>();
             trialRouteLine.transform.rotation = Quaternion.Euler(0f, -52f, 0f);
 
+            roomNormalcyMeterBack = CreateBox("RoomState_NormalcyMeter_Back", new Vector2(-2.1f, 2.42f), new Vector2(1.85f, 0.13f), new Color(0.04f, 0.055f, 0.065f, 0.82f), 8).GetComponent<Renderer>();
+            roomNormalcyMeterFill = CreateBox("RoomState_NormalcyMeter_Fill", new Vector2(-2.95f, 2.42f), new Vector2(0.2f, 0.15f), new Color(1f, 0.42f, 0.24f, 0.92f), 9).GetComponent<Renderer>();
+            roomRecoveredGlow = CreateBox("RoomState_RecoveredGlow", new Vector2(0f, 0.35f), new Vector2(4.9f, 2.65f), new Color(0.32f, 1f, 0.62f, 0.08f), 0).GetComponent<Renderer>();
+            roomRecoveredGlow.gameObject.SetActive(false);
+
+            evidenceLinkShardToBag = CreateBox("EvidenceLink_ShardToBlueBag", new Vector2(1.1f, -1.12f), new Vector2(2.42f, 0.08f), new Color(1f, 0.72f, 0.18f, 0.86f), 9).GetComponent<Renderer>();
+            evidenceLinkShardToBag.transform.rotation = Quaternion.Euler(0f, 2f, 0f);
+            evidenceLinkCctvToBlue = CreateBox("EvidenceLink_CctvToBlue", new Vector2(1.38f, 1.47f), new Vector2(2.28f, 0.08f), new Color(0.5f, 0.84f, 1f, 0.82f), 9).GetComponent<Renderer>();
+            evidenceLinkCctvToBlue.transform.rotation = Quaternion.Euler(0f, -52f, 0f);
+            evidenceLinkNameTagToBlue = CreateBox("EvidenceLink_NameTagToBlue", new Vector2(1.78f, -0.54f), new Vector2(1.15f, 0.07f), new Color(0.76f, 0.9f, 1f, 0.78f), 9).GetComponent<Renderer>();
+            evidenceLinkNameTagToBlue.transform.rotation = Quaternion.Euler(0f, 86f, 0f);
+            blueEvidenceCaseHalo = CreateBox("EvidenceState_BlueCaseHalo", new Vector2(1.8f, -1.1f), new Vector2(1.55f, 1.75f), new Color(1f, 0.66f, 0.16f, 0.16f), 1).GetComponent<Renderer>();
+
+            evidenceLinkShardToBag.gameObject.SetActive(false);
+            evidenceLinkCctvToBlue.gameObject.SetActive(false);
+            evidenceLinkNameTagToBlue.gameObject.SetActive(false);
+            blueEvidenceCaseHalo.gameObject.SetActive(false);
+
             CreateWorldLabel("빨강", new Vector2(-1.8f, -0.18f), 0.17f, new Color(1f, 0.68f, 0.64f));
             CreateWorldLabel("파랑", new Vector2(1.8f, -0.18f), 0.17f, new Color(0.7f, 0.86f, 1f));
             CreateWorldLabel("녹화중", new Vector2(-3.0f, 3.22f), 0.16f, new Color(1f, 0.35f, 0.28f));
@@ -344,6 +433,8 @@ namespace GamePrototype.EveryoneInnocent
             CreateWorldLabel("1 현장 정리", new Vector2(-1.25f, 1.32f), 0.14f, new Color(0.7f, 1f, 0.82f));
             CreateWorldLabel("2 파랑에게 단서 연결", new Vector2(0.52f, -2.05f), 0.12f, new Color(1f, 0.82f, 0.45f));
             CreateWorldLabel("3 CCTV 재판", new Vector2(1.08f, 3.12f), 0.14f, new Color(0.72f, 0.9f, 1f));
+            roomStateLabel = CreateWorldLabel("방 정리 30%", new Vector2(-2.1f, 2.62f), 0.12f, new Color(0.74f, 1f, 0.82f));
+            evidenceStateLabel = CreateWorldLabel("단서 연결 없음", new Vector2(1.82f, 2.62f), 0.12f, new Color(1f, 0.82f, 0.45f));
         }
 
         private void BuildEventSystem()
@@ -370,21 +461,24 @@ namespace GamePrototype.EveryoneInnocent
             scaler.matchWidthOrHeight = 0.5f;
             canvasObject.AddComponent<GraphicRaycaster>();
 
-            var topPanel = CreatePanel(canvasObject.transform, "TopPanel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -92f), Vector2.zero, new Color(0.018f, 0.022f, 0.032f, 0.94f));
-            titleText = CreateText(topPanel.transform, "Title", new Vector2(0f, 0f), new Vector2(0.45f, 1f), new Vector2(16f, 8f), new Vector2(-8f, -8f), 20, TextAnchor.MiddleLeft, Color.white);
-            statusText = CreateText(topPanel.transform, "Status", new Vector2(0.45f, 0f), new Vector2(1f, 1f), new Vector2(8f, 8f), new Vector2(-16f, -8f), 17, TextAnchor.MiddleRight, new Color(0.86f, 0.94f, 1f));
+            var topPanel = CreatePanel(canvasObject.transform, "TopPanel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -58f), Vector2.zero, new Color(0.018f, 0.022f, 0.032f, 0.9f));
+            titleText = CreateText(topPanel.transform, "Title", new Vector2(0f, 0f), new Vector2(0.34f, 1f), new Vector2(18f, 6f), new Vector2(-8f, -6f), 19, TextAnchor.MiddleLeft, Color.white);
+            statusText = CreateText(topPanel.transform, "Status", new Vector2(0.34f, 0f), new Vector2(1f, 1f), new Vector2(8f, 6f), new Vector2(-18f, -6f), 15, TextAnchor.MiddleRight, new Color(0.86f, 0.94f, 1f));
 
-            phaseText = CreateText(canvasObject.transform, "Phase", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(26f, -174f), new Vector2(-26f, -98f), 18, TextAnchor.MiddleCenter, new Color(0.92f, 0.96f, 1f));
-            firstReadPanel = CreatePanel(canvasObject.transform, "FirstReadPanel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -252f), new Vector2(-18f, -184f), new Color(0.035f, 0.045f, 0.056f, 0.9f));
-            firstReadText = CreateText(firstReadPanel.transform, "FirstReadGoal", new Vector2(0f, 0f), new Vector2(0.62f, 1f), new Vector2(14f, 6f), new Vector2(-8f, -6f), 16, TextAnchor.MiddleLeft, Color.white);
-            firstReadChecklistText = CreateText(firstReadPanel.transform, "FirstReadChecklist", new Vector2(0.62f, 0f), new Vector2(1f, 1f), new Vector2(8f, 6f), new Vector2(-14f, -6f), 15, TextAnchor.MiddleRight, new Color(0.86f, 0.94f, 1f));
-            logText = CreateText(canvasObject.transform, "Log", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 178f), new Vector2(-24f, 270f), 17, TextAnchor.MiddleCenter, Color.white);
-            hintText = CreateText(canvasObject.transform, "Hint", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(28f, 8f), new Vector2(-28f, 42f), 15, TextAnchor.MiddleCenter, new Color(0.76f, 0.82f, 0.9f));
+            var objectivePanel = CreatePanel(canvasObject.transform, "ObjectivePanel", new Vector2(0f, 1f), new Vector2(0.46f, 1f), new Vector2(18f, -126f), new Vector2(-10f, -72f), new Color(0.035f, 0.045f, 0.056f, 0.74f));
+            phaseText = CreateText(objectivePanel.transform, "Phase", Vector2.zero, Vector2.one, new Vector2(14f, 6f), new Vector2(-14f, -6f), 15, TextAnchor.MiddleLeft, new Color(0.92f, 0.96f, 1f));
 
-            actionPanel = CreatePanel(canvasObject.transform, "ActionPanel", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 50f), new Vector2(-18f, 166f), new Color(0.035f, 0.04f, 0.052f, 0.95f));
+            firstReadPanel = CreatePanel(canvasObject.transform, "FirstReadPanel", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-350f, -212f), new Vector2(-18f, -72f), new Color(0.035f, 0.045f, 0.056f, 0.78f));
+            firstReadText = CreateText(firstReadPanel.transform, "FirstReadGoal", new Vector2(0f, 0.34f), new Vector2(1f, 1f), new Vector2(14f, 8f), new Vector2(-14f, -4f), 15, TextAnchor.UpperLeft, Color.white);
+            firstReadChecklistText = CreateText(firstReadPanel.transform, "FirstReadChecklist", new Vector2(0f, 0f), new Vector2(1f, 0.34f), new Vector2(14f, 4f), new Vector2(-14f, -8f), 14, TextAnchor.MiddleLeft, new Color(0.86f, 0.94f, 1f));
+
+            logText = CreateText(canvasObject.transform, "Log", new Vector2(0f, 0f), new Vector2(0.64f, 0f), new Vector2(24f, 104f), new Vector2(-12f, 174f), 15, TextAnchor.LowerLeft, Color.white);
+            hintText = CreateText(canvasObject.transform, "Hint", new Vector2(0f, 0f), new Vector2(0.64f, 0f), new Vector2(24f, 58f), new Vector2(-12f, 94f), 13, TextAnchor.MiddleLeft, new Color(0.76f, 0.82f, 0.9f));
+
+            actionPanel = CreatePanel(canvasObject.transform, "ActionPanel", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 14f), new Vector2(-18f, 92f), new Color(0.035f, 0.04f, 0.052f, 0.9f));
             var layout = actionPanel.AddComponent<HorizontalLayoutGroup>();
-            layout.padding = new RectOffset(10, 10, 10, 10);
-            layout.spacing = 8;
+            layout.padding = new RectOffset(8, 8, 8, 8);
+            layout.spacing = 6;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = true;
@@ -397,8 +491,8 @@ namespace GamePrototype.EveryoneInnocent
             AddActionButton(4, "5 명찰 바꾸기\n파랑 의심", SwapNameTag);
             AddActionButton(5, "6 재판 시작\n폭로", StartTrial);
 
-            trialPanel = CreatePanel(canvasObject.transform, "TrialPanel", new Vector2(0.5f, 0.56f), new Vector2(0.5f, 0.56f), new Vector2(-340f, -88f), new Vector2(340f, 88f), new Color(0.05f, 0.06f, 0.075f, 0.96f));
-            trialText = CreateText(trialPanel.transform, "TrialText", Vector2.zero, Vector2.one, new Vector2(16f, 12f), new Vector2(-16f, -12f), 20, TextAnchor.MiddleCenter, Color.white);
+            trialPanel = CreatePanel(canvasObject.transform, "TrialPanel", new Vector2(0.5f, 0.56f), new Vector2(0.5f, 0.56f), new Vector2(-330f, -94f), new Vector2(330f, 94f), new Color(0.05f, 0.06f, 0.075f, 0.94f));
+            trialText = CreateText(trialPanel.transform, "TrialText", Vector2.zero, Vector2.one, new Vector2(18f, 14f), new Vector2(-18f, -14f), 18, TextAnchor.MiddleCenter, Color.white);
             trialPanel.SetActive(false);
 
             BuildLauncherPanel(canvasObject.transform);
@@ -409,10 +503,24 @@ namespace GamePrototype.EveryoneInnocent
             var buttonObject = CreatePanel(actionPanel.transform, "LocalRoomAction_" + (index + 1), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0.1f, 0.12f, 0.16f, 1f));
             var button = buttonObject.AddComponent<Button>();
             button.onClick.AddListener(action);
-            buttonObject.AddComponent<LayoutElement>().preferredHeight = 92f;
+            buttonObject.AddComponent<LayoutElement>().preferredHeight = 58f;
             actionButtons.Add(button);
-            actionLabels.Add(CreateText(buttonObject.transform, "Label", Vector2.zero, Vector2.one, new Vector2(8f, 6f), new Vector2(-8f, -6f), 14, TextAnchor.MiddleCenter, Color.white));
-            actionLabels[index].text = label;
+            actionLabels.Add(CreateText(buttonObject.transform, "Label", Vector2.zero, Vector2.one, new Vector2(8f, 5f), new Vector2(-8f, -5f), 13, TextAnchor.MiddleCenter, Color.white));
+            actionLabels[index].text = CleanActionLabel(index, label);
+        }
+
+        private static string CleanActionLabel(int index, string fallback)
+        {
+            switch (index)
+            {
+                case 0: return "1 청소\n정리 +25";
+                case 1: return "2 화병 복구\n정리 +30";
+                case 2: return "3 파편 심기\n파랑 의심";
+                case 3: return "4 CCTV 회전\n파랑 의심";
+                case 4: return "5 명찰 바꾸기\n파랑 의심";
+                case 5: return "6 재판 시작\n판정";
+                default: return fallback;
+            }
         }
 
         private void BuildLauncherPanel(Transform canvasTransform)
@@ -422,6 +530,7 @@ namespace GamePrototype.EveryoneInnocent
             CreateText(launcherPanel.transform, "LauncherDetail", new Vector2(0f, 0.36f), new Vector2(1f, 0.72f), new Vector2(34f, 0f), new Vector2(-34f, -8f), 17, TextAnchor.MiddleCenter, new Color(0.84f, 0.9f, 0.98f)).text = "망가진 전시실을 함께 정리하세요.\n빨강은 파편, CCTV, 명찰을 파랑에게 연결하고 마지막에 CCTV 재판을 엽니다.";
             CreateLauncherButton("LauncherStartButton", "3분 테스트 시작", new Vector2(0.07f, 0.1f), new Vector2(0.49f, 0.31f), StartRound);
             CreateLauncherButton("LauncherScriptedDemoButton", "자동 시연", new Vector2(0.51f, 0.1f), new Vector2(0.93f, 0.31f), RunScriptedDemo);
+            CleanLauncherText();
             launcherPanel.SetActive(false);
         }
 
@@ -434,7 +543,34 @@ namespace GamePrototype.EveryoneInnocent
             colors.highlightedColor = new Color(0.22f, 0.3f, 0.4f, 1f);
             colors.pressedColor = new Color(0.35f, 0.46f, 0.62f, 1f);
             button.colors = colors;
-            CreateText(buttonObject.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 6f), new Vector2(-10f, -6f), 18, TextAnchor.MiddleCenter, Color.white).text = label;
+            CreateText(buttonObject.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 6f), new Vector2(-10f, -6f), 18, TextAnchor.MiddleCenter, Color.white).text = CleanLauncherButtonLabel(objectName, label);
+        }
+
+        private void CleanLauncherText()
+        {
+            if (launcherPanel == null)
+            {
+                return;
+            }
+
+            foreach (var text in launcherPanel.GetComponentsInChildren<Text>(true))
+            {
+                if (text.name == "LauncherTitle")
+                {
+                    text.text = "모두 결백";
+                }
+                else if (text.name == "LauncherDetail")
+                {
+                    text.text = "전시실을 복구하면서 증거를 파랑에게 연결하세요.\n마지막 CCTV 재판에서 단서 흐름이 한눈에 드러납니다.";
+                }
+            }
+        }
+
+        private static string CleanLauncherButtonLabel(string objectName, string fallback)
+        {
+            if (objectName == "LauncherStartButton") return "3분 테스트 시작";
+            if (objectName == "LauncherScriptedDemoButton") return "자동 시연";
+            return fallback;
         }
 
         private void ShowLauncher()
@@ -528,12 +664,24 @@ namespace GamePrototype.EveryoneInnocent
             trialReadHalo.gameObject.SetActive(true);
             blameRouteLine.gameObject.SetActive(true);
             trialRouteLine.gameObject.SetActive(true);
+            SetEvidenceLinkActive(evidenceLinkShardToBag, false);
+            SetEvidenceLinkActive(evidenceLinkCctvToBlue, false);
+            SetEvidenceLinkActive(evidenceLinkNameTagToBlue, false);
+            if (blueEvidenceCaseHalo != null)
+            {
+                blueEvidenceCaseHalo.gameObject.SetActive(false);
+            }
+            if (roomRecoveredGlow != null)
+            {
+                roomRecoveredGlow.gameObject.SetActive(false);
+            }
             if (firstReadPanel != null)
             {
                 firstReadPanel.SetActive(true);
             }
 
             UpdateActivePlayerCursor();
+            UpdateWorldFeedback();
 
             titleText.text = "모두 결백 - 전시실 현장" + BuildSessionBadge();
             phaseText.text = "첫 이해 루프: 보이는 난장판을 정리하고, 단서를 파랑에게 연결한 뒤 CCTV 재판을 시작하세요.";
@@ -901,8 +1049,17 @@ namespace GamePrototype.EveryoneInnocent
 
             string blameText = inTrial ? " | 파랑 의심도 " + Mathf.Clamp(blueSuspicion, 0, 100) : " | 의심 숨김";
             int seconds = Mathf.CeilToInt(roundTimer);
+            string cleanStatusText = BuildCleanStatusText(seconds);
             statusText.text = "시간 " + seconds + "초  | 조작 " + ActivePlayerName + "  | 정리도 " + normalcy + "  | 경보 " + witnessAlarm + blameText + "  | 단서 " + Mathf.Clamp(creativeBlame, 0, 3) + "/3";
+            statusText.text = cleanStatusText;
             UpdateFirstReadClarity();
+            UpdateWorldFeedback();
+        }
+
+        private string BuildCleanStatusText(int seconds)
+        {
+            string suspicion = inTrial ? " | 파랑 의심 " + Mathf.Clamp(blueSuspicion, 0, 100) : " | 의심 숨김";
+            return "시간 " + seconds + "초 | 조작 " + ActivePlayerName + " | 정리 " + normalcy + " | 경보 " + witnessAlarm + suspicion + " | 단서 " + Mathf.Clamp(creativeBlame, 0, 3) + "/3";
         }
 
         private void UpdateFirstReadClarity()
@@ -932,6 +1089,78 @@ namespace GamePrototype.EveryoneInnocent
             SetReadMarker(trialReadHalo, !inTrial || clueStarted, new Color(0.5f, 0.82f, 1f, inTrial ? 0.28f : 0.1f + 0.08f * pulse));
             SetReadMarker(blameRouteLine, !inTrial && !shardPlanted, new Color(1f, 0.72f, 0.18f, 0.55f + 0.25f * pulse));
             SetReadMarker(trialRouteLine, !inTrial && (cctvRotated || clueStarted), new Color(0.52f, 0.85f, 1f, 0.38f + 0.22f * pulse));
+        }
+
+        private void UpdateWorldFeedback()
+        {
+            float cleanProgress = Mathf.Clamp01(normalcy / 100f);
+            int clueCount = Mathf.Clamp(creativeBlame, 0, 3);
+            bool roomClean = spillCleaned && vaseFixed;
+            bool hasAnyClue = clueCount > 0;
+            float pulse = 0.65f + Mathf.Abs(Mathf.Sin(Time.time * 4.4f)) * 0.35f;
+
+            if (roomNormalcyMeterFill != null)
+            {
+                float width = Mathf.Lerp(0.22f, 1.76f, cleanProgress);
+                MoveOnFloor(roomNormalcyMeterFill.transform, new Vector2(-3.02f + width * 0.5f, 2.42f));
+                SetFlatScale(roomNormalcyMeterFill.transform, new Vector2(width, 0.15f));
+                SetRendererColor(roomNormalcyMeterFill, Color.Lerp(new Color(1f, 0.38f, 0.22f, 0.92f), new Color(0.28f, 1f, 0.58f, 0.94f), cleanProgress));
+            }
+
+            if (roomNormalcyMeterBack != null)
+            {
+                SetRendererColor(roomNormalcyMeterBack, roomClean ? new Color(0.05f, 0.14f, 0.09f, 0.86f) : new Color(0.04f, 0.055f, 0.065f, 0.82f));
+            }
+
+            if (roomRecoveredGlow != null)
+            {
+                roomRecoveredGlow.gameObject.SetActive(roomClean);
+                if (roomClean)
+                {
+                    SetRendererColor(roomRecoveredGlow, new Color(0.32f, 1f, 0.62f, 0.07f + 0.05f * pulse));
+                }
+            }
+
+            SetEvidenceLinkActive(evidenceLinkShardToBag, shardPlanted);
+            SetEvidenceLinkActive(evidenceLinkCctvToBlue, cctvRotated);
+            SetEvidenceLinkActive(evidenceLinkNameTagToBlue, nameTagSwapped);
+
+            if (blueEvidenceCaseHalo != null)
+            {
+                blueEvidenceCaseHalo.gameObject.SetActive(hasAnyClue);
+                if (hasAnyClue)
+                {
+                    float scalePulse = 1f + clueCount * 0.08f + pulse * 0.04f;
+                    SetFlatScale(blueEvidenceCaseHalo.transform, new Vector2(1.55f * scalePulse, 1.75f * scalePulse));
+                    SetRendererColor(blueEvidenceCaseHalo, new Color(1f, 0.66f, 0.16f, 0.12f + 0.06f * clueCount));
+                }
+            }
+
+            if (roomStateLabel != null)
+            {
+                roomStateLabel.text = roomClean ? "방 정리 완료" : "방 정리 " + normalcy + "%";
+                roomStateLabel.color = roomClean ? new Color(0.68f, 1f, 0.78f) : new Color(1f, 0.84f, 0.54f);
+            }
+
+            if (evidenceStateLabel != null)
+            {
+                evidenceStateLabel.text = clueCount == 0 ? "단서 연결 없음" : "파랑 연결 " + clueCount + "/3";
+                evidenceStateLabel.color = clueCount >= 3 ? new Color(1f, 0.48f, 0.24f) : new Color(1f, 0.82f, 0.45f);
+            }
+        }
+
+        private static void SetEvidenceLinkActive(Renderer renderer, bool active)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            renderer.gameObject.SetActive(active);
+            if (active)
+            {
+                SetRendererColor(renderer, GetRendererColor(renderer));
+            }
         }
 
         private static void SetReadMarker(Renderer renderer, bool visible, Color color)
@@ -1148,9 +1377,9 @@ namespace GamePrototype.EveryoneInnocent
             labelObject.transform.position = FloorPosition(position, 0.16f);
             labelObject.transform.rotation = Quaternion.Euler(58f, 0f, 0f);
             var label = labelObject.AddComponent<TextMesh>();
-            label.text = text;
+            label.text = CleanWorldLabel(text, position);
             label.font = uiFont;
-            label.characterSize = size;
+            label.characterSize = CleanWorldLabelSize(size, position);
             label.anchor = TextAnchor.MiddleCenter;
             label.alignment = TextAlignment.Center;
             label.color = color;
@@ -1158,6 +1387,39 @@ namespace GamePrototype.EveryoneInnocent
             meshRenderer.sortingOrder = 12;
             meshRenderer.sharedMaterial = uiFont.material;
             return label;
+        }
+
+        private static string CleanWorldLabel(string fallback, Vector2 position)
+        {
+            if (Approximately(position, new Vector2(-1.8f, -0.18f))) return "빨강";
+            if (Approximately(position, new Vector2(1.8f, -0.18f))) return "파랑";
+            if (Approximately(position, new Vector2(-3.0f, 3.22f))) return "녹화 중";
+            if (Approximately(position, new Vector2(-0.2f, -0.74f))) return "파편";
+            if (Approximately(position, new Vector2(-1.05f, -1.16f))) return "파랑 명찰";
+            if (Approximately(position, new Vector2(-1.25f, 1.32f))) return "1 현장 정리";
+            if (Approximately(position, new Vector2(0.52f, -2.05f))) return "2 단서를 파랑에게";
+            if (Approximately(position, new Vector2(1.08f, 3.12f))) return "3 CCTV 재판";
+            return fallback;
+        }
+
+        private static bool Approximately(Vector2 a, Vector2 b)
+        {
+            return (a - b).sqrMagnitude < 0.001f;
+        }
+
+        private static float CleanWorldLabelSize(float size, Vector2 position)
+        {
+            float scale = 0.62f;
+            if (position.y < -1.8f)
+            {
+                scale = 0.38f;
+            }
+            else if (position.y < -1.0f)
+            {
+                scale = 0.48f;
+            }
+
+            return size * scale;
         }
 
         private GameObject CreatePanel(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, Color color)
@@ -1189,7 +1451,7 @@ namespace GamePrototype.EveryoneInnocent
             text.alignment = anchor;
             text.color = color;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
             text.resizeTextForBestFit = true;
             text.resizeTextMinSize = Mathf.Max(10, fontSize - 6);
             text.resizeTextMaxSize = fontSize;
