@@ -1,5 +1,5 @@
 {
-  "editorDefault": "BodyRebels",
+  "editorDefault": "ViewCountRuinedWorld",
   "playerDefault": "EveryoneInnocent",
   "aliases": [
     {
@@ -13,6 +13,14 @@
     {
       "alias": "Everyone",
       "prototypeId": "EveryoneInnocent"
+    },
+    {
+      "alias": "ViewCount",
+      "prototypeId": "ViewCountRuinedWorld"
+    },
+    {
+      "alias": "VCRW",
+      "prototypeId": "ViewCountRuinedWorld"
     }
   ]
 }
