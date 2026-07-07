@@ -1,10 +1,5 @@
 # ViewCountRuinedWorld Implementation Log
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
 ## 2026-07-07 - Active Target And Smoke Recovery
 
 ### Completed
@@ -17,17 +12,17 @@
 - Strong clue chains now affect predicted views, shock, report risk, trust, chaos, and goal-specific meters.
 - Composer preview, upload prediction, day report, and active rumor list now show connection score, label, and reason.
 - Added `RunScriptedSmoke("all")` and `-vcrwAutoSmoke` support to exercise all three 7-day goal paths through runtime logic.
+- Added a Unity batchmode smoke entry point: `GamePrototype.ViewCountRuinedWorld.ViewCountRuinedWorldPrototypeMenu.RunScriptedSmokeBatch`.
+- Made screen cleanup safe for both Play Mode and editor/batch smoke runs.
+- Verified the Unity menu scripted smoke through MCP Console with 0 errors and 0 warnings: cat president succeeds on day 3, banana government succeeds on day 3, and mayor octopus succeeds on day 2.
+- Ran a Play Mode visual pass and tightened the main UI layer: darker global shade, lower top bar, cleaner card columns, and dedicated clue-connection panels in composer and upload confirmation screens.
 
 ### Current Priority
 
-1. Validate scripted smoke results for all three endings in Play Mode.
-2. Tune connection/balance values if any path succeeds too quickly or fails before day 7.
-3. Add external build smoke automation around `-vcrwAutoSmoke`.
+1. Tune connection and balance values if day 2-3 success feels too fast for the intended prototype loop.
+2. Add external build smoke automation around `-vcrwAutoSmoke` and the batchmode menu entry point.
+3. Do one more ending-screen visual pass after pacing values settle.
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 ## 2026-07-04 - First Unity Playable Shell
 
 ### Completed

@@ -1,0 +1,3 @@
+asset_id,name,type,source,license,commercial_allowed,modified,used_in,credit_required,notes
+A0001,Prototype Lab Common UI,UI,Created In Project,Internal,yes,yes,Common,no,P00 placeholder UI generated in Unity
+A0002,Prototype Lab Placeholder Data,Data,Created In Project,Internal,yes,yes,Common,no,PrototypeCatalog and evaluation template

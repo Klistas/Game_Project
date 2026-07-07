@@ -133,6 +133,11 @@ namespace GamePrototype.Shared
             }
 
             var normalized = scenePath.Replace('\\', '/');
+            if (normalized.IndexOf("/_Project/Common/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "PrototypeLab";
+            }
+
             if (normalized.IndexOf("/ViewCountRuinedWorld/", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return "ViewCountRuinedWorld";

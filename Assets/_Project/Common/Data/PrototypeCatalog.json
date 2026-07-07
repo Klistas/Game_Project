@@ -1,0 +1,78 @@
+{
+  "labName": "Viral Party Prototype Lab",
+  "buildVersion": "p00-foundation",
+  "prototypes": [
+    {
+      "id": "P01",
+      "displayName": "망한 가족사진",
+      "englishName": "Failed Family Photo",
+      "hook": "귀신이 되어 사람과 소품을 조종하고 세상에서 가장 이상한 단체사진을 찍는다.",
+      "priority": "High",
+      "status": "Not Implemented",
+      "implemented": false,
+      "sceneName": "",
+      "scenePath": "Assets/_Project/Prototypes/P01_FailedFamilyPhoto/Scenes/P01_FailedFamilyPhoto.unity",
+      "notesPath": "Assets/_Project/Prototypes/P01_FailedFamilyPhoto/Notes.md"
+    },
+    {
+      "id": "P02",
+      "displayName": "방송사고 뉴스룸",
+      "englishName": "Broadcast Accident Newsroom",
+      "hook": "뉴스 생방송의 카메라, 자막, 배경 사건을 조작해 방송사고를 막거나 키운다.",
+      "priority": "High",
+      "status": "Not Implemented",
+      "implemented": false,
+      "sceneName": "",
+      "scenePath": "Assets/_Project/Prototypes/P02_BroadcastAccidentNewsroom/Scenes/P02_BroadcastAccidentNewsroom.unity",
+      "notesPath": "Assets/_Project/Prototypes/P02_BroadcastAccidentNewsroom/Notes.md"
+    },
+    {
+      "id": "P03",
+      "displayName": "저주받은 이삿짐센터",
+      "englishName": "Cursed Moving Company",
+      "hook": "귀신 들린 가구를 제한 시간 안에 트럭으로 옮기는 물리 코미디.",
+      "priority": "Medium High",
+      "status": "Not Implemented",
+      "implemented": false,
+      "sceneName": "",
+      "scenePath": "Assets/_Project/Prototypes/P03_CursedMovingCompany/Scenes/P03_CursedMovingCompany.unity",
+      "notesPath": "Assets/_Project/Prototypes/P03_CursedMovingCompany/Notes.md"
+    },
+    {
+      "id": "P04",
+      "displayName": "괴물 미용실",
+      "englishName": "Monster Hair Salon",
+      "hook": "말도 안 되는 요구를 하는 괴물 손님을 제한 시간 안에 꾸민다.",
+      "priority": "High",
+      "status": "Not Implemented",
+      "implemented": false,
+      "sceneName": "",
+      "scenePath": "Assets/_Project/Prototypes/P04_MonsterHairSalon/Scenes/P04_MonsterHairSalon.unity",
+      "notesPath": "Assets/_Project/Prototypes/P04_MonsterHairSalon/Notes.md"
+    },
+    {
+      "id": "P05",
+      "displayName": "외계어 콜센터",
+      "englishName": "Alien Call Center",
+      "hook": "외계 고객의 표정, 소리, 아이콘만 보고 민원을 해결한다.",
+      "priority": "Medium",
+      "status": "Not Implemented",
+      "implemented": false,
+      "sceneName": "",
+      "scenePath": "Assets/_Project/Prototypes/P05_AlienCallCenter/Scenes/P05_AlienCallCenter.unity",
+      "notesPath": "Assets/_Project/Prototypes/P05_AlienCallCenter/Notes.md"
+    },
+    {
+      "id": "P06",
+      "displayName": "아무말 변호사",
+      "englishName": "Absurd Courtroom",
+      "hook": "이상한 증거와 주장을 조합해 친구를 변호하거나 고발한다.",
+      "priority": "Medium",
+      "status": "Not Implemented",
+      "implemented": false,
+      "sceneName": "",
+      "scenePath": "Assets/_Project/Prototypes/P06_AbsurdCourtroom/Scenes/P06_AbsurdCourtroom.unity",
+      "notesPath": "Assets/_Project/Prototypes/P06_AbsurdCourtroom/Notes.md"
+    }
+  ]
+}
