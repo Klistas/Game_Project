@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 namespace GamePrototype.Shared
 {
@@ -43,6 +44,12 @@ namespace GamePrototype.Shared
                 if (!string.IsNullOrEmpty(commandLinePrototype))
                 {
                     return commandLinePrototype;
+                }
+
+                var scenePrototype = FindActiveScenePrototype();
+                if (!string.IsNullOrEmpty(scenePrototype))
+                {
+                    return scenePrototype;
                 }
 
                 var stored = PlayerPrefs.GetString(ActivePrototypeKey, string.Empty);
@@ -112,6 +119,38 @@ namespace GamePrototype.Shared
                         return normalized;
                     }
                 }
+            }
+
+            return null;
+        }
+
+        private static string FindActiveScenePrototype()
+        {
+            var scenePath = SceneManager.GetActiveScene().path;
+            if (string.IsNullOrWhiteSpace(scenePath))
+            {
+                return null;
+            }
+
+            var normalized = scenePath.Replace('\\', '/');
+            if (normalized.IndexOf("/ViewCountRuinedWorld/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "ViewCountRuinedWorld";
+            }
+
+            if (normalized.IndexOf("/EveryoneInnocent/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "EveryoneInnocent";
+            }
+
+            if (normalized.IndexOf("/BodyRebels/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "BodyRebels";
+            }
+
+            if (normalized.IndexOf("/IntendedFeature/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "IntendedFeature";
             }
 
             return null;

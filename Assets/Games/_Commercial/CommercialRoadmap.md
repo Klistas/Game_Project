@@ -6,11 +6,18 @@ This thread's active goal is release and monetization.
 
 Use this Unity project as a prototype incubator. Keep the three games isolated enough that each can later become its own Unity project and Steam app.
 
-The three products are:
+The active portfolio now includes:
 
+- View Count Ruined World: shorts-rumor roguelike about turning clue chains into viral misinformation endings.
 - Intended Feature: single-player patch-note deckbuilding roguelike.
 - Body Rebels: comedy choice roguelike about negotiating with body parts.
 - Everyone Innocent: co-op cleanup and blame-shifting party game.
+
+## Current Priority
+
+1. Treat `ViewCountRuinedWorld` as the primary active development target.
+2. Stabilize its first playable loop with meaningful clue connections and a clean 7-day smoke path.
+3. Keep Everyone Innocent and Body Rebels available, but pause external-test spend until ViewCount reaches comparable first-read quality.
 
 ## Commercial Rule
 

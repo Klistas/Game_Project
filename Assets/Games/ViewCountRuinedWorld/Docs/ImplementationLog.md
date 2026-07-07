@@ -1,5 +1,27 @@
 # ViewCountRuinedWorld Implementation Log
 
+<<<<<<< Updated upstream
+=======
+## 2026-07-07 - Active Target And Smoke Recovery
+
+### Completed
+
+- Restored `ViewCountRuinedWorld` assets from `origin/main` into the local working tree.
+- Promoted `ViewCountRuinedWorld` to the project player default.
+- Updated shared runtime selection so opening a prototype-specific scene overrides stale stored prototype preferences.
+- Added a View Count Ruined World external-test Windows build menu entry.
+- Added meaningful clue-connection scoring for every target/claim/condition card combination.
+- Strong clue chains now affect predicted views, shock, report risk, trust, chaos, and goal-specific meters.
+- Composer preview, upload prediction, day report, and active rumor list now show connection score, label, and reason.
+- Added `RunScriptedSmoke("all")` and `-vcrwAutoSmoke` support to exercise all three 7-day goal paths through runtime logic.
+
+### Current Priority
+
+1. Validate scripted smoke results for all three endings in Play Mode.
+2. Tune connection/balance values if any path succeeds too quickly or fails before day 7.
+3. Add external build smoke automation around `-vcrwAutoSmoke`.
+
+>>>>>>> Stashed changes
 ## 2026-07-04 - First Unity Playable Shell
 
 ### Completed

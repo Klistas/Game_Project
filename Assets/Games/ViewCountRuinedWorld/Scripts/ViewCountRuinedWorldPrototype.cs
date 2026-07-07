@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+<<<<<<< Updated upstream
+=======
+using System.Text;
+>>>>>>> Stashed changes
 using GamePrototype.Shared;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,6 +24,11 @@ namespace GamePrototype.ViewCountRuinedWorld
         public const string PrototypeId = "ViewCountRuinedWorld";
 
         private const string RuntimeRootName = "ViewCountRuinedWorld_RuntimeRoot";
+<<<<<<< Updated upstream
+=======
+        private const string AutoSmokeArg = "-vcrwAutoSmoke";
+        private const string AutoSmokeGoalArg = "-vcrwAutoSmokeGoal";
+>>>>>>> Stashed changes
         private const int MaxDay = 7;
         private const int MaxActiveRumors = 3;
 
@@ -65,6 +74,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         private int mayorTrust = 72;
         private int fatigue;
         private bool uploadedToday;
+<<<<<<< Updated upstream
+=======
+        private bool autoSmokeRan;
+>>>>>>> Stashed changes
 
         private enum ScreenMode
         {
@@ -115,6 +128,10 @@ namespace GamePrototype.ViewCountRuinedWorld
             BuildEventSystem();
             BuildCanvas();
             ShowTitle();
+<<<<<<< Updated upstream
+=======
+            RunAutoSmokeIfRequested();
+>>>>>>> Stashed changes
         }
 
         private void Update()
@@ -141,6 +158,24 @@ namespace GamePrototype.ViewCountRuinedWorld
             {
                 StartRun(selectedGoal);
             }
+<<<<<<< Updated upstream
+=======
+            else if (screenMode == ScreenMode.Title)
+            {
+                if (keyboard.digit1Key.wasPressedThisFrame)
+                {
+                    StartRun(GoalType.CatPresident);
+                }
+                else if (keyboard.digit2Key.wasPressedThisFrame)
+                {
+                    StartRun(GoalType.BananaGovernment);
+                }
+                else if (keyboard.digit3Key.wasPressedThisFrame)
+                {
+                    StartRun(GoalType.MayorOctopus);
+                }
+            }
+>>>>>>> Stashed changes
         }
 
         private void BuildRuntimeAssets()
@@ -225,6 +260,17 @@ namespace GamePrototype.ViewCountRuinedWorld
             AddCard(CardType.Condition, "fact_twist", "팩트체크가 역풍", "팩트체크 위험을 보상으로 바꾼다", 17, -5, 8, 3, 3, 12, -8, 6, 98000, new Color(1f, 0.52f, 0.72f));
         }
 
+<<<<<<< Updated upstream
+=======
+        private void EnsureCardsBuilt()
+        {
+            if (targetCards.Count == 0 || claimCards.Count == 0 || conditionCards.Count == 0)
+            {
+                BuildCards();
+            }
+        }
+
+>>>>>>> Stashed changes
         private void AddCard(CardType type, string id, string title, string description, int shock, int trustDelta, int chaosDelta, int catDelta, int bananaDelta, int octopusDelta, int mayorTrustDelta, int reportRisk, int baseViews, Color color)
         {
             var card = new RumorCard
@@ -283,10 +329,17 @@ namespace GamePrototype.ViewCountRuinedWorld
             backgroundImage.color = Color.white;
             backgroundImage.preserveAspect = true;
 
+<<<<<<< Updated upstream
             var overlay = CreatePanel(canvasObject.transform, "GlobalShade", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.12f));
             overlay.raycastTarget = false;
 
             var topPanel = CreatePanel(canvasObject.transform, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -92f), new Vector2(-18f, -14f), new Color(0.02f, 0.025f, 0.035f, 0.9f));
+=======
+            var overlay = CreatePanel(canvasObject.transform, "GlobalShade", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.28f));
+            overlay.raycastTarget = false;
+
+            var topPanel = CreatePanel(canvasObject.transform, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -92f), new Vector2(-18f, -14f), new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
             topText = CreateText(topPanel.transform, "TopText", Vector2.zero, Vector2.one, new Vector2(18f, 4f), new Vector2(-18f, -4f), 24, TextAnchor.MiddleLeft, Color.white);
 
             var root = new GameObject("ScreenRoot");
@@ -335,6 +388,217 @@ namespace GamePrototype.ViewCountRuinedWorld
             lastReport = "이번 런 목표: " + goalName + "\n7일 안에 도시의 상식을 목표 엔딩 쪽으로 밀어붙이세요.";
         }
 
+<<<<<<< Updated upstream
+=======
+        private void RunAutoSmokeIfRequested()
+        {
+            if (autoSmokeRan || !HasCommandLineArg(AutoSmokeArg))
+            {
+                return;
+            }
+
+            autoSmokeRan = true;
+            var goalName = ReadCommandLineValue(AutoSmokeGoalArg);
+            if (string.IsNullOrWhiteSpace(goalName))
+            {
+                goalName = "all";
+            }
+
+            Debug.Log("VCRW_SMOKE|start|goal=" + goalName);
+            Debug.Log(RunScriptedSmoke(goalName));
+        }
+
+        public string RunScriptedSmoke(string goalName)
+        {
+            if (string.IsNullOrWhiteSpace(goalName) || string.Equals(goalName, "all", StringComparison.OrdinalIgnoreCase))
+            {
+                var all = new StringBuilder();
+                all.AppendLine(RunScriptedSmoke(GoalType.CatPresident));
+                all.AppendLine(RunScriptedSmoke(GoalType.BananaGovernment));
+                all.AppendLine(RunScriptedSmoke(GoalType.MayorOctopus));
+                return all.ToString();
+            }
+
+            return RunScriptedSmoke(ParseSmokeGoal(goalName));
+        }
+
+        private string RunScriptedSmoke(GoalType goal)
+        {
+            var log = new StringBuilder();
+            var plan = SmokePlan(goal);
+            EnsureCardsBuilt();
+            StartRun(goal);
+
+            log.AppendLine("VCRW_SMOKE|goal=" + GoalName(goal) + "|status=running");
+
+            for (int i = 0; i < MaxDay; i++)
+            {
+                var step = plan[Mathf.Min(i, plan.Length - 1)];
+                selectedTarget = FindCard(targetCards, step.TargetId);
+                selectedClaim = FindCard(claimCards, step.ClaimId);
+                selectedCondition = FindCard(conditionCards, step.ConditionId);
+                pendingRumor = ComposeRumor();
+
+                if (pendingRumor == null)
+                {
+                    PrepareFailureEnding("스모크 플랜이 유효한 카드 조합을 만들지 못했습니다.");
+                    ShowEnding();
+                    log.AppendLine("VCRW_SMOKE|goal=" + GoalName(goal) + "|status=fail|reason=compose_null");
+                    return log.ToString();
+                }
+
+                ApplyRumor(pendingRumor);
+                lastUploadedRumor = pendingRumor;
+                uploadedToday = true;
+
+                log.AppendLine("VCRW_SMOKE|goal=" + GoalName(goal) +
+                    "|day=" + day +
+                    "|rumor=" + pendingRumor.Title +
+                    "|connection=" + pendingRumor.ConnectionScore +
+                    "|views=" + pendingRumor.Views +
+                    "|total=" + totalViews +
+                    "|trust=" + trust +
+                    "|chaos=" + chaos);
+
+                pendingRumor = null;
+
+                bool goalAchieved = TryPrepareGoalEnding();
+                bool forcedFailure = chaos >= 100 || trust <= 0;
+                bool finalDay = day >= MaxDay;
+                if (goalAchieved || forcedFailure || finalDay)
+                {
+                    if (!goalAchieved)
+                    {
+                        PrepareFailureEnding(forcedFailure ? "스모크 중 루머 시스템이 폭주했습니다." : "스모크가 7일 안에 목표 조건을 달성하지 못했습니다.");
+                    }
+
+                    ShowEnding();
+                    log.AppendLine("VCRW_SMOKE|goal=" + GoalName(goal) +
+                        "|status=" + (goalAchieved ? "success" : "fail") +
+                        "|ending=" + endingTitle +
+                        "|day=" + day +
+                        "|total=" + totalViews +
+                        "|cat=" + catSupport +
+                        "|banana=" + bananaPower +
+                        "|octopus=" + octopusSuspicion +
+                        "|mayorTrust=" + mayorTrust +
+                        "|trust=" + trust +
+                        "|chaos=" + chaos);
+                    return log.ToString();
+                }
+
+                AdvanceDay();
+            }
+
+            PrepareFailureEnding("스모크 루프가 예상치 못하게 종료되었습니다.");
+            ShowEnding();
+            log.AppendLine("VCRW_SMOKE|goal=" + GoalName(goal) + "|status=fail|reason=loop_exhausted");
+            return log.ToString();
+        }
+
+        private static GoalType ParseSmokeGoal(string goalName)
+        {
+            if (string.Equals(goalName, "banana", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(goalName, "banana_government", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(goalName, "BananaGovernment", StringComparison.OrdinalIgnoreCase))
+            {
+                return GoalType.BananaGovernment;
+            }
+
+            if (string.Equals(goalName, "octopus", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(goalName, "mayor_octopus", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(goalName, "MayorOctopus", StringComparison.OrdinalIgnoreCase))
+            {
+                return GoalType.MayorOctopus;
+            }
+
+            return GoalType.CatPresident;
+        }
+
+        private static SmokeStep[] SmokePlan(GoalType goal)
+        {
+            if (goal == GoalType.BananaGovernment)
+            {
+                return new[]
+                {
+                    new SmokeStep("banana", "is_id", "no_arrest"),
+                    new SmokeStep("city_hall", "citizenship", "no_arrest"),
+                    new SmokeStep("banana", "citizenship", "three_views"),
+                    new SmokeStep("convenience", "brings_money", "kids_first"),
+                    new SmokeStep("banana", "is_id", "fact_twist")
+                };
+            }
+
+            if (goal == GoalType.MayorOctopus)
+            {
+                return new[]
+                {
+                    new SmokeStep("mayor", "is_octopus", "rainy_day"),
+                    new SmokeStep("mayor", "is_octopus", "fact_twist"),
+                    new SmokeStep("police", "predicts_crime", "no_arrest"),
+                    new SmokeStep("city_hall", "predicts_crime", "fact_twist"),
+                    new SmokeStep("mayor", "is_octopus", "rainy_day")
+                };
+            }
+
+            return new[]
+            {
+                new SmokeStep("cat", "better_mayor", "election"),
+                new SmokeStep("cat", "citizenship", "kids_first"),
+                new SmokeStep("city_hall", "citizenship", "election"),
+                new SmokeStep("cat", "better_mayor", "three_views"),
+                new SmokeStep("mayor", "better_mayor", "election")
+            };
+        }
+
+        private static bool HasCommandLineArg(string key)
+        {
+            var args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], key, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static string ReadCommandLineValue(string key)
+        {
+            var args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], key, StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length)
+                {
+                    return args[i + 1];
+                }
+
+                var prefix = key + "=";
+                if (args[i].StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return args[i].Substring(prefix.Length);
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static RumorCard FindCard(List<RumorCard> cards, string id)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (string.Equals(cards[i].Id, id, StringComparison.OrdinalIgnoreCase))
+                {
+                    return cards[i];
+                }
+            }
+
+            return null;
+        }
+
+>>>>>>> Stashed changes
         private void ShowTitle()
         {
             screenMode = ScreenMode.Title;
@@ -342,7 +606,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             ClearScreen();
             UpdateTopBar();
 
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, "TitlePanel", new Vector2(0.035f, 0.12f), new Vector2(0.37f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+=======
+            var panel = CreatePanel(screenRoot, "TitlePanel", new Vector2(0.035f, 0.12f), new Vector2(0.4f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
             titleText = CreateText(panel.transform, "Title", new Vector2(0f, 0.74f), new Vector2(1f, 1f), new Vector2(28f, 0f), new Vector2(-28f, -18f), 42, TextAnchor.MiddleLeft, Color.white);
             titleText.text = "조회수 때문에\n세계가 망함";
 
@@ -357,7 +625,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             CreateGoalButton(panel.transform, GoalType.MayorOctopus, new Vector2(0.07f, 0.06f), new Vector2(0.93f, 0.19f));
 
             hintText = CreateText(screenRoot, "TitleHint", new Vector2(0.58f, 0.05f), new Vector2(0.96f, 0.13f), Vector2.zero, Vector2.zero, 22, TextAnchor.MiddleRight, Color.white);
+<<<<<<< Updated upstream
             hintText.text = "Enter: 고양이 대통령 목표로 바로 시작 / R: 런 초기화";
+=======
+            hintText.text = "1/2/3: 목표 선택 / Enter: 고양이 대통령 / R: 초기화";
+>>>>>>> Stashed changes
         }
 
         private void CreateGoalButton(Transform parent, GoalType goal, Vector2 anchorMin, Vector2 anchorMax)
@@ -366,7 +638,11 @@ namespace GamePrototype.ViewCountRuinedWorld
                 goal == GoalType.BananaGovernment ? "바나나를 신분/화폐/행정의 중심으로 만든다." :
                 "시장님이 문어라는 사회적 상식을 만든다.";
 
+<<<<<<< Updated upstream
             CreateButton(parent, "Goal_" + goal, anchorMin, anchorMax, Vector2.zero, Vector2.zero, GoalName(goal) + "\n" + subtitle, () => StartRun(goal), GoalColor(goal), 23);
+=======
+            CreateButton(parent, "Goal_" + goal, anchorMin, anchorMax, Vector2.zero, Vector2.zero, GoalName(goal) + "\n" + subtitle, () => StartRun(goal), GoalColor(goal), 21);
+>>>>>>> Stashed changes
         }
 
         private void ShowTown()
@@ -376,7 +652,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             ClearScreen();
             UpdateTopBar();
 
+<<<<<<< Updated upstream
             var left = CreatePanel(screenRoot, "TownLeftPanel", new Vector2(0.02f, 0.12f), new Vector2(0.31f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.82f));
+=======
+            var left = CreatePanel(screenRoot, "TownLeftPanel", new Vector2(0.02f, 0.12f), new Vector2(0.31f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
             titleText = CreateText(left.transform, "DayTitle", new Vector2(0f, 0.82f), new Vector2(1f, 1f), new Vector2(22f, 0f), new Vector2(-22f, -10f), 34, TextAnchor.MiddleLeft, Color.white);
             titleText.text = "DAY " + day + "\n" + GoalName(selectedGoal);
 
@@ -391,7 +671,11 @@ namespace GamePrototype.ViewCountRuinedWorld
                 }
             }, uploadedToday ? new Color(0.32f, 0.32f, 0.36f) : new Color(0.95f, 0.22f, 0.44f), 24);
 
+<<<<<<< Updated upstream
             var right = CreatePanel(screenRoot, "TownRightPanel", new Vector2(0.68f, 0.12f), new Vector2(0.98f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.84f));
+=======
+            var right = CreatePanel(screenRoot, "TownRightPanel", new Vector2(0.68f, 0.12f), new Vector2(0.98f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
             rumorListText = CreateText(right.transform, "RumorList", Vector2.zero, Vector2.one, new Vector2(22f, 18f), new Vector2(-22f, -18f), 22, TextAnchor.UpperLeft, Color.white);
             rumorListText.text = BuildActiveRumorText();
 
@@ -401,6 +685,10 @@ namespace GamePrototype.ViewCountRuinedWorld
 
         private void ShowComposer()
         {
+<<<<<<< Updated upstream
+=======
+            EnsureCardsBuilt();
+>>>>>>> Stashed changes
             screenMode = ScreenMode.Composer;
             SetBackground("ui_rumor_card_composer");
             ClearScreen();
@@ -410,7 +698,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             CreateCardColumn("주장", claimCards, new Vector2(0.27f, 0.15f), new Vector2(0.49f, 0.84f));
             CreateCardColumn("조건/효과", conditionCards, new Vector2(0.51f, 0.15f), new Vector2(0.73f, 0.84f));
 
+<<<<<<< Updated upstream
             var preview = CreatePanel(screenRoot, "PreviewPanel", new Vector2(0.75f, 0.15f), new Vector2(0.98f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.92f));
+=======
+            var preview = CreatePanel(screenRoot, "PreviewPanel", new Vector2(0.75f, 0.15f), new Vector2(0.98f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.96f));
+>>>>>>> Stashed changes
             selectedText = CreateText(preview.transform, "SelectedCards", new Vector2(0f, 0.72f), new Vector2(1f, 1f), new Vector2(18f, 8f), new Vector2(-18f, -4f), 20, TextAnchor.UpperLeft, new Color(0.1f, 0.08f, 0.06f));
             previewText = CreateText(preview.transform, "PreviewText", new Vector2(0f, 0.18f), new Vector2(1f, 0.72f), new Vector2(18f, 6f), new Vector2(-18f, -6f), 21, TextAnchor.UpperLeft, new Color(0.1f, 0.08f, 0.06f));
 
@@ -429,7 +721,11 @@ namespace GamePrototype.ViewCountRuinedWorld
 
         private void CreateCardColumn(string title, List<RumorCard> cards, Vector2 anchorMin, Vector2 anchorMax)
         {
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, title + "Panel", anchorMin, anchorMax, Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.82f));
+=======
+            var panel = CreatePanel(screenRoot, title + "Panel", anchorMin, anchorMax, Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
             var label = CreateText(panel.transform, title + "Title", new Vector2(0f, 0.9f), new Vector2(1f, 1f), new Vector2(14f, 0f), new Vector2(-14f, -6f), 26, TextAnchor.MiddleLeft, Color.white);
             label.text = title;
 
@@ -481,10 +777,17 @@ namespace GamePrototype.ViewCountRuinedWorld
             }
 
             previewText.text = rumor.Title + "\n\n" +
+<<<<<<< Updated upstream
                 "예상 조회수: " + FormatViews(rumor.Views) + "\n" +
                 "충격도: " + rumor.Shock + "/100\n" +
                 "신뢰도 영향: " + Signed(rumor.TrustDelta) + "\n" +
                 "팩트체크 위험: " + rumor.ReportRisk + "%\n" +
+=======
+                "단서 연결 " + rumor.ConnectionScore + " / " + rumor.ConnectionLabel + "\n" +
+                rumor.ConnectionReason + "\n\n" +
+                "조회수 " + FormatViews(rumor.Views) + "   충격 " + rumor.Shock + "/100\n" +
+                "신뢰도 " + Signed(rumor.TrustDelta) + "   위험 " + rumor.ReportRisk + "%\n" +
+>>>>>>> Stashed changes
                 "부작용: " + rumor.SideEffect;
         }
 
@@ -500,7 +803,11 @@ namespace GamePrototype.ViewCountRuinedWorld
                 pendingRumor = ComposeRumor();
             }
 
+<<<<<<< Updated upstream
             var left = CreatePanel(screenRoot, "ShortsPreview", new Vector2(0.04f, 0.17f), new Vector2(0.42f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.78f));
+=======
+            var left = CreatePanel(screenRoot, "ShortsPreview", new Vector2(0.04f, 0.17f), new Vector2(0.42f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
             titleText = CreateText(left.transform, "ShortsTitle", new Vector2(0f, 0.68f), new Vector2(1f, 1f), new Vector2(24f, 10f), new Vector2(-24f, -10f), 32, TextAnchor.MiddleCenter, Color.white);
             titleText.text = pendingRumor.Title;
 
@@ -511,6 +818,7 @@ namespace GamePrototype.ViewCountRuinedWorld
                 "댓글: " + FormatViews(pendingRumor.Comments) + "\n\n" +
                 "추천 태그\n" + pendingRumor.HashTags;
 
+<<<<<<< Updated upstream
             var right = CreatePanel(screenRoot, "UploadEffects", new Vector2(0.48f, 0.17f), new Vector2(0.96f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.92f));
             previewText = CreateText(right.transform, "UploadPrediction", new Vector2(0f, 0.22f), new Vector2(1f, 1f), new Vector2(28f, 20f), new Vector2(-28f, -16f), 25, TextAnchor.UpperLeft, new Color(0.1f, 0.08f, 0.06f));
             previewText.text = "업로드 후 예상 변화\n\n" +
@@ -520,6 +828,15 @@ namespace GamePrototype.ViewCountRuinedWorld
                 "바나나 권력도 " + Signed(pendingRumor.BananaDelta) + "\n" +
                 "문어 의심도 " + Signed(pendingRumor.OctopusDelta) + "\n" +
                 "시장 신뢰도 " + Signed(pendingRumor.MayorTrustDelta) + "\n\n" +
+=======
+            var right = CreatePanel(screenRoot, "UploadEffects", new Vector2(0.48f, 0.17f), new Vector2(0.96f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.98f));
+            previewText = CreateText(right.transform, "UploadPrediction", new Vector2(0f, 0.22f), new Vector2(1f, 1f), new Vector2(28f, 20f), new Vector2(-28f, -16f), 28, TextAnchor.UpperLeft, new Color(0.02f, 0.018f, 0.014f));
+            previewText.text = "단서 연결 " + pendingRumor.ConnectionScore + " / " + pendingRumor.ConnectionLabel + "\n" +
+                pendingRumor.ConnectionReason + "\n\n" +
+                "신뢰도 " + Signed(pendingRumor.TrustDelta) + "   혼란도 " + Signed(pendingRumor.ChaosDelta) + "\n" +
+                "고양이 " + Signed(pendingRumor.CatDelta) + "   바나나 " + Signed(pendingRumor.BananaDelta) + "\n" +
+                "문어 의심 " + Signed(pendingRumor.OctopusDelta) + "   시장 신뢰 " + Signed(pendingRumor.MayorTrustDelta) + "\n" +
+>>>>>>> Stashed changes
                 "팩트체크 위험 " + pendingRumor.ReportRisk + "%";
 
             CreateButton(right.transform, "UploadButton", new Vector2(0.08f, 0.05f), new Vector2(0.92f, 0.17f), Vector2.zero, Vector2.zero, "업로드!", UploadPendingRumor, new Color(0.95f, 0.22f, 0.44f), 32);
@@ -569,7 +886,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             ClearScreen();
             UpdateTopBar();
 
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, "ReportPanel", new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.82f));
+=======
+            var panel = CreatePanel(screenRoot, "ReportPanel", new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
             titleText = CreateText(panel.transform, "ReportTitle", new Vector2(0f, 0.82f), new Vector2(1f, 1f), new Vector2(30f, 0f), new Vector2(-30f, -12f), 34, TextAnchor.MiddleLeft, Color.white);
             titleText.text = "DAY " + day + " 종료 리포트";
 
@@ -622,7 +943,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             ClearScreen();
             UpdateTopBar();
 
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, "EndingPanel", new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.86f));
+=======
+            var panel = CreatePanel(screenRoot, "EndingPanel", new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
             titleText = CreateText(panel.transform, "EndingTitle", new Vector2(0f, 0.48f), new Vector2(0.58f, 1f), new Vector2(28f, 0f), new Vector2(-18f, -4f), 34, TextAnchor.MiddleLeft, Color.white);
             titleText.text = endingTitle;
 
@@ -644,11 +969,16 @@ namespace GamePrototype.ViewCountRuinedWorld
 
         private Rumor ComposeRumor()
         {
+<<<<<<< Updated upstream
+=======
+            EnsureCardsBuilt();
+>>>>>>> Stashed changes
             if (selectedTarget == null || selectedClaim == null || selectedCondition == null)
             {
                 return null;
             }
 
+<<<<<<< Updated upstream
             int shock = Mathf.Clamp(selectedTarget.Shock + selectedClaim.Shock + selectedCondition.Shock + day * 2, 1, 100);
             int reportRisk = Mathf.Clamp(selectedTarget.ReportRisk + selectedClaim.ReportRisk + selectedCondition.ReportRisk + fatigue / 5, 0, 100);
             int chaosDelta = Mathf.RoundToInt((selectedTarget.ChaosDelta + selectedClaim.ChaosDelta + selectedCondition.ChaosDelta) * GoalSynergyMultiplier());
@@ -657,6 +987,18 @@ namespace GamePrototype.ViewCountRuinedWorld
             int bananaDelta = Mathf.RoundToInt((selectedTarget.BananaDelta + selectedClaim.BananaDelta + selectedCondition.BananaDelta) * GoalSynergyMultiplier(GoalType.BananaGovernment));
             int octopusDelta = Mathf.RoundToInt((selectedTarget.OctopusDelta + selectedClaim.OctopusDelta + selectedCondition.OctopusDelta) * GoalSynergyMultiplier(GoalType.MayorOctopus));
             int mayorTrustDelta = selectedTarget.MayorTrustDelta + selectedClaim.MayorTrustDelta + selectedCondition.MayorTrustDelta;
+=======
+            var connection = EvaluateConnection(selectedTarget, selectedClaim, selectedCondition);
+
+            int shock = Mathf.Clamp(selectedTarget.Shock + selectedClaim.Shock + selectedCondition.Shock + day * 2 + connection.ShockBonus, 1, 100);
+            int reportRisk = Mathf.Clamp(selectedTarget.ReportRisk + selectedClaim.ReportRisk + selectedCondition.ReportRisk + fatigue / 5 + connection.ReportRiskDelta, 0, 100);
+            int chaosDelta = Mathf.RoundToInt((selectedTarget.ChaosDelta + selectedClaim.ChaosDelta + selectedCondition.ChaosDelta) * GoalSynergyMultiplier()) + connection.ChaosDelta;
+            int trustDelta = selectedTarget.TrustDelta + selectedClaim.TrustDelta + selectedCondition.TrustDelta + connection.TrustDelta - Mathf.RoundToInt(reportRisk * 0.12f);
+            int catDelta = Mathf.RoundToInt((selectedTarget.CatDelta + selectedClaim.CatDelta + selectedCondition.CatDelta + connection.CatDelta) * GoalSynergyMultiplier(GoalType.CatPresident));
+            int bananaDelta = Mathf.RoundToInt((selectedTarget.BananaDelta + selectedClaim.BananaDelta + selectedCondition.BananaDelta + connection.BananaDelta) * GoalSynergyMultiplier(GoalType.BananaGovernment));
+            int octopusDelta = Mathf.RoundToInt((selectedTarget.OctopusDelta + selectedClaim.OctopusDelta + selectedCondition.OctopusDelta + connection.OctopusDelta) * GoalSynergyMultiplier(GoalType.MayorOctopus));
+            int mayorTrustDelta = selectedTarget.MayorTrustDelta + selectedClaim.MayorTrustDelta + selectedCondition.MayorTrustDelta + connection.MayorTrustDelta;
+>>>>>>> Stashed changes
 
             long baseViews = selectedTarget.BaseViews + selectedClaim.BaseViews + selectedCondition.BaseViews;
             float trend = 1f + day * 0.12f + chaos * 0.012f + shock * 0.01f;
@@ -665,6 +1007,11 @@ namespace GamePrototype.ViewCountRuinedWorld
                 trend += 0.18f;
             }
 
+<<<<<<< Updated upstream
+=======
+            trend *= connection.ViewMultiplier;
+
+>>>>>>> Stashed changes
             long views = Math.Max(1000, Mathf.RoundToInt(baseViews * trend));
             long likes = Math.Max(50, Mathf.RoundToInt(views * Mathf.Clamp01((shock + trust) / 220f) * 0.16f));
             long shares = Math.Max(20, Mathf.RoundToInt(views * Mathf.Clamp01((shock + chaos) / 190f) * 0.09f));
@@ -688,6 +1035,12 @@ namespace GamePrototype.ViewCountRuinedWorld
                 BananaDelta = bananaDelta,
                 OctopusDelta = octopusDelta,
                 MayorTrustDelta = mayorTrustDelta,
+<<<<<<< Updated upstream
+=======
+                ConnectionScore = connection.Score,
+                ConnectionLabel = connection.Label,
+                ConnectionReason = connection.Reason,
+>>>>>>> Stashed changes
                 HashTags = BuildHashTags(selectedTarget, selectedClaim, selectedCondition),
                 SideEffect = BuildSideEffect(selectedTarget, selectedClaim, selectedCondition)
             };
@@ -703,6 +1056,190 @@ namespace GamePrototype.ViewCountRuinedWorld
             return selectedGoal == goal ? 1.22f + day * 0.015f : 1f;
         }
 
+<<<<<<< Updated upstream
+=======
+        private RumorConnection EvaluateConnection(RumorCard target, RumorCard claim, RumorCard condition)
+        {
+            if (target.Id == "banana" && claim.Id == "is_id" && condition.Id == "no_arrest")
+            {
+                return CreateConnection("강한 연결", "바나나-신분증-체포 공포가 한 문장으로 이어집니다.", 96, 1.3f, 4, 8, -4, 5, 0, 12, 0, -3);
+            }
+
+            if (target.Id == "cat" && claim.Id == "better_mayor" && condition.Id == "election")
+            {
+                return CreateConnection("강한 연결", "선거 맥락이 고양이 후보론을 실제 선택지처럼 만듭니다.", 94, 1.25f, -2, 4, 1, 2, 12, 0, 0, -8);
+            }
+
+            if (target.Id == "mayor" && claim.Id == "is_octopus" && (condition.Id == "rainy_day" || condition.Id == "fact_twist"))
+            {
+                return CreateConnection("강한 연결", "시장님 의심과 조건부 목격담이 음모론의 증거처럼 보입니다.", 93, 1.27f, 3, 6, -3, 4, 0, 0, 12, -9);
+            }
+
+            if (target.Id == "police" && claim.Id == "predicts_crime" && condition.Id == "no_arrest")
+            {
+                return CreateConnection("강한 연결", "치안 예측과 체포 위협이 단속 루머로 묶입니다.", 88, 1.22f, 6, 5, -4, 8, -2, 4, 5, -5);
+            }
+
+            if (target.Id == "city_hall" && (claim.Id == "citizenship" || claim.Id == "is_id") && (condition.Id == "election" || condition.Id == "no_arrest"))
+            {
+                return CreateConnection("강한 연결", "행정 공간과 시민권/신분 규칙이 제도 변화처럼 보입니다.", 84, 1.2f, 1, 4, -2, 5, 0, 7, 0, -6);
+            }
+
+            if (target.Id == "convenience" && claim.Id == "brings_money" && (condition.Id == "kids_first" || condition.Id == "three_views"))
+            {
+                return CreateConnection("중간 연결", "편의점 소비와 학생 확산이 생활형 밈으로 번집니다.", 78, 1.16f, -3, 2, 1, 3, 3, 6, 0, 0);
+            }
+
+            bool targetClaimMatch = IsTargetClaimMatch(target, claim);
+            bool conditionMatch = IsConditionMatch(target, claim, condition);
+            bool goalMatch = IsGoalAligned(target, claim);
+            int score = 36;
+
+            if (targetClaimMatch)
+            {
+                score += 24;
+            }
+
+            if (conditionMatch)
+            {
+                score += 22;
+            }
+
+            if (goalMatch)
+            {
+                score += 10;
+            }
+
+            score = Mathf.Clamp(score, 28, 82);
+
+            if (score >= 72)
+            {
+                return CreateConnection("중간 연결", "대상과 주장의 근거가 보여 댓글에서 재가공되기 쉽습니다.", score, 1.14f, 0, 2, 0, 3, GoalAlignedDelta(GoalType.CatPresident, target, claim), GoalAlignedDelta(GoalType.BananaGovernment, target, claim), GoalAlignedDelta(GoalType.MayorOctopus, target, claim), -2);
+            }
+
+            if (score >= 58)
+            {
+                return CreateConnection("약한 연결", "논리는 조금 얇지만 키워드가 맞아 호기심 클릭은 나옵니다.", score, 1.04f, 3, 0, -2, 2, 0, 0, 0, -1);
+            }
+
+            return CreateConnection("끊긴 연결", "대상, 주장, 조건이 따로 놀아 신고와 조롱 댓글이 먼저 붙습니다.", score, 0.92f, 8, -3, -5, 1, 0, 0, 0, 0);
+        }
+
+        private static bool IsTargetClaimMatch(RumorCard target, RumorCard claim)
+        {
+            if (target.Id == "banana")
+            {
+                return claim.Id == "is_id" || claim.Id == "brings_money" || claim.Id == "citizenship";
+            }
+
+            if (target.Id == "cat")
+            {
+                return claim.Id == "better_mayor" || claim.Id == "citizenship";
+            }
+
+            if (target.Id == "mayor")
+            {
+                return claim.Id == "is_octopus" || claim.Id == "better_mayor";
+            }
+
+            if (target.Id == "police")
+            {
+                return claim.Id == "predicts_crime" || claim.Id == "is_id";
+            }
+
+            if (target.Id == "city_hall")
+            {
+                return claim.Id == "citizenship" || claim.Id == "is_id" || claim.Id == "predicts_crime";
+            }
+
+            return target.Id == "convenience" && (claim.Id == "brings_money" || claim.Id == "citizenship");
+        }
+
+        private static bool IsConditionMatch(RumorCard target, RumorCard claim, RumorCard condition)
+        {
+            if (condition.Id == "no_arrest")
+            {
+                return target.Id == "police" || target.Id == "city_hall" || claim.Id == "is_id" || claim.Id == "predicts_crime";
+            }
+
+            if (condition.Id == "election")
+            {
+                return target.Id == "cat" || target.Id == "mayor" || claim.Id == "better_mayor";
+            }
+
+            if (condition.Id == "rainy_day")
+            {
+                return claim.Id == "is_octopus" || target.Id == "mayor";
+            }
+
+            if (condition.Id == "three_views")
+            {
+                return claim.Id == "brings_money" || claim.Id == "citizenship" || target.Id == "convenience";
+            }
+
+            if (condition.Id == "kids_first")
+            {
+                return target.Id == "cat" || target.Id == "convenience" || claim.Id == "citizenship";
+            }
+
+            return condition.Id == "fact_twist" && (claim.Id == "is_octopus" || claim.Id == "predicts_crime");
+        }
+
+        private bool IsGoalAligned(RumorCard target, RumorCard claim)
+        {
+            if (selectedGoal == GoalType.CatPresident)
+            {
+                return target.Id == "cat" || claim.Id == "better_mayor";
+            }
+
+            if (selectedGoal == GoalType.BananaGovernment)
+            {
+                return target.Id == "banana" || claim.Id == "is_id" || claim.Id == "citizenship";
+            }
+
+            return target.Id == "mayor" || claim.Id == "is_octopus";
+        }
+
+        private static int GoalAlignedDelta(GoalType goal, RumorCard target, RumorCard claim)
+        {
+            if (goal == GoalType.CatPresident && (target.Id == "cat" || claim.Id == "better_mayor"))
+            {
+                return 4;
+            }
+
+            if (goal == GoalType.BananaGovernment && (target.Id == "banana" || claim.Id == "is_id" || claim.Id == "citizenship"))
+            {
+                return 4;
+            }
+
+            if (goal == GoalType.MayorOctopus && (target.Id == "mayor" || claim.Id == "is_octopus"))
+            {
+                return 4;
+            }
+
+            return 0;
+        }
+
+        private static RumorConnection CreateConnection(string label, string reason, int score, float viewMultiplier, int reportRiskDelta, int shockBonus, int trustDelta, int chaosDelta, int catDelta, int bananaDelta, int octopusDelta, int mayorTrustDelta)
+        {
+            return new RumorConnection
+            {
+                Label = label,
+                Reason = reason,
+                Score = score,
+                ViewMultiplier = viewMultiplier,
+                ReportRiskDelta = reportRiskDelta,
+                ShockBonus = shockBonus,
+                TrustDelta = trustDelta,
+                ChaosDelta = chaosDelta,
+                CatDelta = catDelta,
+                BananaDelta = bananaDelta,
+                OctopusDelta = octopusDelta,
+                MayorTrustDelta = mayorTrustDelta
+            };
+        }
+
+>>>>>>> Stashed changes
         private string BuildRumorTitle(RumorCard target, RumorCard claim, RumorCard condition)
         {
             if (target.Id == "banana" && claim.Id == "is_id" && condition.Id == "no_arrest")
@@ -757,12 +1294,20 @@ namespace GamePrototype.ViewCountRuinedWorld
         {
             string headline = "오늘의 루머: " + rumor.Title + "\n";
             string numbers = "조회수 " + FormatViews(rumor.Views) + ", 공유 " + FormatViews(rumor.Shares) + ", 댓글 " + FormatViews(rumor.Comments) + "\n";
+<<<<<<< Updated upstream
+=======
+            string connection = "단서 연결 " + rumor.ConnectionScore + " / " + rumor.ConnectionLabel + ": " + rumor.ConnectionReason + "\n";
+>>>>>>> Stashed changes
             string effects = "신뢰도 " + Signed(rumor.TrustDelta) + ", 혼란도 " + Signed(rumor.ChaosDelta) + ", 팩트체크 위험 " + rumor.ReportRisk + "%\n";
             string goalEffect = "고양이 " + Signed(rumor.CatDelta) + " / 바나나 " + Signed(rumor.BananaDelta) + " / 문어 의심 " + Signed(rumor.OctopusDelta) + " / 시장 신뢰 " + Signed(rumor.MayorTrustDelta);
             string hook = rumor.ReportRisk >= 60 ? "\n팩트체커가 붙었습니다. 하지만 사람들은 이미 댓글을 캡처했습니다." :
                 rumor.Shock >= 75 ? "\n자극적인 썸네일 덕분에 확산 속도가 빨라졌습니다." :
                 "\n도시는 아직 버티고 있지만, 상식이 조금 흔들렸습니다.";
+<<<<<<< Updated upstream
             return headline + numbers + effects + goalEffect + "\n부작용: " + rumor.SideEffect + hook;
+=======
+            return headline + numbers + connection + effects + goalEffect + "\n부작용: " + rumor.SideEffect + hook;
+>>>>>>> Stashed changes
         }
 
         private string BuildTownMetrics()
@@ -790,7 +1335,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             for (int i = 0; i < activeRumors.Count; i++)
             {
                 var rumor = activeRumors[i];
+<<<<<<< Updated upstream
                 text += (i + 1) + ". " + rumor.Title + "\n   확산 " + rumor.Shock + "% / 위험 " + rumor.ReportRisk + "%\n";
+=======
+                text += (i + 1) + ". " + rumor.Title + "\n   연결 " + rumor.ConnectionScore + " / 확산 " + rumor.Shock + "% / 위험 " + rumor.ReportRisk + "%\n";
+>>>>>>> Stashed changes
             }
 
             return text + "\n" + BuildGoalProgress();
@@ -956,7 +1505,12 @@ namespace GamePrototype.ViewCountRuinedWorld
             colors.disabledColor = new Color(0.45f, 0.45f, 0.45f, 0.5f);
             button.colors = colors;
 
+<<<<<<< Updated upstream
             var text = CreateText(image.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 4f), new Vector2(-10f, -4f), fontSize, TextAnchor.MiddleCenter, Color.white);
+=======
+            var textColor = color.grayscale > 0.58f ? new Color(0.08f, 0.07f, 0.06f) : Color.white;
+            var text = CreateText(image.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 4f), new Vector2(-10f, -4f), fontSize, TextAnchor.MiddleCenter, textColor);
+>>>>>>> Stashed changes
             text.text = label;
 
             if (action != null)
@@ -1029,6 +1583,39 @@ namespace GamePrototype.ViewCountRuinedWorld
             public Color Color;
         }
 
+<<<<<<< Updated upstream
+=======
+        private sealed class RumorConnection
+        {
+            public string Label;
+            public string Reason;
+            public int Score;
+            public float ViewMultiplier;
+            public int ReportRiskDelta;
+            public int ShockBonus;
+            public int TrustDelta;
+            public int ChaosDelta;
+            public int CatDelta;
+            public int BananaDelta;
+            public int OctopusDelta;
+            public int MayorTrustDelta;
+        }
+
+        private sealed class SmokeStep
+        {
+            public readonly string TargetId;
+            public readonly string ClaimId;
+            public readonly string ConditionId;
+
+            public SmokeStep(string targetId, string claimId, string conditionId)
+            {
+                TargetId = targetId;
+                ClaimId = claimId;
+                ConditionId = conditionId;
+            }
+        }
+
+>>>>>>> Stashed changes
         private sealed class Rumor
         {
             public string Title;
@@ -1047,6 +1634,12 @@ namespace GamePrototype.ViewCountRuinedWorld
             public int BananaDelta;
             public int OctopusDelta;
             public int MayorTrustDelta;
+<<<<<<< Updated upstream
+=======
+            public int ConnectionScore;
+            public string ConnectionLabel;
+            public string ConnectionReason;
+>>>>>>> Stashed changes
             public string HashTags;
             public string SideEffect;
         }

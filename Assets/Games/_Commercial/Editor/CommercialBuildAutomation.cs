@@ -14,8 +14,11 @@ namespace GamePrototype.Shared
         private const string EveryoneInnocentExeName = "EveryoneInnocent_ExternalTest.exe";
         private const string BodyRebelsBuildFolder = "Builds/BodyRebels_ExternalTest_Windows";
         private const string BodyRebelsExeName = "BodyRebels_ExternalTest.exe";
+        private const string ViewCountBuildFolder = "Builds/ViewCountRuinedWorld_ExternalTest_Windows";
+        private const string ViewCountExeName = "ViewCountRuinedWorld_ExternalTest.exe";
         private const string EveryoneInnocentBuildMenuPath = "Game Prototypes/Build/Everyone Innocent External Test Windows";
         private const string BodyRebelsBuildMenuPath = "Game Prototypes/Build/Body Rebels External Test Windows";
+        private const string ViewCountBuildMenuPath = "Game Prototypes/Build/View Count Ruined World External Test Windows";
 
         [MenuItem(EveryoneInnocentBuildMenuPath)]
         public static void BuildEveryoneInnocentExternalWindows()
@@ -41,6 +44,19 @@ namespace GamePrototype.Shared
             }
 
             BuildStandaloneWindows(outputPath, "Body Rebels");
+        }
+
+        [MenuItem(ViewCountBuildMenuPath)]
+        public static void BuildViewCountExternalWindows()
+        {
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string outputPath = ReadCommandLineValue("-buildOutputPath");
+            if (string.IsNullOrWhiteSpace(outputPath))
+            {
+                outputPath = Path.Combine(projectRoot, ViewCountBuildFolder, ViewCountExeName);
+            }
+
+            BuildStandaloneWindows(outputPath, "View Count Ruined World");
         }
 
         private static void BuildStandaloneWindows(string outputPath, string displayName)

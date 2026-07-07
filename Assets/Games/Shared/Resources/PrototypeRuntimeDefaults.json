@@ -1,6 +1,10 @@
 {
   "editorDefault": "ViewCountRuinedWorld",
+<<<<<<< Updated upstream
   "playerDefault": "EveryoneInnocent",
+=======
+  "playerDefault": "ViewCountRuinedWorld",
+>>>>>>> Stashed changes
   "aliases": [
     {
       "alias": "Intended",
