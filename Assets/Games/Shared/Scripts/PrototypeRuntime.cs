@@ -158,6 +158,16 @@ namespace GamePrototype.Shared
                 return "IntendedFeature";
             }
 
+            if (normalized.IndexOf("/LuckyScratch/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "LuckyScratch";
+            }
+
+            if (normalized.IndexOf("/NightShift/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "NightShift";
+            }
+
             return null;
         }
 

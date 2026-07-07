@@ -1,0 +1,6 @@
+id,displayNameKey,category,baseCost,costGrowth,effectPerLevel,maxLevel
+up_winrate,upgrade.winrate.name,WinRate,200,1.6,0.01,10
+up_minguarantee,upgrade.minguarantee.name,MinGuarantee,500,1.7,0.05,5
+up_jackpot,upgrade.jackpot.name,JackpotChance,2000,1.8,0.001,10
+up_goldmult,upgrade.goldmult.name,GoldMultiplier,1000,1.75,0.1,20
+up_scratchpower,upgrade.scratchpower.name,ScratchPower,150,1.5,0.15,10

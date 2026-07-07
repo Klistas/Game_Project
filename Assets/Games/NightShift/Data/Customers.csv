@@ -1,0 +1,6 @@
+id,displayNameKey,isAnomaly,anomalyIds,correctProcedure,misjudgeResult
+cust_office,customer.office.name,false,,NormalServe,1
+cust_student,customer.student.name,false,wet_umbrella,NormalServe,1
+cust_drunk,customer.drunk.name,false,,NormalServe,1
+cust_wetghost,customer.wetghost.name,true,wet_footprints,CashByTray,2
+cust_mirror,customer.mirror.name,true,no_reflection|no_blink,Refuse,2

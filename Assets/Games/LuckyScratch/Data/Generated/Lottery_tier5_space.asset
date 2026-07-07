@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e4db053ff91fd9438c0391155027180, type: 3}
+  m_Name: Lottery_tier5_space
+  m_EditorClassIdentifier: GamePrototype.LuckyScratch::GamePrototype.LuckyScratch.Data.LotteryTierSO
+  id: tier5_space
+  tier: 5
+  displayNameKey: lottery.tier5.name
+  price: 5000000
+  unlockCost: 25000000
+  scratchAreas: 1
+  ruleModifier: chain
+  payoutTable:
+  - symbolId: blank
+    probability: 0.68
+    payoutMultiplier: 0
+  - symbolId: star
+    probability: 0.18
+    payoutMultiplier: 2.5
+  - symbolId: planet
+    probability: 0.08
+    payoutMultiplier: 4
+  - symbolId: comet
+    probability: 0.054
+    payoutMultiplier: 5
+  - symbolId: galaxy
+    probability: 0.006
+    payoutMultiplier: 18

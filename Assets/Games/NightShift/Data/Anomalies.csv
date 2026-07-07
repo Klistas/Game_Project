@@ -1,0 +1,6 @@
+id,displayNameKey,description,revealedBy,isRedHerring
+wet_footprints,anomaly.wet.name,바닥에 젖은 발자국을 남긴다,Counter,false
+no_reflection,anomaly.mirror.name,거울에 모습이 비치지 않는다,Mirror,false
+no_blink,anomaly.blink.name,눈을 한 번도 깜빡이지 않는다,CCTV,false
+cold_body,anomaly.cold.name,체온계가 비정상적으로 낮게 나온다,Thermometer,false
+wet_umbrella,anomaly.umbrella.name,비도 안 왔는데 우산이 젖어 있다,Counter,true

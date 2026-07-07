@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e4db053ff91fd9438c0391155027180, type: 3}
+  m_Name: Lottery_tier3_treasure
+  m_EditorClassIdentifier: GamePrototype.LuckyScratch::GamePrototype.LuckyScratch.Data.LotteryTierSO
+  id: tier3_treasure
+  tier: 3
+  displayNameKey: lottery.tier3.name
+  price: 1000
+  unlockCost: 3500
+  scratchAreas: 3
+  ruleModifier: multi_area
+  payoutTable:
+  - symbolId: blank
+    probability: 0.62
+    payoutMultiplier: 0
+  - symbolId: coin
+    probability: 0.22
+    payoutMultiplier: 2
+  - symbolId: gem
+    probability: 0.1
+    payoutMultiplier: 3.5
+  - symbolId: chest
+    probability: 0.055
+    payoutMultiplier: 5
+  - symbolId: goldmap
+    probability: 0.005
+    payoutMultiplier: 25

@@ -1,0 +1,4 @@
+id,displayNameKey,unlockOrder,baseCost,costGrowth,baseGoldPerSecond,maxLevel
+auto_parttimer,automation.parttimer.name,0,150,1.15,2,25
+auto_robot,automation.robot.name,1,8000,1.15,100,25
+auto_laser,automation.laser.name,2,200000,1.15,2500,25

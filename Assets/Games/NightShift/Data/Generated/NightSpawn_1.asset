@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 466ddcbb992c64d448d65a219b8ebacb, type: 3}
+  m_Name: NightSpawn_1
+  m_EditorClassIdentifier: GamePrototype.NightShift::GamePrototype.NightShift.Data.NightSpawnTableSO
+  night: 1
+  customerCount: 6
+  entries:
+  - customerId: cust_office
+    weight: 3
+  - customerId: cust_student
+    weight: 2
+  - customerId: cust_drunk
+    weight: 2
+  - customerId: cust_wetghost
+    weight: 1.5
+  - customerId: cust_mirror
+    weight: 1

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e860ec780c23c8247b2cf751f77981bf, type: 3}
+  m_Name: Anomaly_no_reflection
+  m_EditorClassIdentifier: GamePrototype.NightShift::GamePrototype.NightShift.Data.AnomalySO
+  id: no_reflection
+  displayNameKey: anomaly.mirror.name
+  description: "\uAC70\uC6B8\uC5D0 \uBAA8\uC2B5\uC774 \uBE44\uCE58\uC9C0 \uC54A\uB294\uB2E4"
+  revealedBy: 2
+  isRedHerring: 0

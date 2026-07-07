@@ -1,0 +1,5 @@
+id,ruleText,conditionAnomalyId,requiredProcedure,isFalse,acquiredNight
+rule_wet,젖은 발자국을 남기는 손님에게는 거스름돈을 트레이로만 건네시오,wet_footprints,CashByTray,false,1
+rule_mirror,거울에 비치지 않는 손님은 응대를 거부하고 내보내시오,no_reflection,Refuse,false,1
+rule_blink,눈을 깜빡이지 않는 손님과는 눈을 마주치지 마시오,no_blink,Refuse,false,1
+rule_normal,이상 징후가 없는 손님은 평범하게 응대하시오,,NormalServe,false,1
