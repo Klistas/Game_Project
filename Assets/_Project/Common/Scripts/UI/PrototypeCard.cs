@@ -12,6 +12,8 @@ namespace ViralPartyPrototypeLab.UI
     {
         private static readonly Color PlannedBase = new Color(0.12f, 0.145f, 0.2f, 0.98f);
         private static readonly Color PlannedHover = new Color(0.17f, 0.205f, 0.275f, 0.98f);
+        private static readonly Color ShellBase = new Color(0.18f, 0.135f, 0.105f, 0.98f);
+        private static readonly Color ShellHover = new Color(0.25f, 0.19f, 0.13f, 0.98f);
         private static readonly Color ReadyBase = new Color(0.11f, 0.2f, 0.16f, 0.98f);
         private static readonly Color ReadyHover = new Color(0.14f, 0.29f, 0.22f, 0.98f);
         private static readonly Color SelectedColor = new Color(0.22f, 0.24f, 0.33f, 1f);
@@ -92,22 +94,23 @@ namespace ViralPartyPrototypeLab.UI
             Image stripe = CreateImage("TopStripe", new Vector2(0f, 0.94f), Vector2.one, Vector2.zero, Vector2.zero, entry != null && entry.implemented ? new Color(0.44f, 1f, 0.65f, 1f) : new Color(1f, 0.7f, 0.26f, 1f));
             stripe.raycastTarget = false;
 
-            statusBadge = CreateImage("StatusBadge", new Vector2(0.58f, 0.77f), new Vector2(0.94f, 0.91f), Vector2.zero, Vector2.zero, new Color(0.95f, 0.62f, 0.22f, 1f));
+            statusBadge = CreateImage("StatusBadge", new Vector2(0.52f, 0.77f), new Vector2(0.94f, 0.91f), Vector2.zero, Vector2.zero, new Color(0.95f, 0.62f, 0.22f, 1f));
             statusBadge.raycastTarget = false;
         }
 
         private void BuildTexts()
         {
-            string status = entry != null && entry.implemented ? "READY" : "PLANNED";
-            string action = entry != null && entry.implemented ? "Play Prototype" : "Open Brief";
+            bool openable = HasScene(entry);
+            string status = ResolveStatusLabel(entry);
+            string action = entry != null && entry.implemented ? "프로토타입 플레이" : openable ? "셸 열기" : "기획 보기";
             string title = !string.IsNullOrWhiteSpace(entry?.displayName) ? entry.displayName : entry?.englishName;
 
             CreateText("Id", new Vector2(0.06f, 0.78f), new Vector2(0.22f, 0.92f), 20, TextAnchor.MiddleLeft, new Color(0.73f, 0.83f, 1f), entry?.id ?? string.Empty);
-            statusText = CreateText("StatusText", new Vector2(0.59f, 0.785f), new Vector2(0.93f, 0.895f), 13, TextAnchor.MiddleCenter, Color.white, status);
+            statusText = CreateText("StatusText", new Vector2(0.53f, 0.785f), new Vector2(0.93f, 0.895f), 13, TextAnchor.MiddleCenter, Color.white, status);
             CreateText("Title", new Vector2(0.06f, 0.51f), new Vector2(0.94f, 0.76f), 29, TextAnchor.MiddleLeft, Color.white, title ?? string.Empty);
             CreateText("EnglishName", new Vector2(0.06f, 0.43f), new Vector2(0.94f, 0.53f), 14, TextAnchor.MiddleLeft, new Color(0.72f, 0.78f, 0.88f), entry?.englishName ?? string.Empty);
             CreateText("Hook", new Vector2(0.06f, 0.24f), new Vector2(0.94f, 0.42f), 17, TextAnchor.MiddleLeft, new Color(0.87f, 0.91f, 0.96f), entry?.hook ?? string.Empty);
-            CreateText("Footer", new Vector2(0.06f, 0.07f), new Vector2(0.56f, 0.2f), 14, TextAnchor.MiddleLeft, new Color(0.58f, 0.66f, 0.78f), "Priority: " + (entry?.priority ?? "Unset"));
+            CreateText("Footer", new Vector2(0.06f, 0.07f), new Vector2(0.56f, 0.2f), 14, TextAnchor.MiddleLeft, new Color(0.58f, 0.66f, 0.78f), "우선순위: " + (entry?.priority ?? "미정"));
             actionText = CreateText("Action", new Vector2(0.56f, 0.06f), new Vector2(0.94f, 0.2f), 14, TextAnchor.MiddleRight, new Color(1f, 0.78f, 0.38f), action);
         }
 
@@ -136,7 +139,7 @@ namespace ViralPartyPrototypeLab.UI
 
         private void Select()
         {
-            AudioManager.Play(entry != null && entry.implemented ? AudioCue.Success : AudioCue.Pop);
+            AudioManager.Play(entry != null && entry.implemented ? AudioCue.Success : HasScene(entry) ? AudioCue.Pop : AudioCue.Fail);
             onSelected?.Invoke(entry);
             selected = true;
             RefreshState(true);
@@ -145,9 +148,10 @@ namespace ViralPartyPrototypeLab.UI
         private void RefreshState(bool animate)
         {
             bool implemented = entry != null && entry.implemented;
-            Color target = selected ? SelectedColor : hovered ? (implemented ? ReadyHover : PlannedHover) : (implemented ? ReadyBase : PlannedBase);
+            bool openable = HasScene(entry);
+            Color target = selected ? SelectedColor : hovered ? (implemented ? ReadyHover : openable ? ShellHover : PlannedHover) : (implemented ? ReadyBase : openable ? ShellBase : PlannedBase);
             Color borderColor = selected ? new Color(1f, 0.75f, 0.32f, 1f) : hovered ? new Color(0.74f, 0.84f, 1f, 1f) : new Color(0.38f, 0.46f, 0.62f, 0.75f);
-            Color badgeColor = implemented ? new Color(0.25f, 0.72f, 0.42f, 1f) : new Color(0.86f, 0.48f, 0.18f, 1f);
+            Color badgeColor = implemented ? new Color(0.25f, 0.72f, 0.42f, 1f) : openable ? new Color(0.86f, 0.48f, 0.18f, 1f) : new Color(0.42f, 0.46f, 0.54f, 1f);
 
             if (animate)
             {
@@ -169,13 +173,33 @@ namespace ViralPartyPrototypeLab.UI
 
             if (statusText != null)
             {
-                statusText.text = implemented ? "READY" : "PLANNED";
+                statusText.text = ResolveStatusLabel(entry);
             }
 
             if (actionText != null)
             {
-                actionText.text = implemented ? "Play Prototype" : selected ? "Planned Prototype" : "Open Brief";
+                actionText.text = implemented ? "프로토타입 플레이" : openable ? "셸 열기" : selected ? "기획 단계" : "기획 보기";
             }
+        }
+
+        private static bool HasScene(PrototypeEntry prototypeEntry)
+        {
+            return prototypeEntry != null && (!string.IsNullOrWhiteSpace(prototypeEntry.sceneName) || !string.IsNullOrWhiteSpace(prototypeEntry.scenePath));
+        }
+
+        private static string ResolveStatusLabel(PrototypeEntry prototypeEntry)
+        {
+            if (prototypeEntry == null)
+            {
+                return "기획 단계";
+            }
+
+            if (!string.IsNullOrWhiteSpace(prototypeEntry.status))
+            {
+                return prototypeEntry.status.ToUpperInvariant();
+            }
+
+            return prototypeEntry.implemented ? "플레이 가능" : HasScene(prototypeEntry) ? "셸만 구현" : "기획 단계";
         }
 
         private Image CreateImage(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, Color color)

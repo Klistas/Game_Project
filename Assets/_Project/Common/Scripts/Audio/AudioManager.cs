@@ -10,7 +10,8 @@ namespace ViralPartyPrototypeLab.Audio
         Fail,
         Pop,
         Impact,
-        ResultReveal
+        ResultReveal,
+        Shutter
     }
 
     [DisallowMultipleComponent]
@@ -31,6 +32,7 @@ namespace ViralPartyPrototypeLab.Audio
         private AudioClip popClip;
         private AudioClip impactClip;
         private AudioClip resultRevealClip;
+        private AudioClip shutterClip;
 
         public static AudioManager Instance
         {
@@ -95,6 +97,7 @@ namespace ViralPartyPrototypeLab.Audio
             popClip ??= CreateTone("CQK_Pop", 920f, 0.07f, 0.24f);
             impactClip ??= CreateNoise("CQK_Impact", 0.11f, 0.35f);
             resultRevealClip ??= CreateChord("CQK_ResultReveal", 360f, 960f, 0.28f, 0.3f);
+            shutterClip ??= CreateShutter("CQK_Shutter", 0.18f, 0.28f);
         }
 
         private void PlayCue(AudioCue cue)
@@ -113,6 +116,7 @@ namespace ViralPartyPrototypeLab.Audio
                 AudioCue.Pop => popClip,
                 AudioCue.Impact => impactClip,
                 AudioCue.ResultReveal => resultRevealClip,
+                AudioCue.Shutter => shutterClip,
                 _ => uiClickClip
             };
 
@@ -170,6 +174,28 @@ namespace ViralPartyPrototypeLab.Audio
                 float noise = ((seed >> 16) / 32768f) * 2f - 1f;
                 float envelope = 1f - i / (float)length;
                 samples[i] = noise * envelope * volume;
+            }
+
+            var clip = AudioClip.Create(name, length, 1, SampleRate, false);
+            clip.SetData(samples, 0);
+            return clip;
+        }
+
+        private static AudioClip CreateShutter(string name, float duration, float volume)
+        {
+            int length = Mathf.Max(64, Mathf.RoundToInt(SampleRate * duration));
+            var samples = new float[length];
+            uint seed = 24681357;
+
+            for (int i = 0; i < length; i++)
+            {
+                seed = seed * 1664525u + 1013904223u;
+                float t = i / (float)SampleRate;
+                float clickA = Mathf.Exp(-t * 95f) * Mathf.Sin(2f * Mathf.PI * 1150f * t);
+                float clickB = t > 0.045f ? Mathf.Exp(-(t - 0.045f) * 85f) * Mathf.Sin(2f * Mathf.PI * 680f * t) : 0f;
+                float noise = ((seed >> 16) / 32768f) * 2f - 1f;
+                float noiseGate = t < 0.075f ? 1f - t / 0.075f : 0f;
+                samples[i] = (clickA * 0.7f + clickB * 0.55f + noise * noiseGate * 0.35f) * volume;
             }
 
             var clip = AudioClip.Create(name, length, 1, SampleRate, false);

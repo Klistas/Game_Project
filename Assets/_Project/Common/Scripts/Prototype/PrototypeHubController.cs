@@ -25,6 +25,7 @@ namespace ViralPartyPrototypeLab.Prototype
         private PrototypeCatalogData catalog;
         private Font resolvedFont;
         private CaptionPresenter detailCaptionPresenter;
+        private bool rebuiltOnAwake;
 
         private void Awake()
         {
@@ -34,12 +35,17 @@ namespace ViralPartyPrototypeLab.Prototype
             if (Application.isPlaying)
             {
                 SceneFadeTransition.EnsureExists();
+                RebuildNow();
+                rebuiltOnAwake = true;
             }
         }
 
         private void Start()
         {
-            RebuildNow();
+            if (!rebuiltOnAwake)
+            {
+                RebuildNow();
+            }
         }
 
         [ContextMenu("Rebuild Prototype Hub")]
@@ -240,7 +246,7 @@ namespace ViralPartyPrototypeLab.Prototype
                 subtitleText.gameObject.SetActive(true);
             }
 
-            statusText.text = catalog.buildVersion + " | Common Quality Kit";
+            statusText.text = catalog.buildVersion + " | 공통 품질 키트";
 
             ClearChildren(cardContainer);
             cards.Clear();
@@ -308,7 +314,7 @@ namespace ViralPartyPrototypeLab.Prototype
             }
 
             detailPanel.SetActive(true);
-            string text = entry.id + " planned: " + entry.hook;
+            string text = entry.id + " 기획 단계: " + entry.hook;
             if (Application.isPlaying && detailCaptionPresenter != null)
             {
                 detailCaptionPresenter.Present(text);
@@ -401,8 +407,8 @@ namespace ViralPartyPrototypeLab.Prototype
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            CreateQualityButton(navigation.transform, "BackToHubButton", "Hub", new Vector2(0f, 0f), new Vector2(0.48f, 1f), true);
-            CreateQualityButton(navigation.transform, "RestartButton", "Restart", new Vector2(0.52f, 0f), new Vector2(1f, 1f), false);
+            CreateQualityButton(navigation.transform, "BackToHubButton", "허브", new Vector2(0f, 0f), new Vector2(0.48f, 1f), true);
+            CreateQualityButton(navigation.transform, "RestartButton", "다시 시작", new Vector2(0.52f, 0f), new Vector2(1f, 1f), false);
         }
 
         private void OrderHubSurface(Transform canvasRoot)
@@ -490,6 +496,7 @@ namespace ViralPartyPrototypeLab.Prototype
                     continue;
                 }
 #endif
+                child.SetActive(false);
                 Destroy(child);
             }
         }
@@ -500,6 +507,6 @@ namespace ViralPartyPrototypeLab.Prototype
             return font != null ? font : Resources.GetBuiltinResource<Font>("Arial.ttf");
         }
 
-        private const string DefaultCatalogJson = "{\"labName\":\"Viral Party Prototype Lab\",\"buildVersion\":\"p00-foundation\",\"prototypes\":[{\"id\":\"P01\",\"displayName\":\"Failed Family Photo\",\"englishName\":\"Failed Family Photo\",\"hook\":\"Arrange people and props into the worst possible photo.\",\"priority\":\"High\",\"status\":\"Not Implemented\",\"implemented\":false},{\"id\":\"P02\",\"displayName\":\"Broadcast Accident Newsroom\",\"englishName\":\"Broadcast Accident Newsroom\",\"hook\":\"Make or survive a live newsroom disaster.\",\"priority\":\"High\",\"status\":\"Not Implemented\",\"implemented\":false},{\"id\":\"P03\",\"displayName\":\"Cursed Moving Company\",\"englishName\":\"Cursed Moving Company\",\"hook\":\"Move cursed furniture before the job collapses.\",\"priority\":\"Medium High\",\"status\":\"Not Implemented\",\"implemented\":false},{\"id\":\"P04\",\"displayName\":\"Monster Hair Salon\",\"englishName\":\"Monster Hair Salon\",\"hook\":\"Style impossible monster customers under pressure.\",\"priority\":\"High\",\"status\":\"Not Implemented\",\"implemented\":false},{\"id\":\"P05\",\"displayName\":\"Alien Call Center\",\"englishName\":\"Alien Call Center\",\"hook\":\"Solve alien complaints from icons and nonsense language.\",\"priority\":\"Medium\",\"status\":\"Not Implemented\",\"implemented\":false},{\"id\":\"P06\",\"displayName\":\"Absurd Courtroom\",\"englishName\":\"Absurd Courtroom\",\"hook\":\"Combine evidence cards into ridiculous legal arguments.\",\"priority\":\"Medium\",\"status\":\"Not Implemented\",\"implemented\":false}]}";
+        private const string DefaultCatalogJson = "{\"labName\":\"바이럴 파티 프로토타입 랩\",\"buildVersion\":\"공통 씬 셸\",\"prototypes\":[{\"id\":\"P01\",\"displayName\":\"망한 가족사진\",\"englishName\":\"사진 배치 코미디\",\"hook\":\"사람과 소품을 배치해서 세상에서 가장 이상한 단체사진을 만든다.\",\"priority\":\"높음\",\"status\":\"플레이 가능\",\"implemented\":true,\"sceneName\":\"P01_FailedFamilyPhoto\",\"scenePath\":\"Assets/_Project/Prototypes/P01_FailedFamilyPhoto/Scenes/P01_FailedFamilyPhoto.unity\",\"notesPath\":\"Assets/_Project/Prototypes/P01_FailedFamilyPhoto/Notes.md\"},{\"id\":\"P02\",\"displayName\":\"방송사고 뉴스룸\",\"englishName\":\"생방송 사고 코미디\",\"hook\":\"카메라, 자막, 배경 사건을 조작해 생방송을 일부러 망친다.\",\"priority\":\"높음\",\"status\":\"셸만 구현\",\"implemented\":false,\"sceneName\":\"P02_NewsroomDisaster\",\"scenePath\":\"Assets/_Project/Prototypes/P02_BroadcastAccidentNewsroom/Scenes/P02_NewsroomDisaster.unity\",\"notesPath\":\"Assets/_Project/Prototypes/P02_BroadcastAccidentNewsroom/Notes.md\"},{\"id\":\"P03\",\"displayName\":\"저주받은 이삿짐센터\",\"englishName\":\"물리 사고 코미디\",\"hook\":\"저주받은 가구를 트럭으로 옮기며 대참사를 버틴다.\",\"priority\":\"중상\",\"status\":\"셸만 구현\",\"implemented\":false,\"sceneName\":\"P03_CursedMovingCompany\",\"scenePath\":\"Assets/_Project/Prototypes/P03_CursedMovingCompany/Scenes/P03_CursedMovingCompany.unity\",\"notesPath\":\"Assets/_Project/Prototypes/P03_CursedMovingCompany/Notes.md\"},{\"id\":\"P04\",\"displayName\":\"괴물 미용실\",\"englishName\":\"괴물 꾸미기 코미디\",\"hook\":\"말도 안 되는 요구를 하는 괴물 손님을 제한 시간 안에 꾸민다.\",\"priority\":\"높음\",\"status\":\"셸만 구현\",\"implemented\":false,\"sceneName\":\"P04_MonsterSalon\",\"scenePath\":\"Assets/_Project/Prototypes/P04_MonsterHairSalon/Scenes/P04_MonsterSalon.unity\",\"notesPath\":\"Assets/_Project/Prototypes/P04_MonsterHairSalon/Notes.md\"},{\"id\":\"P05\",\"displayName\":\"외계어 콜센터\",\"englishName\":\"아이콘 추리 코미디\",\"hook\":\"외계 고객의 표정과 아이콘만 보고 민원을 해결한다.\",\"priority\":\"중간\",\"status\":\"셸만 구현\",\"implemented\":false,\"sceneName\":\"P05_AlienCallCenter\",\"scenePath\":\"Assets/_Project/Prototypes/P05_AlienCallCenter/Scenes/P05_AlienCallCenter.unity\",\"notesPath\":\"Assets/_Project/Prototypes/P05_AlienCallCenter/Notes.md\"},{\"id\":\"P06\",\"displayName\":\"아무말 변호사\",\"englishName\":\"카드 변론 코미디\",\"hook\":\"이상한 증거와 주장을 조합해 말도 안 되는 변론을 만든다.\",\"priority\":\"중간\",\"status\":\"셸만 구현\",\"implemented\":false,\"sceneName\":\"P06_NonsenseLawyer\",\"scenePath\":\"Assets/_Project/Prototypes/P06_AbsurdCourtroom/Scenes/P06_NonsenseLawyer.unity\",\"notesPath\":\"Assets/_Project/Prototypes/P06_AbsurdCourtroom/Notes.md\"}]}";
     }
 }

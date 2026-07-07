@@ -1,13 +1,39 @@
-# P01 Failed Family Photo
+# P01 망한 가족사진
 
-Status: Not Implemented
+상태: 첫 플레이 루프 구현
 
-P00 only creates the folder and PrototypeHub card for this candidate.
+현재 씬:
+- `P01_FailedFamilyPhoto.unity`
+- 허브 카드에서 P01 플레이 루프로 진입된다.
+- 기존 P00.5 셸을 갈아엎지 않고 `P01FailedFamilyPhotoLoop`가 사진관 플레이 레이어를 얹는다.
+- 4명의 placeholder 인물, 6개의 draggable 소품, 45초 타이머, 셔터 버튼, 셔터 플래시, ResultPanel, 폴라로이드 결과 프레임, 캡션 연출이 있다.
 
-Next expected scope:
-- Create the photo studio scene.
-- Add placeholder people and props.
-- Add drag placement, shutter, result panel, Restart, and Back to Hub.
+조작:
+- 마우스 드래그: 인물과 소품을 사진 영역 안에서 이동한다.
+- `셔터 누르기`: 제한 시간 전에 라운드를 끝낸다.
+- `다시 시작`: P01 씬을 다시 로드한다.
+- `허브로`: PrototypeHub로 돌아간다.
 
-Design reference:
-- DesignBrief.md
+구현된 플레이 요소:
+- 사진관 무대와 카메라 프레임 느낌의 플레이 영역.
+- 의도적인 실루엣, 이름표, 얼굴 표시가 있는 4명 placeholder 인물.
+- 케이크, 꽃다발, 왕관, 액자, 풍선, 트로피 placeholder 소품 6개.
+- 주제 문구와 45초 카운트다운.
+- 드래그 hover, pickup, drop 피드백.
+- 셔터 플래시와 셔터 오디오 훅.
+- 폴라로이드 스타일 결과 프레임과 웃긴 캡션.
+
+평가 포인트:
+- 5초 안에 “배치하고 사진을 찍는 게임”으로 읽히는가?
+- 못 배치해도 결과 화면이 웃긴가?
+- 셔터 플래시와 폴라로이드 결과가 의도된 연출처럼 보이는가?
+- placeholder가 빠진 에셋처럼 보이지 않고 종이 인형/소품처럼 보이는가?
+
+남은 리스크:
+- 실제 스크린샷 export는 없다.
+- 자동 점수/미션 판정은 없다.
+- 드래그는 UI 기반 placeholder이며 물리나 ragdoll은 없다.
+- 최종 아트, 애니메이션, 실제 공유 기능은 없다.
+
+참고 문서:
+- `DesignBrief.md`

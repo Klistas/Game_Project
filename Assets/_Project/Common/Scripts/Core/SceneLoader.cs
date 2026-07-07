@@ -10,9 +10,9 @@ namespace ViralPartyPrototypeLab.Core
         public const string DefaultHubSceneName = "01_PrototypeHub";
         public const string DefaultHubScenePath = "Assets/_Project/Common/Scenes/01_PrototypeHub.unity";
 
-        private static string hubSceneName = DefaultHubScenePath;
+        private static string hubSceneName = DefaultHubSceneName;
 
-        public static string HubSceneName => string.IsNullOrWhiteSpace(hubSceneName) ? DefaultHubScenePath : hubSceneName;
+        public static string HubSceneName => string.IsNullOrWhiteSpace(hubSceneName) ? DefaultHubSceneName : hubSceneName;
 
         public static void RegisterHubScene(string sceneName)
         {
@@ -47,13 +47,19 @@ namespace ViralPartyPrototypeLab.Core
                 return false;
             }
 
-            if (!entry.implemented || string.IsNullOrWhiteSpace(entry.sceneName))
+            string sceneReference = !string.IsNullOrWhiteSpace(entry.sceneName) ? entry.sceneName : entry.scenePath;
+            if (string.IsNullOrWhiteSpace(sceneReference))
             {
-                Debug.Log("Prototype is not implemented yet: " + entry.id);
+                Debug.Log("Prototype has no scene shell yet: " + entry.id);
                 return false;
             }
 
-            LoadSceneByName(entry.sceneName);
+            if (!entry.implemented)
+            {
+                Debug.Log("Opening prototype scene shell before gameplay is complete: " + entry.id);
+            }
+
+            LoadSceneByName(sceneReference);
             return true;
         }
 

@@ -9,10 +9,28 @@ namespace ViralPartyPrototypeLab.UI
     {
         private void Awake()
         {
-            if (TryGetComponent(out Button button))
+            Bind();
+        }
+
+        private void OnEnable()
+        {
+            Bind();
+        }
+
+        private void Start()
+        {
+            Bind();
+        }
+
+        private void Bind()
+        {
+            if (!TryGetComponent(out Button button))
             {
-                button.onClick.AddListener(SceneLoader.LoadHub);
+                return;
             }
+
+            button.onClick.RemoveListener(SceneLoader.LoadHub);
+            button.onClick.AddListener(SceneLoader.LoadHub);
         }
     }
 }

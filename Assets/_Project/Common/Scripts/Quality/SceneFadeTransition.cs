@@ -101,19 +101,21 @@ namespace ViralPartyPrototypeLab.Quality
         {
             if (isTransitioning)
             {
-                return;
+                StopAllCoroutines();
+                isTransitioning = false;
             }
 
-            StartCoroutine(LoadRoutine(sceneName));
-        }
-
-        private IEnumerator LoadRoutine(string sceneName)
-        {
             isTransitioning = true;
             group.blocksRaycasts = true;
-            yield return FadeTo(1f, fadeOutDuration);
+            group.alpha = 1f;
             SceneManager.LoadScene(sceneName);
+            StartCoroutine(FadeInRoutine());
+        }
+
+        private IEnumerator FadeInRoutine()
+        {
             yield return null;
+            yield return FadeTo(1f, fadeOutDuration);
             yield return FadeTo(0f, fadeInDuration);
             group.blocksRaycasts = false;
             isTransitioning = false;
@@ -123,11 +125,14 @@ namespace ViralPartyPrototypeLab.Quality
         {
             float from = group.alpha;
             float elapsed = 0f;
+            float lastTime = Time.realtimeSinceStartup;
             duration = Mathf.Max(0.01f, duration);
 
             while (elapsed < duration)
             {
-                elapsed += Time.unscaledDeltaTime;
+                float now = Time.realtimeSinceStartup;
+                elapsed += Mathf.Max(0f, now - lastTime);
+                lastTime = now;
                 float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
                 group.alpha = Mathf.Lerp(from, targetAlpha, t);
                 yield return null;

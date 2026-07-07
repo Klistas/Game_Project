@@ -15,35 +15,14 @@ namespace ViralPartyPrototypeLab.UI
 
         protected virtual void Awake()
         {
-            if (panelRoot == null)
-            {
-                panelRoot = gameObject;
-            }
-
-            if (canvasGroup == null)
-            {
-                canvasGroup = panelRoot.GetComponent<CanvasGroup>();
-                if (canvasGroup == null)
-                {
-                    canvasGroup = panelRoot.AddComponent<CanvasGroup>();
-                }
-            }
-
-            if (captionPresenter == null && bodyText != null)
-            {
-                captionPresenter = bodyText.GetComponent<CaptionPresenter>();
-            }
-
-            if (momentPresenter == null)
-            {
-                momentPresenter = panelRoot.GetComponent<ResultMomentPresenter>();
-            }
-
+            EnsureBound();
             Hide();
         }
 
         public virtual void Show(string title, string body)
         {
+            EnsureBound();
+
             if (panelRoot != null)
             {
                 panelRoot.SetActive(true);
@@ -59,7 +38,7 @@ namespace ViralPartyPrototypeLab.UI
                 titleText.text = title;
             }
 
-            if (captionPresenter != null)
+            if (captionPresenter != null && captionPresenter.gameObject.activeInHierarchy)
             {
                 captionPresenter.Present(body);
             }
@@ -76,10 +55,64 @@ namespace ViralPartyPrototypeLab.UI
 
         public virtual void Hide()
         {
-            if (panelRoot != null)
+            if (panelRoot == null)
             {
-                panelRoot.SetActive(false);
+                panelRoot = gameObject;
             }
+
+            panelRoot.SetActive(false);
+        }
+
+        private void EnsureBound()
+        {
+            if (panelRoot == null)
+            {
+                panelRoot = gameObject;
+            }
+
+            if (canvasGroup == null)
+            {
+                canvasGroup = panelRoot.GetComponent<CanvasGroup>();
+                if (canvasGroup == null)
+                {
+                    canvasGroup = panelRoot.AddComponent<CanvasGroup>();
+                }
+            }
+
+            if (titleText == null)
+            {
+                titleText = FindChildText("TitleText");
+            }
+
+            if (bodyText == null)
+            {
+                bodyText = FindChildText("BodyText");
+            }
+
+            if (captionPresenter == null && bodyText != null)
+            {
+                captionPresenter = bodyText.GetComponent<CaptionPresenter>();
+            }
+
+            if (momentPresenter == null)
+            {
+                momentPresenter = panelRoot.GetComponent<ResultMomentPresenter>();
+            }
+        }
+
+        private Text FindChildText(string childName)
+        {
+            Text[] texts = GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                Text candidate = texts[i];
+                if (candidate != null && candidate.name == childName)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
         }
     }
 }
