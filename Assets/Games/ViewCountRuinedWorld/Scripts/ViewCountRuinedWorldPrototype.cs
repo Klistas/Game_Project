@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+using System.Text;
+>>>>>>> Stashed changes
 =======
 using System.Text;
 >>>>>>> Stashed changes
@@ -25,6 +29,11 @@ namespace GamePrototype.ViewCountRuinedWorld
 
         private const string RuntimeRootName = "ViewCountRuinedWorld_RuntimeRoot";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+        private const string AutoSmokeArg = "-vcrwAutoSmoke";
+        private const string AutoSmokeGoalArg = "-vcrwAutoSmokeGoal";
+>>>>>>> Stashed changes
 =======
         private const string AutoSmokeArg = "-vcrwAutoSmoke";
         private const string AutoSmokeGoalArg = "-vcrwAutoSmokeGoal";
@@ -75,6 +84,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         private int fatigue;
         private bool uploadedToday;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+        private bool autoSmokeRan;
+>>>>>>> Stashed changes
 =======
         private bool autoSmokeRan;
 >>>>>>> Stashed changes
@@ -129,6 +142,10 @@ namespace GamePrototype.ViewCountRuinedWorld
             BuildCanvas();
             ShowTitle();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            RunAutoSmokeIfRequested();
+>>>>>>> Stashed changes
 =======
             RunAutoSmokeIfRequested();
 >>>>>>> Stashed changes
@@ -159,7 +176,10 @@ namespace GamePrototype.ViewCountRuinedWorld
                 StartRun(selectedGoal);
             }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
             else if (screenMode == ScreenMode.Title)
             {
                 if (keyboard.digit1Key.wasPressedThisFrame)
@@ -175,6 +195,9 @@ namespace GamePrototype.ViewCountRuinedWorld
                     StartRun(GoalType.MayorOctopus);
                 }
             }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
 
@@ -261,7 +284,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         private void EnsureCardsBuilt()
         {
             if (targetCards.Count == 0 || claimCards.Count == 0 || conditionCards.Count == 0)
@@ -270,6 +296,9 @@ namespace GamePrototype.ViewCountRuinedWorld
             }
         }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         private void AddCard(CardType type, string id, string title, string description, int shock, int trustDelta, int chaosDelta, int catDelta, int bananaDelta, int octopusDelta, int mayorTrustDelta, int reportRisk, int baseViews, Color color)
         {
@@ -330,15 +359,21 @@ namespace GamePrototype.ViewCountRuinedWorld
             backgroundImage.preserveAspect = true;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var overlay = CreatePanel(canvasObject.transform, "GlobalShade", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.12f));
             overlay.raycastTarget = false;
 
             var topPanel = CreatePanel(canvasObject.transform, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -92f), new Vector2(-18f, -14f), new Color(0.02f, 0.025f, 0.035f, 0.9f));
 =======
+=======
+>>>>>>> Stashed changes
             var overlay = CreatePanel(canvasObject.transform, "GlobalShade", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.28f));
             overlay.raycastTarget = false;
 
             var topPanel = CreatePanel(canvasObject.transform, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -92f), new Vector2(-18f, -14f), new Color(0.02f, 0.025f, 0.035f, 0.94f));
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             topText = CreateText(topPanel.transform, "TopText", Vector2.zero, Vector2.one, new Vector2(18f, 4f), new Vector2(-18f, -4f), 24, TextAnchor.MiddleLeft, Color.white);
 
@@ -389,7 +424,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         private void RunAutoSmokeIfRequested()
         {
             if (autoSmokeRan || !HasCommandLineArg(AutoSmokeArg))
@@ -598,6 +636,9 @@ namespace GamePrototype.ViewCountRuinedWorld
             return null;
         }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         private void ShowTitle()
         {
@@ -607,7 +648,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             UpdateTopBar();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, "TitlePanel", new Vector2(0.035f, 0.12f), new Vector2(0.37f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+=======
+            var panel = CreatePanel(screenRoot, "TitlePanel", new Vector2(0.035f, 0.12f), new Vector2(0.4f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
 =======
             var panel = CreatePanel(screenRoot, "TitlePanel", new Vector2(0.035f, 0.12f), new Vector2(0.4f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
 >>>>>>> Stashed changes
@@ -626,7 +671,11 @@ namespace GamePrototype.ViewCountRuinedWorld
 
             hintText = CreateText(screenRoot, "TitleHint", new Vector2(0.58f, 0.05f), new Vector2(0.96f, 0.13f), Vector2.zero, Vector2.zero, 22, TextAnchor.MiddleRight, Color.white);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             hintText.text = "Enter: 고양이 대통령 목표로 바로 시작 / R: 런 초기화";
+=======
+            hintText.text = "1/2/3: 목표 선택 / Enter: 고양이 대통령 / R: 초기화";
+>>>>>>> Stashed changes
 =======
             hintText.text = "1/2/3: 목표 선택 / Enter: 고양이 대통령 / R: 초기화";
 >>>>>>> Stashed changes
@@ -639,7 +688,11 @@ namespace GamePrototype.ViewCountRuinedWorld
                 "시장님이 문어라는 사회적 상식을 만든다.";
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             CreateButton(parent, "Goal_" + goal, anchorMin, anchorMax, Vector2.zero, Vector2.zero, GoalName(goal) + "\n" + subtitle, () => StartRun(goal), GoalColor(goal), 23);
+=======
+            CreateButton(parent, "Goal_" + goal, anchorMin, anchorMax, Vector2.zero, Vector2.zero, GoalName(goal) + "\n" + subtitle, () => StartRun(goal), GoalColor(goal), 21);
+>>>>>>> Stashed changes
 =======
             CreateButton(parent, "Goal_" + goal, anchorMin, anchorMax, Vector2.zero, Vector2.zero, GoalName(goal) + "\n" + subtitle, () => StartRun(goal), GoalColor(goal), 21);
 >>>>>>> Stashed changes
@@ -653,7 +706,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             UpdateTopBar();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var left = CreatePanel(screenRoot, "TownLeftPanel", new Vector2(0.02f, 0.12f), new Vector2(0.31f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.82f));
+=======
+            var left = CreatePanel(screenRoot, "TownLeftPanel", new Vector2(0.02f, 0.12f), new Vector2(0.31f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
 =======
             var left = CreatePanel(screenRoot, "TownLeftPanel", new Vector2(0.02f, 0.12f), new Vector2(0.31f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
 >>>>>>> Stashed changes
@@ -672,7 +729,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             }, uploadedToday ? new Color(0.32f, 0.32f, 0.36f) : new Color(0.95f, 0.22f, 0.44f), 24);
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var right = CreatePanel(screenRoot, "TownRightPanel", new Vector2(0.68f, 0.12f), new Vector2(0.98f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.84f));
+=======
+            var right = CreatePanel(screenRoot, "TownRightPanel", new Vector2(0.68f, 0.12f), new Vector2(0.98f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
 =======
             var right = CreatePanel(screenRoot, "TownRightPanel", new Vector2(0.68f, 0.12f), new Vector2(0.98f, 0.88f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
 >>>>>>> Stashed changes
@@ -686,6 +747,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         private void ShowComposer()
         {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            EnsureCardsBuilt();
+>>>>>>> Stashed changes
 =======
             EnsureCardsBuilt();
 >>>>>>> Stashed changes
@@ -699,7 +764,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             CreateCardColumn("조건/효과", conditionCards, new Vector2(0.51f, 0.15f), new Vector2(0.73f, 0.84f));
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var preview = CreatePanel(screenRoot, "PreviewPanel", new Vector2(0.75f, 0.15f), new Vector2(0.98f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.92f));
+=======
+            var preview = CreatePanel(screenRoot, "PreviewPanel", new Vector2(0.75f, 0.15f), new Vector2(0.98f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.96f));
+>>>>>>> Stashed changes
 =======
             var preview = CreatePanel(screenRoot, "PreviewPanel", new Vector2(0.75f, 0.15f), new Vector2(0.98f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.96f));
 >>>>>>> Stashed changes
@@ -722,7 +791,11 @@ namespace GamePrototype.ViewCountRuinedWorld
         private void CreateCardColumn(string title, List<RumorCard> cards, Vector2 anchorMin, Vector2 anchorMax)
         {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, title + "Panel", anchorMin, anchorMax, Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.82f));
+=======
+            var panel = CreatePanel(screenRoot, title + "Panel", anchorMin, anchorMax, Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
 =======
             var panel = CreatePanel(screenRoot, title + "Panel", anchorMin, anchorMax, Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
 >>>>>>> Stashed changes
@@ -778,15 +851,21 @@ namespace GamePrototype.ViewCountRuinedWorld
 
             previewText.text = rumor.Title + "\n\n" +
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 "예상 조회수: " + FormatViews(rumor.Views) + "\n" +
                 "충격도: " + rumor.Shock + "/100\n" +
                 "신뢰도 영향: " + Signed(rumor.TrustDelta) + "\n" +
                 "팩트체크 위험: " + rumor.ReportRisk + "%\n" +
 =======
+=======
+>>>>>>> Stashed changes
                 "단서 연결 " + rumor.ConnectionScore + " / " + rumor.ConnectionLabel + "\n" +
                 rumor.ConnectionReason + "\n\n" +
                 "조회수 " + FormatViews(rumor.Views) + "   충격 " + rumor.Shock + "/100\n" +
                 "신뢰도 " + Signed(rumor.TrustDelta) + "   위험 " + rumor.ReportRisk + "%\n" +
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                 "부작용: " + rumor.SideEffect;
         }
@@ -804,7 +883,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var left = CreatePanel(screenRoot, "ShortsPreview", new Vector2(0.04f, 0.17f), new Vector2(0.42f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.78f));
+=======
+            var left = CreatePanel(screenRoot, "ShortsPreview", new Vector2(0.04f, 0.17f), new Vector2(0.42f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
+>>>>>>> Stashed changes
 =======
             var left = CreatePanel(screenRoot, "ShortsPreview", new Vector2(0.04f, 0.17f), new Vector2(0.42f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.9f));
 >>>>>>> Stashed changes
@@ -819,6 +902,7 @@ namespace GamePrototype.ViewCountRuinedWorld
                 "추천 태그\n" + pendingRumor.HashTags;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var right = CreatePanel(screenRoot, "UploadEffects", new Vector2(0.48f, 0.17f), new Vector2(0.96f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.92f));
             previewText = CreateText(right.transform, "UploadPrediction", new Vector2(0f, 0.22f), new Vector2(1f, 1f), new Vector2(28f, 20f), new Vector2(-28f, -16f), 25, TextAnchor.UpperLeft, new Color(0.1f, 0.08f, 0.06f));
             previewText.text = "업로드 후 예상 변화\n\n" +
@@ -829,6 +913,8 @@ namespace GamePrototype.ViewCountRuinedWorld
                 "문어 의심도 " + Signed(pendingRumor.OctopusDelta) + "\n" +
                 "시장 신뢰도 " + Signed(pendingRumor.MayorTrustDelta) + "\n\n" +
 =======
+=======
+>>>>>>> Stashed changes
             var right = CreatePanel(screenRoot, "UploadEffects", new Vector2(0.48f, 0.17f), new Vector2(0.96f, 0.82f), Vector2.zero, Vector2.zero, new Color(0.98f, 0.92f, 0.8f, 0.98f));
             previewText = CreateText(right.transform, "UploadPrediction", new Vector2(0f, 0.22f), new Vector2(1f, 1f), new Vector2(28f, 20f), new Vector2(-28f, -16f), 28, TextAnchor.UpperLeft, new Color(0.02f, 0.018f, 0.014f));
             previewText.text = "단서 연결 " + pendingRumor.ConnectionScore + " / " + pendingRumor.ConnectionLabel + "\n" +
@@ -836,6 +922,9 @@ namespace GamePrototype.ViewCountRuinedWorld
                 "신뢰도 " + Signed(pendingRumor.TrustDelta) + "   혼란도 " + Signed(pendingRumor.ChaosDelta) + "\n" +
                 "고양이 " + Signed(pendingRumor.CatDelta) + "   바나나 " + Signed(pendingRumor.BananaDelta) + "\n" +
                 "문어 의심 " + Signed(pendingRumor.OctopusDelta) + "   시장 신뢰 " + Signed(pendingRumor.MayorTrustDelta) + "\n" +
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                 "팩트체크 위험 " + pendingRumor.ReportRisk + "%";
 
@@ -887,7 +976,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             UpdateTopBar();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, "ReportPanel", new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.82f));
+=======
+            var panel = CreatePanel(screenRoot, "ReportPanel", new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
 =======
             var panel = CreatePanel(screenRoot, "ReportPanel", new Vector2(0.08f, 0.14f), new Vector2(0.92f, 0.84f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
 >>>>>>> Stashed changes
@@ -944,7 +1037,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             UpdateTopBar();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var panel = CreatePanel(screenRoot, "EndingPanel", new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.86f));
+=======
+            var panel = CreatePanel(screenRoot, "EndingPanel", new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
+>>>>>>> Stashed changes
 =======
             var panel = CreatePanel(screenRoot, "EndingPanel", new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero, new Color(0.02f, 0.025f, 0.035f, 0.94f));
 >>>>>>> Stashed changes
@@ -970,6 +1067,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         private Rumor ComposeRumor()
         {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            EnsureCardsBuilt();
+>>>>>>> Stashed changes
 =======
             EnsureCardsBuilt();
 >>>>>>> Stashed changes
@@ -978,6 +1079,7 @@ namespace GamePrototype.ViewCountRuinedWorld
                 return null;
             }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             int shock = Mathf.Clamp(selectedTarget.Shock + selectedClaim.Shock + selectedCondition.Shock + day * 2, 1, 100);
             int reportRisk = Mathf.Clamp(selectedTarget.ReportRisk + selectedClaim.ReportRisk + selectedCondition.ReportRisk + fatigue / 5, 0, 100);
@@ -988,6 +1090,8 @@ namespace GamePrototype.ViewCountRuinedWorld
             int octopusDelta = Mathf.RoundToInt((selectedTarget.OctopusDelta + selectedClaim.OctopusDelta + selectedCondition.OctopusDelta) * GoalSynergyMultiplier(GoalType.MayorOctopus));
             int mayorTrustDelta = selectedTarget.MayorTrustDelta + selectedClaim.MayorTrustDelta + selectedCondition.MayorTrustDelta;
 =======
+=======
+>>>>>>> Stashed changes
             var connection = EvaluateConnection(selectedTarget, selectedClaim, selectedCondition);
 
             int shock = Mathf.Clamp(selectedTarget.Shock + selectedClaim.Shock + selectedCondition.Shock + day * 2 + connection.ShockBonus, 1, 100);
@@ -998,6 +1102,9 @@ namespace GamePrototype.ViewCountRuinedWorld
             int bananaDelta = Mathf.RoundToInt((selectedTarget.BananaDelta + selectedClaim.BananaDelta + selectedCondition.BananaDelta + connection.BananaDelta) * GoalSynergyMultiplier(GoalType.BananaGovernment));
             int octopusDelta = Mathf.RoundToInt((selectedTarget.OctopusDelta + selectedClaim.OctopusDelta + selectedCondition.OctopusDelta + connection.OctopusDelta) * GoalSynergyMultiplier(GoalType.MayorOctopus));
             int mayorTrustDelta = selectedTarget.MayorTrustDelta + selectedClaim.MayorTrustDelta + selectedCondition.MayorTrustDelta + connection.MayorTrustDelta;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
             long baseViews = selectedTarget.BaseViews + selectedClaim.BaseViews + selectedCondition.BaseViews;
@@ -1008,6 +1115,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            trend *= connection.ViewMultiplier;
+
+>>>>>>> Stashed changes
 =======
             trend *= connection.ViewMultiplier;
 
@@ -1036,6 +1148,12 @@ namespace GamePrototype.ViewCountRuinedWorld
                 OctopusDelta = octopusDelta,
                 MayorTrustDelta = mayorTrustDelta,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+                ConnectionScore = connection.Score,
+                ConnectionLabel = connection.Label,
+                ConnectionReason = connection.Reason,
+>>>>>>> Stashed changes
 =======
                 ConnectionScore = connection.Score,
                 ConnectionLabel = connection.Label,
@@ -1057,7 +1175,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         private RumorConnection EvaluateConnection(RumorCard target, RumorCard claim, RumorCard condition)
         {
             if (target.Id == "banana" && claim.Id == "is_id" && condition.Id == "no_arrest")
@@ -1239,6 +1360,9 @@ namespace GamePrototype.ViewCountRuinedWorld
             };
         }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         private string BuildRumorTitle(RumorCard target, RumorCard claim, RumorCard condition)
         {
@@ -1295,6 +1419,10 @@ namespace GamePrototype.ViewCountRuinedWorld
             string headline = "오늘의 루머: " + rumor.Title + "\n";
             string numbers = "조회수 " + FormatViews(rumor.Views) + ", 공유 " + FormatViews(rumor.Shares) + ", 댓글 " + FormatViews(rumor.Comments) + "\n";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            string connection = "단서 연결 " + rumor.ConnectionScore + " / " + rumor.ConnectionLabel + ": " + rumor.ConnectionReason + "\n";
+>>>>>>> Stashed changes
 =======
             string connection = "단서 연결 " + rumor.ConnectionScore + " / " + rumor.ConnectionLabel + ": " + rumor.ConnectionReason + "\n";
 >>>>>>> Stashed changes
@@ -1304,7 +1432,11 @@ namespace GamePrototype.ViewCountRuinedWorld
                 rumor.Shock >= 75 ? "\n자극적인 썸네일 덕분에 확산 속도가 빨라졌습니다." :
                 "\n도시는 아직 버티고 있지만, 상식이 조금 흔들렸습니다.";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             return headline + numbers + effects + goalEffect + "\n부작용: " + rumor.SideEffect + hook;
+=======
+            return headline + numbers + connection + effects + goalEffect + "\n부작용: " + rumor.SideEffect + hook;
+>>>>>>> Stashed changes
 =======
             return headline + numbers + connection + effects + goalEffect + "\n부작용: " + rumor.SideEffect + hook;
 >>>>>>> Stashed changes
@@ -1336,7 +1468,11 @@ namespace GamePrototype.ViewCountRuinedWorld
             {
                 var rumor = activeRumors[i];
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 text += (i + 1) + ". " + rumor.Title + "\n   확산 " + rumor.Shock + "% / 위험 " + rumor.ReportRisk + "%\n";
+=======
+                text += (i + 1) + ". " + rumor.Title + "\n   연결 " + rumor.ConnectionScore + " / 확산 " + rumor.Shock + "% / 위험 " + rumor.ReportRisk + "%\n";
+>>>>>>> Stashed changes
 =======
                 text += (i + 1) + ". " + rumor.Title + "\n   연결 " + rumor.ConnectionScore + " / 확산 " + rumor.Shock + "% / 위험 " + rumor.ReportRisk + "%\n";
 >>>>>>> Stashed changes
@@ -1506,7 +1642,12 @@ namespace GamePrototype.ViewCountRuinedWorld
             button.colors = colors;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var text = CreateText(image.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 4f), new Vector2(-10f, -4f), fontSize, TextAnchor.MiddleCenter, Color.white);
+=======
+            var textColor = color.grayscale > 0.58f ? new Color(0.08f, 0.07f, 0.06f) : Color.white;
+            var text = CreateText(image.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 4f), new Vector2(-10f, -4f), fontSize, TextAnchor.MiddleCenter, textColor);
+>>>>>>> Stashed changes
 =======
             var textColor = color.grayscale > 0.58f ? new Color(0.08f, 0.07f, 0.06f) : Color.white;
             var text = CreateText(image.transform, "Label", Vector2.zero, Vector2.one, new Vector2(10f, 4f), new Vector2(-10f, -4f), fontSize, TextAnchor.MiddleCenter, textColor);
@@ -1584,7 +1725,10 @@ namespace GamePrototype.ViewCountRuinedWorld
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         private sealed class RumorConnection
         {
             public string Label;
@@ -1615,6 +1759,9 @@ namespace GamePrototype.ViewCountRuinedWorld
             }
         }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         private sealed class Rumor
         {
@@ -1635,6 +1782,12 @@ namespace GamePrototype.ViewCountRuinedWorld
             public int OctopusDelta;
             public int MayorTrustDelta;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            public int ConnectionScore;
+            public string ConnectionLabel;
+            public string ConnectionReason;
+>>>>>>> Stashed changes
 =======
             public int ConnectionScore;
             public string ConnectionLabel;
