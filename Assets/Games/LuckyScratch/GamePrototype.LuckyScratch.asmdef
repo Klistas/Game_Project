@@ -3,7 +3,8 @@
   "rootNamespace": "GamePrototype.LuckyScratch",
   "references": [
     "GamePrototype.Shared",
-    "Unity.InputSystem"
+    "Unity.InputSystem",
+    "UnityEngine.UI"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

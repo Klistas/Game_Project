@@ -33,6 +33,7 @@ namespace GamePrototype.LuckyScratch.Core
 
         private static readonly Dictionary<string, Color> SymbolColors = new()
         {
+            { "blank", new Color(0.55f, 0.55f, 0.6f) },
             { "cherry", new Color(0.85f, 0.2f, 0.25f) },
             { "clover", new Color(0.2f, 0.65f, 0.3f) },
             { "seven", new Color(0.2f, 0.4f, 0.9f) },
@@ -41,8 +42,17 @@ namespace GamePrototype.LuckyScratch.Core
             { "fox", new Color(0.9f, 0.5f, 0.2f) },
             { "tiger", new Color(0.85f, 0.55f, 0.1f) },
             { "dragon", new Color(0.8f, 0.15f, 0.15f) },
+            { "coin", new Color(0.9f, 0.72f, 0.2f) },
+            { "gem", new Color(0.25f, 0.75f, 0.85f) },
+            { "chest", new Color(0.62f, 0.42f, 0.2f) },
             { "goldmap", new Color(0.95f, 0.6f, 0.05f) },
+            { "chip", new Color(0.85f, 0.25f, 0.3f) },
+            { "dice", new Color(0.9f, 0.9f, 0.95f) },
+            { "crown", new Color(0.95f, 0.78f, 0.2f) },
             { "royal", new Color(0.95f, 0.6f, 0.05f) },
+            { "star", new Color(0.95f, 0.88f, 0.3f) },
+            { "planet", new Color(0.35f, 0.7f, 0.75f) },
+            { "comet", new Color(0.6f, 0.8f, 0.95f) },
             { "galaxy", new Color(0.6f, 0.3f, 0.85f) },
         };
 
