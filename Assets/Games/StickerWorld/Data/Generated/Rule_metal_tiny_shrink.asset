@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_metal_tiny_shrink
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: metal_tiny_shrink
+  eventType: 0
+  priority: 62
+  requiredTags:
+  - {fileID: 11400000, guid: c9fbab0f2ce97ee4ab353d56e9b085fa, type: 2}
+  - {fileID: 11400000, guid: f226fbc021252844398f54c8f28ddb1b, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 40
+    targetTagId: Tiny
+    value: 0.58
+    message: "\uAE08\uC18D\uC774 \uB9D0\uB791\uD55C \uCC99\uD558\uBA70 \uC791\uC544\uC84C\uC2B5\uB2C8\uB2E4.
+      \uBB3C\uB9AC\uD559\uC740 \uC7A0\uC2DC \uC790\uB9AC\uB97C \uBE44\uC6E0\uC2B5\uB2C8\uB2E4."
+  stopAfterMatch: 1

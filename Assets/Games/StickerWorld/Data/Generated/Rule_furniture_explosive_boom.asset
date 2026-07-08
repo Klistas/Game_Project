@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_furniture_explosive_boom
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: furniture_explosive_boom
+  eventType: 0
+  priority: 88
+  requiredTags:
+  - {fileID: 11400000, guid: 8bdd1c1776043bf439571adab08251ca, type: 2}
+  - {fileID: 11400000, guid: 4ab2490c8d91b4d4b9b2e7bf9e07f62c, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 30
+    targetTagId: Destroyed
+    value: 0
+    message: "\uC758\uC790\uAC00 \uD68C\uC758 \uB05D\uC5D0 \uD3ED\uBC1C\uC801\uC778
+      \uC758\uACAC\uC744 \uB0C8\uC2B5\uB2C8\uB2E4."
+  stopAfterMatch: 1

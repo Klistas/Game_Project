@@ -1,0 +1,18 @@
+{
+  "name": "GamePrototype.StickerWorld.Editor",
+  "rootNamespace": "GamePrototype.StickerWorld.Editor",
+  "references": [
+    "GamePrototype.StickerWorld"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

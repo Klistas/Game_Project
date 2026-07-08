@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_human_sleepy_sleep
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: human_sleepy_sleep
+  eventType: 0
+  priority: 95
+  requiredTags:
+  - {fileID: 11400000, guid: c713c31f10850b544bb69a4dc58a0f10, type: 2}
+  - {fileID: 11400000, guid: 80e843ad9ff9bea408149bc71de7193c, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 10
+    targetTagId: Asleep
+    value: 0
+    message: "\uC0AC\uB78C\uC774 \uC81C\uC790\uB9AC\uC5D0\uC11C \uAFB8\uBC85\uAFB8\uBC85
+      \uC7A0\uB4E4\uC5C8\uC2B5\uB2C8\uB2E4."
+  stopAfterMatch: 1

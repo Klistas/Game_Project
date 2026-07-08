@@ -168,6 +168,11 @@ namespace GamePrototype.Shared
                 return "NightShift";
             }
 
+            if (normalized.IndexOf("/StickerWorld/", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "StickerWorld";
+            }
+
             return null;
         }
 

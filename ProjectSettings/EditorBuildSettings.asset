@@ -29,6 +29,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Prototypes/P06_AbsurdCourtroom/Scenes/P06_NonsenseLawyer.unity
     guid: fd3a5e5e383bfe04e8760fe77c2395d0
+  - enabled: 1
+    path: Assets/Games/StickerWorld/Scenes/StickerWorldPrototype.unity
+    guid: aac23d2ea3cfdf140b856595b2e50d05
+  - enabled: 1
+    path: Assets/Games/StickerWorld/Scenes/StickerWorld3DPrototype.unity
+    guid: bcadebacc3a2d834e9f9cee9a8dc630a
+  - enabled: 1
+    path: Assets/Games/StickerWorld/Scenes/StickerWorld3DStage02.unity
+    guid: 4a3311f0d2b1d324391da370cfefc282
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

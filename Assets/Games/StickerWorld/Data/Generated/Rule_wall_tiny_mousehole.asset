@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_wall_tiny_mousehole
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: wall_tiny_mousehole
+  eventType: 0
+  priority: 82
+  requiredTags:
+  - {fileID: 11400000, guid: 4d3ee766ad981854086ac75bbb052d09, type: 2}
+  - {fileID: 11400000, guid: f226fbc021252844398f54c8f28ddb1b, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 90
+    targetTagId: Open
+    value: 0
+    message: "\uC587\uC740 \uBCBD\uC5D0 \uB9D0\uB3C4 \uC548 \uB418\uAC8C \uC791\uC740
+      \uD1B5\uB85C\uAC00 \uC0DD\uACBC\uC2B5\uB2C8\uB2E4."
+  stopAfterMatch: 1
