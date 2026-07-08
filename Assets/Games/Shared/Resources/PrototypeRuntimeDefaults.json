@@ -29,6 +29,14 @@
     {
       "alias": "Night",
       "prototypeId": "NightShift"
+    },
+    {
+      "alias": "Sticker",
+      "prototypeId": "StickerWorld"
+    },
+    {
+      "alias": "StickerWorld",
+      "prototypeId": "StickerWorld"
     }
   ]
 }

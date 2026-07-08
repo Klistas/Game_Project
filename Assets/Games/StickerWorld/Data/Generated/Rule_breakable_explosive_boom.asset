@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_breakable_explosive_boom
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: breakable_explosive_boom
+  eventType: 0
+  priority: 90
+  requiredTags:
+  - {fileID: 11400000, guid: f92d7a7a1eb42fb41b5e2d3f1269375e, type: 2}
+  - {fileID: 11400000, guid: 4ab2490c8d91b4d4b9b2e7bf9e07f62c, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 30
+    targetTagId: Destroyed
+    value: 0
+    message: "\uC587\uC740 \uBCBD\uC774 \uC740\uD589 \uBCF4\uC548 \uB9E4\uB274\uC5BC\uBCF4\uB2E4
+      \uBA3C\uC800 \uD130\uC84C\uC2B5\uB2C8\uB2E4."
+  stopAfterMatch: 1

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_furniture_dog_noise
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: furniture_dog_noise
+  eventType: 0
+  priority: 75
+  requiredTags:
+  - {fileID: 11400000, guid: 8bdd1c1776043bf439571adab08251ca, type: 2}
+  - {fileID: 11400000, guid: 021ec9bb2a8b8f947adea9d66cac693d, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 100
+    targetTagId: Distracting
+    value: 0
+    message: "\uC758\uC790\uAC00 \uC9D6\uC5C8\uC2B5\uB2C8\uB2E4. \uACBD\uBE44\uC6D0\uC740
+      \uC624\uB298 \uD1F4\uC0AC\uB97C \uACE0\uBBFC\uD569\uB2C8\uB2E4."
+  stopAfterMatch: 1

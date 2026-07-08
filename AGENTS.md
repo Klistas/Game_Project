@@ -33,7 +33,7 @@
 
 | 순위 | 프로젝트 | 역할 | 상태 | 점수(40) |
 |---|---|---|---|---|
-| 1 | **럭키 스크래치** (`Assets/Games/LuckyScratch`) | **Primary** | Phase 2 완료, G1 판정 대기 | 34 |
+| 1 | **럭키 스크래치** (`Assets/Games/LuckyScratch`) | **Primary** | Phase 2.5 게임화 패스 완료(2026-07-08), G1 재판정 대기 | 34 |
 | 2 | **새벽의 편의점** (`Assets/Games/NightShift`) | Next | Phase 1.5 완료, G0 판정 대기 | 30 |
 | 3 | 화투 로그 | Reserve(수익 상방 최고) | GDD only (`docs/01_*`) | 29 |
 | 4/5 | 스티커 월드 / 이름표 도시 | 토너먼트 풀 | GDD only (`docs/04·05_*`) | 28/26 |
@@ -72,7 +72,7 @@
 
 ### 즉시 (사람 판정 대기)
 
-- **럭키 스크래치 G1 게이트:** 준헌님이 `Builds/LuckyScratch_G1_Windows/` 직접 2시간 플레이(흐름 끊김 확인) + 지인 5명("돈 주고 사겠다" 3명↑). 통과 시 Phase 3.
+- **럭키 스크래치 G1 재판정:** G1 1차(2026-07-08)는 완성도 부족으로 보류 → 같은 날 **Phase 2.5 게임화 패스 완료**(클릭 UI·티어 기믹 3종·티어별 비주얼, 상세: `Assets/Games/LuckyScratch/Docs/PROGRESS.md`). 준헌님이 갱신된 `Builds/LuckyScratch_G1_Windows/` 직접 2시간 플레이 + 지인 5명("돈 주고 사겠다" 3명↑). 통과 시 Phase 3.
 - **새벽의 편의점 G0 게이트:** `NightShiftPrototype` 씬 재생(사운드 ON)으로 "무서운가" 판정. 통과 시 Phase 2.
 
 ### 럭키 스크래치 (G1 통과 시)

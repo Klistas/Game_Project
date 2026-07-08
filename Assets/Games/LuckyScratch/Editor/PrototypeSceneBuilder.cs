@@ -2,6 +2,7 @@ using System.Linq;
 using GamePrototype.LuckyScratch.Data;
 using GamePrototype.LuckyScratch.Economy;
 using GamePrototype.LuckyScratch.Scratch;
+using GamePrototype.LuckyScratch.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace GamePrototype.LuckyScratch.Editor
 {
     /// <summary>
-    /// 긁기 프로토타입 씬 자동 구성.
+    /// 긁기 프로토타입 씬 자동 구성 (Phase 2.5: 멀티 존 + 클릭 HUD).
     /// 메뉴: Tools > LuckyScratch > Build Prototype Scene
     /// </summary>
     public static class PrototypeSceneBuilder
@@ -50,20 +51,20 @@ namespace GamePrototype.LuckyScratch.Editor
             baseQuad.GetComponent<MeshRenderer>().sharedMaterial =
                 CreateUnlitMaterial("TicketBase", new Color(0.96f, 0.93f, 0.82f));
 
-            var zone = CreateQuad("ScratchZoneBg", ticketRoot.transform,
-                new Vector3(0, 0, -0.005f), new Vector3(TicketW * 0.86f, 0.9f, 1));
-            zone.GetComponent<MeshRenderer>().sharedMaterial =
-                CreateUnlitMaterial("ScratchZoneBg", new Color(0.88f, 0.84f, 0.72f));
+            var accentQuad = CreateQuad("AccentBar", ticketRoot.transform,
+                new Vector3(0, 1.38f, -0.005f), new Vector3(TicketW, 0.42f, 1));
+            accentQuad.GetComponent<MeshRenderer>().sharedMaterial =
+                CreateUnlitMaterial("AccentBar", new Color(0.85f, 0.32f, 0.3f));
 
-            var symbolRoot = new GameObject("SymbolRoot");
-            symbolRoot.transform.SetParent(ticketRoot.transform, false);
-            symbolRoot.transform.localPosition = new Vector3(0, 0, -0.01f);
-
-            var foilQuad = CreateQuad("Foil", ticketRoot.transform,
-                new Vector3(0, 0, -0.02f), new Vector3(TicketW, TicketH, 1));
             var foilMat = CreateFoilMaterial();
-            var foilRenderer = foilQuad.GetComponent<MeshRenderer>();
-            foilRenderer.sharedMaterial = foilMat;
+
+            // 긁기 존 3개: 메인(심볼) + 보조 2개 (multi_area/multiplier/chain용)
+            var zones = new[]
+            {
+                CreateZone(ticketRoot.transform, "ZoneMain", new Vector2(0f, 0.42f), new Vector2(1.9f, 0.95f), 512, foilMat),
+                CreateZone(ticketRoot.transform, "ZoneSubA", new Vector2(-0.5f, -0.62f), new Vector2(0.88f, 0.75f), 256, foilMat),
+                CreateZone(ticketRoot.transform, "ZoneSubB", new Vector2(0.5f, -0.62f), new Vector2(0.88f, 0.75f), 256, foilMat),
+            };
 
             // ---- 텍스트 ----
             var titleText = TextMeshFactory.Create(null, "TitleText", "LUCKY SCRATCH",
@@ -94,13 +95,8 @@ namespace GamePrototype.LuckyScratch.Editor
             // ---- 매니저 와이어링 ----
             var managers = new GameObject("Managers");
 
-            var surface = managers.AddComponent<ScratchSurface>();
-            surface.foilRenderer = foilRenderer;
-            surface.aspect = TicketW / TicketH;
-
             var inputComp = managers.AddComponent<ScratchInput>();
-            inputComp.surface = surface;
-            inputComp.ticketPlane = foilQuad.transform;
+            inputComp.zones = zones;
             inputComp.brushRadius = 0.055f;
 
             var fx = managers.AddComponent<ScratchFx>();
@@ -111,9 +107,10 @@ namespace GamePrototype.LuckyScratch.Editor
 
             var ticket = managers.AddComponent<TicketController>();
             ticket.tier = AssetDatabase.LoadAssetAtPath<LotteryTierSO>(TierAssetPath);
-            ticket.surface = surface;
+            ticket.zones = zones;
             ticket.presentation = presentation;
-            ticket.symbolRoot = symbolRoot.transform;
+            ticket.ticketBaseRenderer = baseQuad.GetComponent<MeshRenderer>();
+            ticket.accentBarRenderer = accentQuad.GetComponent<MeshRenderer>();
             ticket.titleText = titleText;
             ticket.resultText = resultText;
             ticket.progressText = progressText;
@@ -121,16 +118,53 @@ namespace GamePrototype.LuckyScratch.Editor
             if (ticket.tier == null)
                 Debug.LogWarning("[PrototypeSceneBuilder] 티어 에셋 없음 — 먼저 CSV Import 실행 필요: " + TierAssetPath);
 
-            // ---- 경제 시스템 (Phase 2) ----
+            // ---- 경제 시스템 + HUD ----
+            var hud = managers.AddComponent<GameHud>();
+
             var economy = managers.AddComponent<EconomyController>();
             economy.ticket = ticket;
+            economy.hud = hud;
             economy.tiers = LoadAll<LotteryTierSO>();
             economy.automations = LoadAll<AutomationSO>();
             economy.upgrades = LoadAll<UpgradeSO>();
             ticket.economy = economy;
 
             EditorSceneManager.SaveScene(scene, ScenePath);
-            Debug.Log($"[PrototypeSceneBuilder] 씬 생성 완료: {ScenePath}");
+            Debug.Log($"[PrototypeSceneBuilder] 씬 생성 완료 (멀티존 {zones.Length}개 + HUD): {ScenePath}");
+        }
+
+        private static ScratchZone CreateZone(Transform ticketRoot, string name,
+            Vector2 pos, Vector2 size, int maskSize, Material foilMat)
+        {
+            var zoneGo = new GameObject(name);
+            zoneGo.transform.SetParent(ticketRoot, false);
+            zoneGo.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
+
+            var bg = CreateQuad("Bg", zoneGo.transform,
+                new Vector3(0, 0, -0.005f), new Vector3(size.x, size.y, 1));
+            bg.GetComponent<MeshRenderer>().sharedMaterial =
+                CreateUnlitMaterial("ScratchZoneBg", new Color(0.88f, 0.84f, 0.72f));
+
+            var symbolRoot = new GameObject("SymbolRoot");
+            symbolRoot.transform.SetParent(zoneGo.transform, false);
+            symbolRoot.transform.localPosition = new Vector3(0, 0, -0.01f);
+
+            var foil = CreateQuad("Foil", zoneGo.transform,
+                new Vector3(0, 0, -0.02f), new Vector3(size.x, size.y, 1));
+            foil.GetComponent<MeshRenderer>().sharedMaterial = foilMat;
+
+            var surface = zoneGo.AddComponent<ScratchSurface>();
+            surface.foilRenderer = foil.GetComponent<MeshRenderer>();
+            surface.aspect = size.x / size.y;
+            surface.maskSize = maskSize;
+
+            var zone = zoneGo.AddComponent<ScratchZone>();
+            zone.surface = surface;
+            zone.foilRenderer = foil.GetComponent<MeshRenderer>();
+            zone.backgroundRenderer = bg.GetComponent<MeshRenderer>();
+            zone.symbolRoot = symbolRoot.transform;
+            zone.plane = foil.transform;
+            return zone;
         }
 
         private static T[] LoadAll<T>() where T : ScriptableObject

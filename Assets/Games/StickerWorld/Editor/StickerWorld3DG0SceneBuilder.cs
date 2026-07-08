@@ -1,0 +1,342 @@
+using System.Collections.Generic;
+using GamePrototype.StickerWorld.Data;
+using GamePrototype.StickerWorld.Gameplay;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+
+namespace GamePrototype.StickerWorld.Editor
+{
+    public static class StickerWorld3DG0SceneBuilder
+    {
+        private const string ScenePath = "Assets/Games/StickerWorld/Scenes/StickerWorld3DPrototype.unity";
+        private const string Stage02ScenePath = "Assets/Games/StickerWorld/Scenes/StickerWorld3DStage02.unity";
+        private const string MaterialsDir = "Assets/Games/StickerWorld/Data/Generated";
+
+        [MenuItem("Tools/StickerWorld/Build 3D G0 Scene")]
+        public static void Build()
+        {
+            StickerWorldG0SceneBuilder.EnsureG0Data(out var stickers, out var rules);
+
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.42f, 0.46f, 0.5f);
+
+            var root = new GameObject("StickerWorld3D_G0");
+            var stageRoot = new GameObject("BankStage");
+            stageRoot.transform.SetParent(root.transform);
+            var controller = root.AddComponent<StickerWorld3DStageController>();
+
+            var player = CreatePlayer(stageRoot.transform, out var playerTarget);
+            var camera = CreateCamera(player.transform);
+            var guard = CreateGuard(stageRoot.transform, out var guardTarget, out var guardBrain, out var guardVision);
+            var cctv = CreateTarget(stageRoot.transform, "cctv", "CCTV", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.7f, 2.2f, 3.9f), new Vector3(0.8f, 0.45f, 0.45f), new Color(0.24f, 0.34f, 0.42f));
+            var cone = CreateCctvCone(cctv.transform);
+            var vault = CreateTarget(stageRoot.transform, "vault_door", "금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.8f), new Vector3(0.28f, 2.2f, 2.0f), new Color(0.42f, 0.52f, 0.55f));
+            var wall = CreateTarget(stageRoot.transform, "thin_wall", "얇은 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(2.1f, 0.8f, 4.8f), new Vector3(2.2f, 1.6f, 0.22f), new Color(0.48f, 0.34f, 0.3f));
+            CreateTarget(stageRoot.transform, "cat", "고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-1.2f, 0.35f, 1.6f), new Vector3(0.7f, 0.45f, 0.7f), new Color(0.78f, 0.58f, 0.32f));
+            CreateTarget(stageRoot.transform, "chair", "의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-2.1f, 0.35f, -0.4f), new Vector3(0.75f, 0.7f, 0.75f), new Color(0.55f, 0.42f, 0.26f));
+            CreateTarget(stageRoot.transform, "cash_box", "돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(3.6f, 0.35f, -1.0f), new Vector3(0.9f, 0.7f, 0.7f), new Color(0.82f, 0.68f, 0.24f));
+
+            CreateStageGeometry(stageRoot.transform);
+            CreateGoalZone(stageRoot.transform, controller, new Vector3(5.35f, 0.5f, 3.8f));
+
+            controller.Configure(stickers, rules, camera, player, playerTarget, guardTarget, cctv, vault, wall, guardBrain, cone, guardVision);
+
+            EditorSceneManager.SaveScene(scene, ScenePath);
+            AddSceneToBuildSettings(ScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("[StickerWorld] 3D G0 씬 생성 완료: " + ScenePath);
+        }
+
+        [MenuItem("Tools/StickerWorld/Build 3D Stage 02 Scene")]
+        public static void BuildStage02()
+        {
+            StickerWorldG0SceneBuilder.EnsureG0Data(out var stickers, out var rules);
+
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.48f, 0.43f, 0.38f);
+
+            var root = new GameObject("StickerWorld3D_Stage02");
+            var stageRoot = new GameObject("VipVaultStage");
+            stageRoot.transform.SetParent(root.transform);
+            var controller = root.AddComponent<StickerWorld3DStageController>();
+
+            var player = CreatePlayer(stageRoot.transform, out var playerTarget);
+            player.transform.position = new Vector3(-4.8f, 1f, -3.7f);
+            var camera = CreateCamera(player.transform);
+            var guard = CreateGuard(stageRoot.transform, out var guardTarget, out var guardBrain, out var guardVision);
+            guard.transform.position = new Vector3(0.9f, 1f, 0.55f);
+
+            var cctv = CreateTarget(stageRoot.transform, "cctv", "VIP CCTV", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.65f, 2.2f, 3.8f), new Vector3(0.85f, 0.45f, 0.45f), new Color(0.22f, 0.28f, 0.38f));
+            var cone = CreateCctvCone(cctv.transform);
+            var vault = CreateTarget(stageRoot.transform, "vault_door", "VIP 금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.8f), new Vector3(0.32f, 2.2f, 2.05f), new Color(0.55f, 0.48f, 0.28f));
+            var wall = CreateTarget(stageRoot.transform, "thin_wall", "장식용 얇은 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(2.1f, 0.8f, 4.8f), new Vector3(2.2f, 1.6f, 0.22f), new Color(0.42f, 0.28f, 0.35f));
+
+            CreateTarget(stageRoot.transform, "vip_cat", "접대 고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-1.15f, 0.35f, 1.55f), new Vector3(0.68f, 0.45f, 0.68f), new Color(0.74f, 0.55f, 0.34f));
+            CreateTarget(stageRoot.transform, "royal_chair", "왕좌 의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-0.85f, 0.42f, 0.35f), new Vector3(0.9f, 0.84f, 0.88f), new Color(0.48f, 0.30f, 0.58f));
+            CreateTarget(stageRoot.transform, "tax_cash_box", "금색 돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(2.25f, 0.36f, -0.95f), new Vector3(0.95f, 0.72f, 0.72f), new Color(0.88f, 0.68f, 0.22f));
+            CreateTarget(stageRoot.transform, "display_case", "유리 진열대", new[] { "Furniture", "Breakable" }, PrimitiveType.Cube, new Vector3(3.25f, 0.5f, 1.2f), new Vector3(1.05f, 1f, 0.65f), new Color(0.35f, 0.58f, 0.68f));
+
+            CreateVipStageGeometry(stageRoot.transform);
+            CreateWorldText(
+                stageRoot.transform,
+                "StageHint",
+                "VIP 금고실\n소품을 왕좌나 개처럼 속이면 경비가 흔들립니다.",
+                new Vector3(0f, 0.08f, -4.55f),
+                42,
+                new Color(0.98f, 0.86f, 0.42f));
+            CreateGoalZone(stageRoot.transform, controller, new Vector3(5.35f, 0.5f, 3.8f));
+
+            controller.Configure(stickers, rules, camera, player, playerTarget, guardTarget, cctv, vault, wall, guardBrain, cone, guardVision);
+            controller.ConfigureStageText(
+                "스테이지 02: VIP 금고실",
+                "VIP 금고 안쪽에 들어가기",
+                "2번 방: CCTV 정면 돌파보다 VIP 소품을 말도 안 되게 바꿔 경비와 금고문을 동시에 흔들어 보세요.",
+                "VIP 금고 앞까지 왔지만 아직 조합이 부족합니다. 몸, 경비, 진입로 중 하나가 아직 평범합니다.",
+                "VIP 금고실 클리어",
+                "왕좌 의자는 직급 체계를 무너뜨렸고, 금고문은 졸다가 열렸고, 플레이어는 너무 작아서 보안 규정에 적히지도 않았습니다.\n\nR: 다시 시작");
+            controller.ConfigureCctvZone(new Vector2(-5.6f, -2.75f), new Vector2(-0.25f, 3.4f));
+            controller.ConfigureGuardDetection(1.35f, 3.2f, 0.32f);
+
+            EditorSceneManager.SaveScene(scene, Stage02ScenePath);
+            AddSceneToBuildSettings(Stage02ScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("[StickerWorld] 3D Stage 02 씬 생성 완료: " + Stage02ScenePath);
+        }
+
+        private static StickerWorld3DPlayer CreatePlayer(Transform parent, out StickerWorld3DTarget playerTarget)
+        {
+            var playerObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            playerObject.name = "플레이어";
+            playerObject.transform.SetParent(parent, false);
+            playerObject.transform.position = new Vector3(-4.8f, 1f, -3.7f);
+            playerObject.transform.localScale = new Vector3(0.8f, 1f, 0.8f);
+            playerObject.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_Player", new Color(0.32f, 0.58f, 0.88f));
+            Object.DestroyImmediate(playerObject.GetComponent<CapsuleCollider>());
+            var controller = playerObject.AddComponent<CharacterController>();
+            controller.height = 2f;
+            controller.radius = 0.38f;
+            controller.center = new Vector3(0f, 0f, 0f);
+            var player = playerObject.AddComponent<StickerWorld3DPlayer>();
+            playerTarget = AddTarget(playerObject, "player", "플레이어", new[] { "Player", "Human" });
+            return player;
+        }
+
+        private static Camera CreateCamera(Transform player)
+        {
+            var cameraObject = new GameObject("Main Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.tag = "MainCamera";
+            camera.orthographic = true;
+            camera.orthographicSize = 5.9f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.07f, 0.085f, 0.1f);
+            cameraObject.transform.position = new Vector3(0f, 11.0f, -4.2f);
+            cameraObject.transform.rotation = Quaternion.Euler(70f, 0f, 0f);
+            cameraObject.AddComponent<AudioListener>();
+            return camera;
+        }
+
+        private static GameObject CreateGuard(Transform parent, out StickerWorld3DTarget guardTarget, out StickerWorld3DGuard guardBrain, out GameObject guardVision)
+        {
+            var guard = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            guard.name = "경비원";
+            guard.transform.SetParent(parent, false);
+            guard.transform.position = new Vector3(0.8f, 1f, 0.7f);
+            guard.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_Guard", new Color(0.45f, 0.38f, 0.28f));
+            guardTarget = AddTarget(guard, "guard", "경비원", new[] { "Human", "Guard" });
+            guardVision = CreateGuardVision(guard.transform);
+            guardBrain = guard.AddComponent<StickerWorld3DGuard>();
+
+            var points = new List<Transform>
+            {
+                CreateMarker(parent, "GuardPatrol_A", new Vector3(-0.4f, 0f, 0.4f)),
+                CreateMarker(parent, "GuardPatrol_B", new Vector3(2.6f, 0f, 0.5f)),
+                CreateMarker(parent, "GuardPatrol_C", new Vector3(2.7f, 0f, 2.8f))
+            };
+            guardBrain.Configure(points.ToArray());
+            return guard;
+        }
+
+        private static StickerWorld3DTarget CreateTarget(Transform parent, string id, string displayName, string[] tags, PrimitiveType primitive, Vector3 position, Vector3 scale, Color color)
+        {
+            var go = GameObject.CreatePrimitive(primitive);
+            go.name = displayName;
+            go.transform.SetParent(parent, false);
+            go.transform.position = position;
+            go.transform.localScale = scale;
+            go.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_" + id, color);
+            return AddTarget(go, id, displayName, tags);
+        }
+
+        private static StickerWorld3DTarget AddTarget(GameObject go, string id, string displayName, string[] tags)
+        {
+            var label = CreateWorldText(go.transform, "Label", displayName, new Vector3(0f, 1.35f, 0f), 46, Color.white);
+            var state = CreateWorldText(go.transform, "State", "대기", new Vector3(0f, 1.05f, 0f), 32, new Color(1f, 0.84f, 0.32f));
+            var target = go.AddComponent<StickerWorld3DTarget>();
+            var mainRenderer = go.GetComponent<Renderer>();
+            target.Configure(id, displayName, tags, mainRenderer != null ? new[] { mainRenderer } : new Renderer[0], label, state);
+            target.CacheBaseState();
+            return target;
+        }
+
+        private static GameObject CreateGuardVision(Transform guard)
+        {
+            var vision = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            vision.name = "경비 시야";
+            vision.transform.SetParent(guard, false);
+            vision.transform.localPosition = new Vector3(0f, -0.96f, 1.55f);
+            vision.transform.localScale = new Vector3(1.85f, 0.035f, 3.1f);
+            vision.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_GuardView", new Color(0.95f, 0.72f, 0.12f, 0.45f));
+            Object.DestroyImmediate(vision.GetComponent<BoxCollider>());
+            return vision;
+        }
+
+        private static void CreateStageGeometry(Transform parent)
+        {
+            CreateBox(parent, "Floor", new Vector3(0f, -0.06f, 0f), new Vector3(12f, 0.12f, 10f), new Color(0.12f, 0.15f, 0.14f));
+            CreateBox(parent, "BackWall", new Vector3(0f, 1f, 5.1f), new Vector3(12f, 2f, 0.2f), new Color(0.16f, 0.18f, 0.2f));
+            CreateBox(parent, "LeftWall", new Vector3(-6.1f, 1f, 0f), new Vector3(0.2f, 2f, 10f), new Color(0.16f, 0.18f, 0.2f));
+            CreateBox(parent, "RightWall", new Vector3(6.1f, 1f, 0f), new Vector3(0.2f, 2f, 10f), new Color(0.16f, 0.18f, 0.2f));
+            CreateBox(parent, "Counter", new Vector3(-3.2f, 0.45f, 2.6f), new Vector3(2.2f, 0.9f, 0.8f), new Color(0.22f, 0.2f, 0.18f));
+            CreateBox(parent, "QueueRope", new Vector3(-0.8f, 0.3f, -1.7f), new Vector3(3.2f, 0.1f, 0.1f), new Color(0.72f, 0.1f, 0.1f));
+
+            var lightObject = new GameObject("Directional Light");
+            lightObject.transform.SetParent(parent, false);
+            var light = lightObject.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 1.1f;
+            lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+        }
+
+        private static void CreateVipStageGeometry(Transform parent)
+        {
+            CreateBox(parent, "VipFloor", new Vector3(0f, -0.06f, 0f), new Vector3(12f, 0.12f, 10f), new Color(0.13f, 0.12f, 0.14f));
+            CreateBox(parent, "VipBackWall", new Vector3(0f, 1f, 5.1f), new Vector3(12f, 2f, 0.2f), new Color(0.2f, 0.16f, 0.22f));
+            CreateBox(parent, "VipLeftWall", new Vector3(-6.1f, 1f, 0f), new Vector3(0.2f, 2f, 10f), new Color(0.2f, 0.16f, 0.22f));
+            CreateBox(parent, "VipRightWall", new Vector3(6.1f, 1f, 0f), new Vector3(0.2f, 2f, 10f), new Color(0.2f, 0.16f, 0.22f));
+            CreateBox(parent, "VipCarpet", new Vector3(0.85f, 0.015f, 0.05f), new Vector3(4.8f, 0.05f, 1.4f), new Color(0.45f, 0.06f, 0.1f));
+            CreateBox(parent, "GoldQueueRope", new Vector3(-0.95f, 0.3f, -1.75f), new Vector3(3.0f, 0.1f, 0.1f), new Color(0.92f, 0.72f, 0.18f));
+            CreateBox(parent, "VelvetCounter", new Vector3(-3.25f, 0.45f, 2.55f), new Vector3(2.15f, 0.9f, 0.8f), new Color(0.22f, 0.15f, 0.18f));
+            CreateBox(parent, "DisplayRail", new Vector3(2.75f, 0.28f, 2.2f), new Vector3(1.8f, 0.12f, 0.12f), new Color(0.9f, 0.72f, 0.28f));
+
+            var lightObject = new GameObject("Directional Light");
+            lightObject.transform.SetParent(parent, false);
+            var light = lightObject.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 1.15f;
+            lightObject.transform.rotation = Quaternion.Euler(50f, -25f, 0f);
+        }
+
+        private static GameObject CreateCctvCone(Transform cctv)
+        {
+            var cone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cone.name = "CCTV 감시 영역";
+            cone.transform.SetParent(cctv, false);
+            cone.transform.localPosition = new Vector3(0.5f, -2.2f, -2.3f);
+            cone.transform.localScale = new Vector3(2.6f, 0.04f, 4.3f);
+            cone.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_CctvCone", new Color(0.8f, 0.12f, 0.08f, 0.34f));
+            Object.DestroyImmediate(cone.GetComponent<BoxCollider>());
+            return cone;
+        }
+
+        private static void CreateGoalZone(Transform parent, StickerWorld3DStageController controller, Vector3 position)
+        {
+            var marker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            marker.name = "금고 진입 목표";
+            marker.transform.SetParent(parent, false);
+            marker.transform.position = new Vector3(position.x, 0.02f, position.z);
+            marker.transform.localScale = new Vector3(1.35f, 0.04f, 2.1f);
+            marker.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_GoalZone", new Color(0.15f, 0.68f, 0.44f));
+            Object.DestroyImmediate(marker.GetComponent<BoxCollider>());
+
+            var zone = new GameObject("VaultGoalZone");
+            zone.transform.SetParent(parent, false);
+            zone.transform.position = position;
+            var collider = zone.AddComponent<BoxCollider>();
+            collider.isTrigger = true;
+            collider.size = new Vector3(1.2f, 1.2f, 2.0f);
+            var goal = zone.AddComponent<StickerWorld3DGoalZone>();
+            goal.Configure(controller);
+        }
+
+        private static GameObject CreateBox(Transform parent, string name, Vector3 position, Vector3 scale, Color color)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            go.name = name;
+            go.transform.SetParent(parent, false);
+            go.transform.position = position;
+            go.transform.localScale = scale;
+            go.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_" + name, color);
+            return go;
+        }
+
+        private static Transform CreateMarker(Transform parent, string name, Vector3 position)
+        {
+            var marker = new GameObject(name);
+            marker.transform.SetParent(parent, false);
+            marker.transform.position = position;
+            return marker.transform;
+        }
+
+        private static TextMesh CreateWorldText(Transform parent, string name, string value, Vector3 localPosition, int fontSize, Color color)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = localPosition;
+            go.transform.localRotation = Quaternion.Euler(70f, 0f, 0f);
+            var text = go.AddComponent<TextMesh>();
+            text.text = value;
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.fontSize = fontSize;
+            text.anchor = TextAnchor.MiddleCenter;
+            text.alignment = TextAlignment.Center;
+            text.color = color;
+            go.transform.localScale = Vector3.one * 0.05f;
+            return text;
+        }
+
+        private static Material CreateMaterial(string name, Color color)
+        {
+            var path = MaterialsDir + "/" + name + ".mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null)
+            {
+                mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                AssetDatabase.CreateAsset(mat, path);
+            }
+
+            mat.color = color;
+            if (mat.HasProperty("_BaseColor"))
+            {
+                mat.SetColor("_BaseColor", color);
+            }
+
+            EditorUtility.SetDirty(mat);
+            return mat;
+        }
+
+        private static void AddSceneToBuildSettings(string scenePath)
+        {
+            var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+            foreach (var scene in scenes)
+            {
+                if (scene.path == scenePath)
+                {
+                    scene.enabled = true;
+                    EditorBuildSettings.scenes = scenes.ToArray();
+                    return;
+                }
+            }
+
+            scenes.Add(new EditorBuildSettingsScene(scenePath, true));
+            EditorBuildSettings.scenes = scenes.ToArray();
+        }
+    }
+}

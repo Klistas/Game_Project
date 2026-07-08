@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa95ebe5480e404d8c127c638f996a7, type: 3}
+  m_Name: Rule_treasure_royal_tax
+  m_EditorClassIdentifier: GamePrototype.StickerWorld::GamePrototype.StickerWorld.Data.TagRuleSO
+  id: treasure_royal_tax
+  eventType: 0
+  priority: 64
+  requiredTags:
+  - {fileID: 11400000, guid: b54651032f2c8ec4aa85a44cc8ba92b2, type: 2}
+  - {fileID: 11400000, guid: fb4e1aad6db518e42be49e368b057dae, type: 2}
+  blockedTags: []
+  effects:
+  - reaction: 80
+    targetTagId: Royal
+    value: 0
+    message: "\uB3C8\uC0C1\uC790\uAC00 \uC655\uC2E4 \uAE08\uACE0\uB97C \uC790\uCC98\uD588\uC2B5\uB2C8\uB2E4.
+      \uACBD\uBE44\uC6D0\uC774 \uC138\uAE08\uCC98\uB7FC \uACE0\uAC1C\uB97C \uC219\uC785\uB2C8\uB2E4."
+  stopAfterMatch: 1
