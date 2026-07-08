@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.IO;
 using GamePrototype.StickerWorld.Data;
 using GamePrototype.StickerWorld.Gameplay;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.TextCore.LowLevel;
 
 namespace GamePrototype.StickerWorld.Editor
 {
@@ -14,12 +17,19 @@ namespace GamePrototype.StickerWorld.Editor
         private const string Stage03ScenePath = "Assets/Games/StickerWorld/Scenes/StickerWorld3DStage03.unity";
         private const string MaterialsDir = "Assets/Games/StickerWorld/Data/Generated";
         private const string KenneyModelDir = "Assets/Games/StickerWorld/Art/External/KenneyFurnitureKit/Models";
+        private const string KoreanFontDir = "Assets/Games/StickerWorld/Art/External/NotoSansKR";
+        private const string KoreanFontSourcePath = "C:/Windows/Fonts/NotoSansKR-VF.ttf";
+        private const string KoreanFontAssetPath = KoreanFontDir + "/NotoSansKR-VF.ttf";
+        private const string TmpSettingsDir = "Assets/TextMesh Pro/Resources";
+        private const string TmpSettingsAssetPath = TmpSettingsDir + "/TMP Settings.asset";
+        private const string KoreanTmpFontAssetPath = MaterialsDir + "/StickerWorld_Korean_TMP.asset";
         private const float KenneyModelScale = 0.3f;
 
         [MenuItem("Tools/StickerWorld/Build 3D G0 Scene")]
         public static void Build()
         {
             StickerWorldG0SceneBuilder.EnsureG0Data(out var stickers, out var rules);
+            var textFont = EnsureKoreanTmpFontAsset();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
@@ -30,22 +40,24 @@ namespace GamePrototype.StickerWorld.Editor
             stageRoot.transform.SetParent(root.transform);
             var controller = root.AddComponent<StickerWorld3DStageController>();
 
-            var player = CreatePlayer(stageRoot.transform, out var playerTarget);
+            var player = CreatePlayer(stageRoot.transform, textFont, out var playerTarget);
             var camera = CreateCamera(player.transform);
-            var guard = CreateGuard(stageRoot.transform, out var guardTarget, out var guardBrain, out var guardVision);
-            var cctv = CreateTarget(stageRoot.transform, "cctv", "CCTV", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.7f, 2.2f, 3.9f), new Vector3(0.8f, 0.45f, 0.45f), new Color(0.24f, 0.34f, 0.42f));
+            var guard = CreateGuard(stageRoot.transform, textFont, out var guardTarget, out var guardBrain, out var guardVision);
+            var cctv = CreateTarget(stageRoot.transform, "cctv", "CCTV", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.7f, 2.2f, 3.9f), new Vector3(0.8f, 0.45f, 0.45f), new Color(0.24f, 0.34f, 0.42f), textFont);
             var cone = CreateCctvCone(cctv.transform);
-            var vault = CreateTarget(stageRoot.transform, "vault_door", "금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.8f), new Vector3(0.28f, 2.2f, 2.0f), new Color(0.42f, 0.52f, 0.55f));
-            var wall = CreateTarget(stageRoot.transform, "thin_wall", "얇은 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(2.1f, 0.8f, 4.8f), new Vector3(2.2f, 1.6f, 0.22f), new Color(0.48f, 0.34f, 0.3f));
-            CreateTarget(stageRoot.transform, "cat", "고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-1.2f, 0.35f, 1.6f), new Vector3(0.7f, 0.45f, 0.7f), new Color(0.78f, 0.58f, 0.32f));
-            CreateTarget(stageRoot.transform, "chair", "의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-2.1f, 0.35f, -0.4f), new Vector3(0.75f, 0.7f, 0.75f), new Color(0.55f, 0.42f, 0.26f));
-            CreateTarget(stageRoot.transform, "cash_box", "돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(3.6f, 0.35f, -1.0f), new Vector3(0.9f, 0.7f, 0.7f), new Color(0.82f, 0.68f, 0.24f));
+            var vault = CreateTarget(stageRoot.transform, "vault_door", "금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.8f), new Vector3(0.28f, 2.2f, 2.0f), new Color(0.42f, 0.52f, 0.55f), textFont);
+            var wall = CreateTarget(stageRoot.transform, "thin_wall", "얇은 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(2.1f, 0.8f, 4.8f), new Vector3(2.2f, 1.6f, 0.22f), new Color(0.48f, 0.34f, 0.3f), textFont);
+            CreateTarget(stageRoot.transform, "cat", "고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-1.2f, 0.35f, 1.6f), new Vector3(0.7f, 0.45f, 0.7f), new Color(0.78f, 0.58f, 0.32f), textFont);
+            CreateTarget(stageRoot.transform, "chair", "의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-2.1f, 0.35f, -0.4f), new Vector3(0.75f, 0.7f, 0.75f), new Color(0.55f, 0.42f, 0.26f), textFont);
+            CreateTarget(stageRoot.transform, "cash_box", "돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(3.6f, 0.35f, -1.0f), new Vector3(0.9f, 0.7f, 0.7f), new Color(0.82f, 0.68f, 0.24f), textFont);
 
             CreateStageGeometry(stageRoot.transform);
             CreateBankAssetDressing(stageRoot.transform);
             CreateGoalZone(stageRoot.transform, controller, new Vector3(5.35f, 0.5f, 3.8f));
 
             controller.Configure(stickers, rules, camera, player, playerTarget, guardTarget, cctv, vault, wall, guardBrain, cone, guardVision);
+            controller.ConfigureTextFont(textFont);
+            controller.ConfigureStageObjective(StickerWorld3DStageController.StageObjectiveMode.ClassicVault);
             controller.ConfigureStageText(
                 "스테이지 01: 첫 금고",
                 "금고 안쪽에 들어가기",
@@ -67,6 +79,7 @@ namespace GamePrototype.StickerWorld.Editor
         public static void BuildStage02()
         {
             StickerWorldG0SceneBuilder.EnsureG0Data(out var stickers, out var rules);
+            var textFont = EnsureKoreanTmpFontAsset();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
@@ -77,21 +90,21 @@ namespace GamePrototype.StickerWorld.Editor
             stageRoot.transform.SetParent(root.transform);
             var controller = root.AddComponent<StickerWorld3DStageController>();
 
-            var player = CreatePlayer(stageRoot.transform, out var playerTarget);
+            var player = CreatePlayer(stageRoot.transform, textFont, out var playerTarget);
             player.transform.position = new Vector3(-4.8f, 1f, -3.7f);
             var camera = CreateCamera(player.transform);
-            var guard = CreateGuard(stageRoot.transform, out var guardTarget, out var guardBrain, out var guardVision);
+            var guard = CreateGuard(stageRoot.transform, textFont, out var guardTarget, out var guardBrain, out var guardVision);
             guard.transform.position = new Vector3(0.9f, 1f, 0.55f);
 
-            var cctv = CreateTarget(stageRoot.transform, "cctv", "VIP CCTV", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.65f, 2.2f, 3.8f), new Vector3(0.85f, 0.45f, 0.45f), new Color(0.22f, 0.28f, 0.38f), "Mat_stage02_cctv");
+            var cctv = CreateTarget(stageRoot.transform, "cctv", "VIP CCTV", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.65f, 2.2f, 3.8f), new Vector3(0.85f, 0.45f, 0.45f), new Color(0.22f, 0.28f, 0.38f), textFont, "Mat_stage02_cctv");
             var cone = CreateCctvCone(cctv.transform);
-            var vault = CreateTarget(stageRoot.transform, "vault_door", "VIP 금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.8f), new Vector3(0.32f, 2.2f, 2.05f), new Color(0.55f, 0.48f, 0.28f), "Mat_stage02_vault_door");
-            var wall = CreateTarget(stageRoot.transform, "thin_wall", "장식용 얇은 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(2.1f, 0.8f, 4.8f), new Vector3(2.2f, 1.6f, 0.22f), new Color(0.42f, 0.28f, 0.35f), "Mat_stage02_thin_wall");
+            var vault = CreateTarget(stageRoot.transform, "vault_door", "VIP 금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.8f), new Vector3(0.32f, 2.2f, 2.05f), new Color(0.55f, 0.48f, 0.28f), textFont, "Mat_stage02_vault_door");
+            var wall = CreateTarget(stageRoot.transform, "thin_wall", "장식용 얇은 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(2.1f, 0.8f, 4.8f), new Vector3(2.2f, 1.6f, 0.22f), new Color(0.42f, 0.28f, 0.35f), textFont, "Mat_stage02_thin_wall");
 
-            CreateTarget(stageRoot.transform, "vip_cat", "접대 고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-1.15f, 0.35f, 1.55f), new Vector3(0.68f, 0.45f, 0.68f), new Color(0.74f, 0.55f, 0.34f));
-            CreateTarget(stageRoot.transform, "royal_chair", "왕좌 의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-0.85f, 0.42f, 0.35f), new Vector3(0.9f, 0.84f, 0.88f), new Color(0.48f, 0.30f, 0.58f));
-            CreateTarget(stageRoot.transform, "tax_cash_box", "금색 돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(2.25f, 0.36f, -0.95f), new Vector3(0.95f, 0.72f, 0.72f), new Color(0.88f, 0.68f, 0.22f));
-            CreateTarget(stageRoot.transform, "display_case", "유리 진열대", new[] { "Furniture", "Breakable" }, PrimitiveType.Cube, new Vector3(3.25f, 0.5f, 1.2f), new Vector3(1.05f, 1f, 0.65f), new Color(0.35f, 0.58f, 0.68f));
+            CreateTarget(stageRoot.transform, "vip_cat", "접대 고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-1.15f, 0.35f, 1.55f), new Vector3(0.68f, 0.45f, 0.68f), new Color(0.74f, 0.55f, 0.34f), textFont);
+            CreateTarget(stageRoot.transform, "royal_chair", "왕좌 의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-0.85f, 0.42f, 0.35f), new Vector3(0.9f, 0.84f, 0.88f), new Color(0.48f, 0.30f, 0.58f), textFont);
+            CreateTarget(stageRoot.transform, "tax_cash_box", "금색 돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(2.25f, 0.36f, -0.95f), new Vector3(0.95f, 0.72f, 0.72f), new Color(0.88f, 0.68f, 0.22f), textFont);
+            CreateTarget(stageRoot.transform, "display_case", "유리 진열대", new[] { "Furniture", "Breakable" }, PrimitiveType.Cube, new Vector3(3.25f, 0.5f, 1.2f), new Vector3(1.05f, 1f, 0.65f), new Color(0.35f, 0.58f, 0.68f), textFont);
 
             CreateVipStageGeometry(stageRoot.transform);
             CreateVipAssetDressing(stageRoot.transform);
@@ -101,15 +114,18 @@ namespace GamePrototype.StickerWorld.Editor
                 "VIP 금고실\n소품을 왕좌나 개처럼 속이면 경비가 흔들립니다.",
                 new Vector3(0f, 0.08f, -4.55f),
                 42,
-                new Color(0.98f, 0.86f, 0.42f));
+                new Color(0.98f, 0.86f, 0.42f),
+                textFont);
             CreateGoalZone(stageRoot.transform, controller, new Vector3(5.35f, 0.5f, 3.8f));
 
             controller.Configure(stickers, rules, camera, player, playerTarget, guardTarget, cctv, vault, wall, guardBrain, cone, guardVision);
+            controller.ConfigureTextFont(textFont);
+            controller.ConfigureStageObjective(StickerWorld3DStageController.StageObjectiveMode.VipCeremony);
             controller.ConfigureStageText(
                 "스테이지 02: VIP 금고실",
-                "VIP 금고 안쪽에 들어가기",
-                "2번 방: CCTV 정면 돌파보다 VIP 소품을 말도 안 되게 바꿔 경비와 금고문을 동시에 흔들어 보세요.",
-                "VIP 금고 앞까지 왔지만 아직 조합이 부족합니다. 몸, 경비, 진입로 중 하나가 아직 평범합니다.",
+                "VIP 의식을 망가뜨리고 금고 안쪽에 들어가기",
+                "2번 방: 왕좌 의자로 경비를 예절 모드에 빠뜨리고, 금고문을 졸리게 만든 뒤 몸을 줄이세요.",
+                "VIP 금고는 예절이 먼저입니다. 몸을 줄이고, VIP 금고문을 열고, 경비가 왕실 예절을 하게 만들어야 합니다.",
                 "VIP 금고실 클리어",
                 "왕좌 의자는 직급 체계를 무너뜨렸고, 금고문은 졸다가 열렸고, 플레이어는 너무 작아서 보안 규정에 적히지도 않았습니다.");
             controller.ConfigureStageFlow("StickerWorld3DStage03", "다음: 기록 보관실");
@@ -128,6 +144,7 @@ namespace GamePrototype.StickerWorld.Editor
         public static void BuildStage03()
         {
             StickerWorldG0SceneBuilder.EnsureG0Data(out var stickers, out var rules);
+            var textFont = EnsureKoreanTmpFontAsset();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
@@ -138,20 +155,20 @@ namespace GamePrototype.StickerWorld.Editor
             stageRoot.transform.SetParent(root.transform);
             var controller = root.AddComponent<StickerWorld3DStageController>();
 
-            var player = CreatePlayer(stageRoot.transform, out var playerTarget);
+            var player = CreatePlayer(stageRoot.transform, textFont, out var playerTarget);
             var camera = CreateCamera(player.transform);
-            var guard = CreateGuard(stageRoot.transform, out var guardTarget, out var guardBrain, out var guardVision);
+            var guard = CreateGuard(stageRoot.transform, textFont, out var guardTarget, out var guardBrain, out var guardVision);
             guard.transform.position = new Vector3(0.65f, 1f, 0.25f);
 
-            var cctv = CreateTarget(stageRoot.transform, "cctv", "짖는 CCTV 후보", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.7f, 2.2f, 3.85f), new Vector3(0.82f, 0.45f, 0.45f), new Color(0.2f, 0.32f, 0.36f), "Mat_stage03_cctv");
+            var cctv = CreateTarget(stageRoot.transform, "cctv", "짖는 CCTV 후보", new[] { "Machine", "Watcher" }, PrimitiveType.Cube, new Vector3(-4.7f, 2.2f, 3.85f), new Vector3(0.82f, 0.45f, 0.45f), new Color(0.2f, 0.32f, 0.36f), textFont, "Mat_stage03_cctv");
             var cone = CreateCctvCone(cctv.transform);
-            var vault = CreateTarget(stageRoot.transform, "vault_door", "기록 금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.85f), new Vector3(0.28f, 2.2f, 2.0f), new Color(0.38f, 0.48f, 0.43f), "Mat_stage03_vault_door");
-            var wall = CreateTarget(stageRoot.transform, "thin_wall", "균열 난 후문 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(4.35f, 0.85f, 1.15f), new Vector3(0.32f, 1.7f, 1.55f), new Color(0.42f, 0.36f, 0.32f), "Mat_stage03_thin_wall");
+            var vault = CreateTarget(stageRoot.transform, "vault_door", "기록 금고문", new[] { "Door", "Vault", "Metal" }, PrimitiveType.Cube, new Vector3(4.8f, 1.1f, 3.85f), new Vector3(0.28f, 2.2f, 2.0f), new Color(0.38f, 0.48f, 0.43f), textFont, "Mat_stage03_vault_door");
+            var wall = CreateTarget(stageRoot.transform, "thin_wall", "균열 난 후문 벽", new[] { "Wall", "Breakable" }, PrimitiveType.Cube, new Vector3(4.35f, 0.85f, 1.15f), new Vector3(0.32f, 1.7f, 1.55f), new Color(0.42f, 0.36f, 0.32f), textFont, "Mat_stage03_thin_wall");
 
-            CreateTarget(stageRoot.transform, "archive_cat", "서류함 고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-0.95f, 0.35f, 1.75f), new Vector3(0.66f, 0.44f, 0.66f), new Color(0.72f, 0.62f, 0.44f));
-            CreateTarget(stageRoot.transform, "archive_chair", "대기 의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-2.25f, 0.34f, -0.75f), new Vector3(0.8f, 0.68f, 0.78f), new Color(0.42f, 0.36f, 0.28f));
-            CreateTarget(stageRoot.transform, "archive_cash_box", "압수 돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(2.2f, 0.35f, -1.15f), new Vector3(0.88f, 0.68f, 0.68f), new Color(0.72f, 0.62f, 0.24f));
-            CreateTarget(stageRoot.transform, "copy_machine", "복사기", new[] { "Machine", "Furniture" }, PrimitiveType.Cube, new Vector3(-3.65f, 0.46f, 1.25f), new Vector3(0.95f, 0.92f, 0.75f), new Color(0.46f, 0.58f, 0.6f));
+            CreateTarget(stageRoot.transform, "archive_cat", "서류함 고양이", new[] { "Animal", "Cute" }, PrimitiveType.Sphere, new Vector3(-0.95f, 0.35f, 1.75f), new Vector3(0.66f, 0.44f, 0.66f), new Color(0.72f, 0.62f, 0.44f), textFont);
+            CreateTarget(stageRoot.transform, "archive_chair", "대기 의자", new[] { "Furniture" }, PrimitiveType.Cube, new Vector3(-2.25f, 0.34f, -0.75f), new Vector3(0.8f, 0.68f, 0.78f), new Color(0.42f, 0.36f, 0.28f), textFont);
+            CreateTarget(stageRoot.transform, "archive_cash_box", "압수 돈상자", new[] { "Treasure", "Metal" }, PrimitiveType.Cube, new Vector3(2.2f, 0.35f, -1.15f), new Vector3(0.88f, 0.68f, 0.68f), new Color(0.72f, 0.62f, 0.24f), textFont);
+            CreateTarget(stageRoot.transform, "copy_machine", "복사기", new[] { "Machine", "Furniture" }, PrimitiveType.Cube, new Vector3(-3.65f, 0.46f, 1.25f), new Vector3(0.95f, 0.92f, 0.75f), new Color(0.46f, 0.58f, 0.6f), textFont);
 
             CreateArchiveStageGeometry(stageRoot.transform);
             CreateArchiveAssetDressing(stageRoot.transform);
@@ -161,15 +178,18 @@ namespace GamePrototype.StickerWorld.Editor
                 "기록 보관실\nCCTV를 끄지 않고 짖게 만들면 경비가 자리를 비웁니다.",
                 new Vector3(0f, 0.08f, -4.55f),
                 42,
-                new Color(0.84f, 0.94f, 0.68f));
+                new Color(0.84f, 0.94f, 0.68f),
+                textFont);
             CreateGoalZone(stageRoot.transform, controller, new Vector3(5.35f, 0.5f, 1.15f));
 
             controller.Configure(stickers, rules, camera, player, playerTarget, guardTarget, cctv, vault, wall, guardBrain, cone, guardVision);
+            controller.ConfigureTextFont(textFont);
+            controller.ConfigureStageObjective(StickerWorld3DStageController.StageObjectiveMode.ArchiveBackdoor);
             controller.ConfigureStageText(
                 "스테이지 03: 기록 보관실 후문",
-                "오른쪽 후문 벽을 뚫고 기록 금고 안쪽에 들어가기",
-                "3번 방: CCTV를 개처럼 짖게 만들어 경비를 빼내고, 균열 벽을 터뜨린 뒤 몸을 줄여 후문으로 들어가세요.",
-                "후문 앞까지 왔지만 아직 수법이 덜 우스꽝스럽습니다. 몸, 경비, 진입로를 모두 비틀어야 합니다.",
+                "CCTV로 경비를 유인하고 후문을 뚫기",
+                "3번 방: CCTV를 끄지 말고 개처럼 짖게 만들어 경비를 빼내고, 균열 벽을 터뜨린 뒤 몸을 줄여 후문으로 들어가세요.",
+                "기록 보관실은 정문보다 소문이 빠릅니다. CCTV 소음, 후문 파괴, 몸 축소가 모두 필요합니다.",
                 "G0 데모 완료",
                 "CCTV가 짖고, 경비가 소리의 품종을 확인하러 떠났고, 벽은 폭발적인 서류 정리를 당했습니다. 세 방 모두 이제 하나의 짧은 데모로 이어집니다.");
             controller.ConfigureStageFlow("StickerWorld3DPrototype", "처음부터 다시");
@@ -184,7 +204,179 @@ namespace GamePrototype.StickerWorld.Editor
             Debug.Log("[StickerWorld] 3D Stage 03 씬 생성 완료: " + Stage03ScenePath);
         }
 
-        private static StickerWorld3DPlayer CreatePlayer(Transform parent, out StickerWorld3DTarget playerTarget)
+        private static TMP_FontAsset EnsureKoreanTmpFontAsset()
+        {
+            EnsureTmpSettingsAsset();
+
+            Directory.CreateDirectory(MaterialsDir);
+            var fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(KoreanTmpFontAssetPath);
+            if (fontAsset != null && !HasUsableFontAtlas(fontAsset))
+            {
+                AssetDatabase.DeleteAsset(KoreanTmpFontAssetPath);
+                fontAsset = null;
+            }
+
+            if (fontAsset == null)
+            {
+                fontAsset = CreateKoreanTmpFontAsset();
+                fontAsset.name = "StickerWorld_Korean_TMP";
+                var material = fontAsset.material;
+                var atlasTextures = fontAsset.atlasTextures;
+                AssetDatabase.CreateAsset(fontAsset, KoreanTmpFontAssetPath);
+                AddFontAssetSubAssets(fontAsset, material, atlasTextures);
+            }
+
+            fontAsset.TryAddCharacters(KoreanTmpWarmupCharacters(), out _);
+            EditorUtility.SetDirty(fontAsset);
+            if (fontAsset.atlasTextures != null)
+            {
+                foreach (var atlasTexture in fontAsset.atlasTextures)
+                {
+                    if (atlasTexture != null)
+                    {
+                        EditorUtility.SetDirty(atlasTexture);
+                    }
+                }
+            }
+
+            if (fontAsset.material != null)
+            {
+                EditorUtility.SetDirty(fontAsset.material);
+            }
+
+            AssetDatabase.SaveAssets();
+            return fontAsset;
+        }
+
+        private static bool HasUsableFontAtlas(TMP_FontAsset fontAsset)
+        {
+            return fontAsset.material != null
+                && fontAsset.atlasTextures != null
+                && fontAsset.atlasTextures.Length > 0
+                && fontAsset.atlasTextures[0] != null;
+        }
+
+        private static void AddFontAssetSubAssets(TMP_FontAsset fontAsset, Material material, Texture2D[] atlasTextures)
+        {
+            if (atlasTextures != null)
+            {
+                foreach (var atlasTexture in atlasTextures)
+                {
+                    if (atlasTexture == null || AssetDatabase.Contains(atlasTexture))
+                    {
+                        continue;
+                    }
+
+                    AssetDatabase.AddObjectToAsset(atlasTexture, fontAsset);
+                    EditorUtility.SetDirty(atlasTexture);
+                }
+            }
+
+            if (material != null && !AssetDatabase.Contains(material))
+            {
+                AssetDatabase.AddObjectToAsset(material, fontAsset);
+                EditorUtility.SetDirty(material);
+            }
+        }
+
+        private static void EnsureTmpSettingsAsset()
+        {
+            if (Resources.Load<TMP_Settings>("TMP Settings") != null)
+            {
+                return;
+            }
+
+            var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(TMP_Settings).Assembly);
+            if (packageInfo == null)
+            {
+                CreateFallbackTmpSettingsAsset();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+                return;
+            }
+
+            var packagePath = packageInfo.resolvedPath.Replace('\\', '/');
+            var essentialResourcesPackage = packagePath + "/Package Resources/TMP Essential Resources.unitypackage";
+            if (!File.Exists(essentialResourcesPackage))
+            {
+                CreateFallbackTmpSettingsAsset();
+            }
+            else
+            {
+                AssetDatabase.ImportPackage(essentialResourcesPackage, false);
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+
+            if (Resources.Load<TMP_Settings>("TMP Settings") == null)
+            {
+                CreateFallbackTmpSettingsAsset();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            }
+
+            _ = TMP_Settings.instance;
+        }
+
+        private static void CreateFallbackTmpSettingsAsset()
+        {
+            if (AssetDatabase.LoadAssetAtPath<TMP_Settings>(TmpSettingsAssetPath) != null)
+            {
+                return;
+            }
+
+            Directory.CreateDirectory(TmpSettingsDir);
+            var settings = ScriptableObject.CreateInstance<TMP_Settings>();
+            AssetDatabase.CreateAsset(settings, TmpSettingsAssetPath);
+        }
+
+        private static TMP_FontAsset CreateKoreanTmpFontAsset()
+        {
+            var koreanFont = EnsureProjectKoreanFont();
+            if (koreanFont != null)
+            {
+                var fontAsset = TMP_FontAsset.CreateFontAsset(koreanFont, 90, 9, GlyphRenderMode.SDFAA, 2048, 2048, AtlasPopulationMode.Dynamic, true);
+                if (fontAsset != null)
+                {
+                    return fontAsset;
+                }
+            }
+
+            var legacyFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            return TMP_FontAsset.CreateFontAsset(legacyFont, 90, 9, GlyphRenderMode.SDFAA, 2048, 2048, AtlasPopulationMode.Dynamic, true);
+        }
+
+        private static Font EnsureProjectKoreanFont()
+        {
+            var font = AssetDatabase.LoadAssetAtPath<Font>(KoreanFontAssetPath);
+            if (font != null)
+            {
+                return font;
+            }
+
+            if (!File.Exists(KoreanFontSourcePath))
+            {
+                return null;
+            }
+
+            Directory.CreateDirectory(KoreanFontDir);
+            File.Copy(KoreanFontSourcePath, KoreanFontAssetPath, true);
+            AssetDatabase.ImportAsset(KoreanFontAssetPath, ImportAssetOptions.ForceSynchronousImport);
+            return AssetDatabase.LoadAssetAtPath<Font>(KoreanFontAssetPath);
+        }
+
+        private static string KoreanTmpWarmupCharacters()
+        {
+            return
+                "가나다라마바사아자차카타파하0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" +
+                "스테이지 첫 금고 금고실 기록 보관실 후문 은행 로비 목표 완료 필요 다음 다시 시작 선택 사용 이동 좌클릭 부착 자신 성공 실패" +
+                "플레이어 경비원 CCTV 후보 문 벽 얇은 균열 난 돈상자 고양이 의자 왕좌 접대 유리 진열대 복사기 압수 서류함 대기" +
+                "몸 축소 진입로 확보 경비 처리 예절 상태 소음 유인 파괴 잠금장치 졸음 열림 작아짐 절전 왈 폐하 통과 가능 펑" +
+                "VIP 의식 망가뜨리고 안쪽 들어가기 끄지 않고 짖게 만들면 자리를 비웁니다 해법 부족 평범합니다";
+        }
+
+        private static StickerWorld3DPlayer CreatePlayer(Transform parent, TMP_FontAsset textFont, out StickerWorld3DTarget playerTarget)
         {
             var playerObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             playerObject.name = "플레이어";
@@ -198,7 +390,7 @@ namespace GamePrototype.StickerWorld.Editor
             controller.radius = 0.38f;
             controller.center = new Vector3(0f, 0f, 0f);
             var player = playerObject.AddComponent<StickerWorld3DPlayer>();
-            playerTarget = AddTarget(playerObject, "player", "플레이어", new[] { "Player", "Human" });
+            playerTarget = AddTarget(playerObject, "player", "플레이어", new[] { "Player", "Human" }, textFont);
             return player;
         }
 
@@ -217,14 +409,14 @@ namespace GamePrototype.StickerWorld.Editor
             return camera;
         }
 
-        private static GameObject CreateGuard(Transform parent, out StickerWorld3DTarget guardTarget, out StickerWorld3DGuard guardBrain, out GameObject guardVision)
+        private static GameObject CreateGuard(Transform parent, TMP_FontAsset textFont, out StickerWorld3DTarget guardTarget, out StickerWorld3DGuard guardBrain, out GameObject guardVision)
         {
             var guard = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             guard.name = "경비원";
             guard.transform.SetParent(parent, false);
             guard.transform.position = new Vector3(0.8f, 1f, 0.7f);
             guard.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Mat_Guard", new Color(0.45f, 0.38f, 0.28f));
-            guardTarget = AddTarget(guard, "guard", "경비원", new[] { "Human", "Guard" });
+            guardTarget = AddTarget(guard, "guard", "경비원", new[] { "Human", "Guard" }, textFont);
             guardVision = CreateGuardVision(guard.transform);
             guardBrain = guard.AddComponent<StickerWorld3DGuard>();
 
@@ -238,7 +430,7 @@ namespace GamePrototype.StickerWorld.Editor
             return guard;
         }
 
-        private static StickerWorld3DTarget CreateTarget(Transform parent, string id, string displayName, string[] tags, PrimitiveType primitive, Vector3 position, Vector3 scale, Color color, string materialName = null)
+        private static StickerWorld3DTarget CreateTarget(Transform parent, string id, string displayName, string[] tags, PrimitiveType primitive, Vector3 position, Vector3 scale, Color color, TMP_FontAsset textFont, string materialName = null)
         {
             var go = GameObject.CreatePrimitive(primitive);
             go.name = displayName;
@@ -246,13 +438,13 @@ namespace GamePrototype.StickerWorld.Editor
             go.transform.position = position;
             go.transform.localScale = scale;
             go.GetComponent<Renderer>().sharedMaterial = CreateMaterial(string.IsNullOrWhiteSpace(materialName) ? "Mat_" + id : materialName, color);
-            return AddTarget(go, id, displayName, tags);
+            return AddTarget(go, id, displayName, tags, textFont);
         }
 
-        private static StickerWorld3DTarget AddTarget(GameObject go, string id, string displayName, string[] tags)
+        private static StickerWorld3DTarget AddTarget(GameObject go, string id, string displayName, string[] tags, TMP_FontAsset textFont)
         {
-            var label = CreateWorldText(go.transform, "Label", displayName, new Vector3(0f, 1.35f, 0f), 46, Color.white);
-            var state = CreateWorldText(go.transform, "State", "대기", new Vector3(0f, 1.05f, 0f), 32, new Color(1f, 0.84f, 0.32f));
+            var label = CreateTargetWorldText(go, "Label", displayName, new Vector3(0f, 1.35f, 0f), 46, Color.white, textFont);
+            var state = CreateTargetWorldText(go, "State", "대기", new Vector3(0f, 1.05f, 0f), 32, new Color(1f, 0.84f, 0.32f), textFont);
             var target = go.AddComponent<StickerWorld3DTarget>();
             var mainRenderer = go.GetComponent<Renderer>();
             target.Configure(id, displayName, tags, mainRenderer != null ? new[] { mainRenderer } : new Renderer[0], label, state);
@@ -533,20 +725,34 @@ namespace GamePrototype.StickerWorld.Editor
             return marker.transform;
         }
 
-        private static TextMesh CreateWorldText(Transform parent, string name, string value, Vector3 localPosition, int fontSize, Color color)
+        private static TMP_Text CreateTargetWorldText(GameObject target, string name, string value, Vector3 localOffset, int fontSize, Color color, TMP_FontAsset textFont)
+        {
+            var parent = target.transform.parent != null ? target.transform.parent : target.transform;
+            Vector3 worldPosition = target.transform.TransformPoint(localOffset);
+            Vector3 parentLocalPosition = parent.InverseTransformPoint(worldPosition);
+            var text = CreateWorldText(parent, target.name + "_" + name, value, parentLocalPosition, fontSize, color, textFont);
+            var follower = text.gameObject.AddComponent<StickerWorld3DWorldLabel>();
+            follower.Configure(target.transform, localOffset, new Vector3(70f, 0f, 0f), 0.045f);
+            return text;
+        }
+
+        private static TMP_Text CreateWorldText(Transform parent, string name, string value, Vector3 localPosition, int fontSize, Color color, TMP_FontAsset textFont)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             go.transform.localPosition = localPosition;
             go.transform.localRotation = Quaternion.Euler(70f, 0f, 0f);
-            var text = go.AddComponent<TextMesh>();
+            go.transform.localScale = Vector3.one * 0.045f;
+
+            var text = go.AddComponent<TextMeshPro>();
             text.text = value;
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.font = textFont;
             text.fontSize = fontSize;
-            text.anchor = TextAnchor.MiddleCenter;
-            text.alignment = TextAlignment.Center;
+            text.alignment = TextAlignmentOptions.Center;
             text.color = color;
-            go.transform.localScale = Vector3.one * 0.05f;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.overflowMode = TextOverflowModes.Overflow;
+            text.sortingOrder = 20;
             return text;
         }
 

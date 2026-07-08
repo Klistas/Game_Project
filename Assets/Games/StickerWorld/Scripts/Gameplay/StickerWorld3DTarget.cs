@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GamePrototype.StickerWorld.Core;
+using TMPro;
 using UnityEngine;
 
 namespace GamePrototype.StickerWorld.Gameplay
@@ -10,8 +11,8 @@ namespace GamePrototype.StickerWorld.Gameplay
         [SerializeField] private string displayName;
         [SerializeField] private string[] baseTags;
         [SerializeField] private Renderer[] renderers;
-        [SerializeField] private TextMesh label;
-        [SerializeField] private TextMesh stateLabel;
+        [SerializeField] private TMP_Text label;
+        [SerializeField] private TMP_Text stateLabel;
 
         private readonly List<string> runtimeTags = new List<string>();
         private readonly List<Color> baseColors = new List<Color>();
@@ -22,7 +23,7 @@ namespace GamePrototype.StickerWorld.Gameplay
         public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? name : displayName;
         public IReadOnlyList<string> Tags => runtimeTags;
 
-        public void Configure(string id, string labelText, string[] tags, Renderer[] targetRenderers, TextMesh nameLabel, TextMesh state)
+        public void Configure(string id, string labelText, string[] tags, Renderer[] targetRenderers, TMP_Text nameLabel, TMP_Text state)
         {
             targetId = id;
             displayName = labelText;

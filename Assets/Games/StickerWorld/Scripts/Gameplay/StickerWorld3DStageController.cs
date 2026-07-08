@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GamePrototype.StickerWorld.Core;
 using GamePrototype.StickerWorld.Data;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,13 @@ namespace GamePrototype.StickerWorld.Gameplay
 {
     public sealed class StickerWorld3DStageController : MonoBehaviour
     {
+        public enum StageObjectiveMode
+        {
+            ClassicVault,
+            VipCeremony,
+            ArchiveBackdoor
+        }
+
         [SerializeField] private StickerSO[] stickers;
         [SerializeField] private TagRuleSO[] rules;
         [SerializeField] private Camera stageCamera;
@@ -36,20 +44,22 @@ namespace GamePrototype.StickerWorld.Gameplay
         [SerializeField, TextArea] private string successBody = "CCTV는 졸고, 경비는 왕실 예절을 하느라 바쁘고, 플레이어는 금고 문 밑 먼지처럼 들어갔습니다.";
         [SerializeField] private string nextSceneName;
         [SerializeField] private string nextStageLabel = "다음 스테이지";
+        [SerializeField] private StageObjectiveMode objectiveMode = StageObjectiveMode.ClassicVault;
+        [SerializeField] private TMP_FontAsset textFont;
 
         private readonly StickerApplicationService stickerService = new StickerApplicationService();
         private readonly Dictionary<StickerSO, bool> usedStickers = new Dictionary<StickerSO, bool>();
 
-        private Text stickerBarText;
-        private Text aimText;
-        private Text logText;
-        private Text objectiveText;
+        private TMP_Text stickerBarText;
+        private TMP_Text aimText;
+        private TMP_Text logText;
+        private TMP_Text objectiveText;
         private CanvasGroup resultGroup;
-        private Text resultText;
+        private TMP_Text resultText;
         private Image resultPanelImage;
         private Button restartButton;
         private Button nextStageButton;
-        private Text nextStageButtonText;
+        private TMP_Text nextStageButtonText;
         private StickerWorld3DTarget hoverTarget;
         private AudioSource audioSource;
         private AudioClip attachClip;
@@ -137,6 +147,17 @@ namespace GamePrototype.StickerWorld.Gameplay
             }
         }
 
+        public void ConfigureTextFont(TMP_FontAsset font)
+        {
+            textFont = font;
+        }
+
+        public void ConfigureStageObjective(StageObjectiveMode mode)
+        {
+            objectiveMode = mode;
+            RefreshObjectiveText();
+        }
+
         public void ConfigureCctvZone(Vector2 xRange, Vector2 zRange)
         {
             cctvZoneX = xRange;
@@ -216,9 +237,9 @@ namespace GamePrototype.StickerWorld.Gameplay
                 return;
             }
 
-            if (!CanEnterVault())
+            if (!IsObjectiveComplete())
             {
-                WriteLog(blockedGoalLog);
+                WriteLog(BuildBlockedGoalLog());
                 return;
             }
 
@@ -481,6 +502,19 @@ namespace GamePrototype.StickerWorld.Gameplay
             SetGuardVisionVisible(false);
         }
 
+        private bool IsObjectiveComplete()
+        {
+            switch (objectiveMode)
+            {
+                case StageObjectiveMode.VipCeremony:
+                    return IsPlayerPrepared() && IsVipDoorPrepared() && IsVipGuardCeremonyReady();
+                case StageObjectiveMode.ArchiveBackdoor:
+                    return IsPlayerPrepared() && IsArchiveCctvBarking() && IsArchiveBackdoorOpen();
+                default:
+                    return CanEnterVault();
+            }
+        }
+
         private bool CanEnterVault()
         {
             bool playerCanEnter = playerTarget != null && (playerTarget.HasTag("Tiny") || playerTarget.HasTag("Ghost"));
@@ -497,6 +531,44 @@ namespace GamePrototype.StickerWorld.Gameplay
                 (wallTarget != null && (wallTarget.HasTag("Open") || wallTarget.HasTag("Destroyed")));
 
             return playerCanEnter && guardNeutralized && routeOpen;
+        }
+
+        private string BuildBlockedGoalLog()
+        {
+            var missing = new List<string>();
+            switch (objectiveMode)
+            {
+                case StageObjectiveMode.VipCeremony:
+                    AddMissing(missing, IsPlayerPrepared(), "플레이어 축소");
+                    AddMissing(missing, IsVipDoorPrepared(), "VIP 금고문 열기");
+                    AddMissing(missing, IsVipGuardCeremonyReady(), "경비 예절 상태");
+                    break;
+                case StageObjectiveMode.ArchiveBackdoor:
+                    AddMissing(missing, IsPlayerPrepared(), "플레이어 축소");
+                    AddMissing(missing, IsArchiveCctvBarking(), "CCTV 소음 유인");
+                    AddMissing(missing, IsArchiveBackdoorOpen(), "후문 벽 파괴");
+                    break;
+                default:
+                    AddMissing(missing, IsPlayerPrepared(), "플레이어 축소");
+                    AddMissing(missing, IsRoutePrepared(), "진입로 확보");
+                    AddMissing(missing, IsGuardNeutralized(), "경비 처리");
+                    break;
+            }
+
+            if (missing.Count == 0)
+            {
+                return blockedGoalLog;
+            }
+
+            return blockedGoalLog + "\n아직 필요: " + string.Join(", ", missing);
+        }
+
+        private static void AddMissing(List<string> missing, bool isReady, string label)
+        {
+            if (!isReady)
+            {
+                missing.Add(label);
+            }
         }
 
         private void DetectFailure()
@@ -578,6 +650,26 @@ namespace GamePrototype.StickerWorld.Gameplay
             return playerTarget != null && (playerTarget.HasTag("Tiny") || playerTarget.HasTag("Ghost"));
         }
 
+        private bool IsVipDoorPrepared()
+        {
+            return vaultTarget != null && (vaultTarget.HasTag("Open") || vaultTarget.HasTag("Destroyed"));
+        }
+
+        private bool IsVipGuardCeremonyReady()
+        {
+            return guardTarget == null || guardTarget.HasTag("Bowing") || guardTarget.HasTag("Royal");
+        }
+
+        private bool IsArchiveCctvBarking()
+        {
+            return cctvTarget != null && cctvTarget.HasTag("Distracting");
+        }
+
+        private bool IsArchiveBackdoorOpen()
+        {
+            return wallTarget != null && (wallTarget.HasTag("Open") || wallTarget.HasTag("Destroyed"));
+        }
+
         private bool IsRoutePrepared()
         {
             return IsCctvNeutralized() ||
@@ -595,7 +687,20 @@ namespace GamePrototype.StickerWorld.Gameplay
             objectiveText.text =
                 $"{stageTitle}\n" +
                 $"목표: {goalText}\n" +
-                $"몸 작게: {StatusText(IsPlayerPrepared())} / 진입로 확보: {StatusText(IsRoutePrepared())} / 경비 처리: {StatusText(IsGuardNeutralized())}";
+                BuildObjectiveStatusLine();
+        }
+
+        private string BuildObjectiveStatusLine()
+        {
+            switch (objectiveMode)
+            {
+                case StageObjectiveMode.VipCeremony:
+                    return $"몸 축소: {StatusText(IsPlayerPrepared())} / VIP 금고문: {StatusText(IsVipDoorPrepared())} / 경비 예절: {StatusText(IsVipGuardCeremonyReady())}";
+                case StageObjectiveMode.ArchiveBackdoor:
+                    return $"몸 축소: {StatusText(IsPlayerPrepared())} / CCTV 소음 유인: {StatusText(IsArchiveCctvBarking())} / 후문 파괴: {StatusText(IsArchiveBackdoorOpen())}";
+                default:
+                    return $"몸 축소: {StatusText(IsPlayerPrepared())} / 진입로 확보: {StatusText(IsRoutePrepared())} / 경비 처리: {StatusText(IsGuardNeutralized())}";
+            }
         }
 
         private static string StatusText(bool completeStep)
@@ -626,7 +731,7 @@ namespace GamePrototype.StickerWorld.Gameplay
             resultText = CreateText(resultRoot.transform, "ResultText", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.9f), 28, TextAnchor.MiddleCenter, new Color(0.1f, 0.1f, 0.08f), string.Empty);
             restartButton = CreateButton(resultRoot.transform, "RestartButton", new Vector2(0.18f, 0.08f), new Vector2(0.47f, 0.22f), "다시 시작", RestartStage);
             nextStageButton = CreateButton(resultRoot.transform, "NextStageButton", new Vector2(0.53f, 0.08f), new Vector2(0.82f, 0.22f), NextStageLabel(), LoadNextStage);
-            nextStageButtonText = nextStageButton.GetComponentInChildren<Text>();
+            nextStageButtonText = nextStageButton.GetComponentInChildren<TMP_Text>();
             nextStageButton.gameObject.SetActive(false);
             resultGroup.alpha = 0f;
             resultGroup.blocksRaycasts = false;
@@ -949,7 +1054,7 @@ namespace GamePrototype.StickerWorld.Gameplay
             return rect;
         }
 
-        private static Text CreateText(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, int fontSize, TextAnchor anchor, Color color, string value)
+        private TMP_Text CreateText(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, int fontSize, TextAnchor anchor, Color color, string value)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
@@ -958,18 +1063,23 @@ namespace GamePrototype.StickerWorld.Gameplay
             rect.anchorMax = anchorMax;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-            var text = go.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var text = go.AddComponent<TextMeshProUGUI>();
+            if (textFont != null)
+            {
+                text.font = textFont;
+            }
+
             text.fontSize = fontSize;
-            text.alignment = anchor;
+            text.alignment = ToTextMeshProAlignment(anchor);
             text.color = color;
             text.text = value;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.overflowMode = TextOverflowModes.Truncate;
+            text.raycastTarget = false;
             return text;
         }
 
-        private static Button CreateButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, string label, UnityEngine.Events.UnityAction onClick)
+        private Button CreateButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, string label, UnityEngine.Events.UnityAction onClick)
         {
             var rect = CreatePanel(parent, name, anchorMin, anchorMax, new Color(0.08f, 0.11f, 0.12f, 0.96f));
             var button = rect.gameObject.AddComponent<Button>();
@@ -977,6 +1087,33 @@ namespace GamePrototype.StickerWorld.Gameplay
             button.onClick.AddListener(onClick);
             CreateText(rect.transform, "Label", new Vector2(0.04f, 0.08f), new Vector2(0.96f, 0.92f), 20, TextAnchor.MiddleCenter, Color.white, label);
             return button;
+        }
+
+        private static TextAlignmentOptions ToTextMeshProAlignment(TextAnchor anchor)
+        {
+            switch (anchor)
+            {
+                case TextAnchor.UpperLeft:
+                    return TextAlignmentOptions.TopLeft;
+                case TextAnchor.UpperCenter:
+                    return TextAlignmentOptions.Top;
+                case TextAnchor.UpperRight:
+                    return TextAlignmentOptions.TopRight;
+                case TextAnchor.MiddleLeft:
+                    return TextAlignmentOptions.Left;
+                case TextAnchor.MiddleCenter:
+                    return TextAlignmentOptions.Center;
+                case TextAnchor.MiddleRight:
+                    return TextAlignmentOptions.Right;
+                case TextAnchor.LowerLeft:
+                    return TextAlignmentOptions.BottomLeft;
+                case TextAnchor.LowerCenter:
+                    return TextAlignmentOptions.Bottom;
+                case TextAnchor.LowerRight:
+                    return TextAlignmentOptions.BottomRight;
+                default:
+                    return TextAlignmentOptions.Center;
+            }
         }
     }
 }

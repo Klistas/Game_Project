@@ -180,6 +180,74 @@
 - [x] EditMode 테스트 45/45 통과.
 - [x] 최종 콘솔 0건 확인.
 
+## 2026-07-08 — 3D G0 에셋/스테이지 정체성 1차 패스
+
+- [x] Kenney Furniture Kit 일부 FBX 모델 선별 적용.
+  - Source: `https://kenney.nl/assets/furniture-kit`
+  - License: CC0
+  - License record: `Assets/Licenses/Kenney_FurnitureKit_CC0.md`
+- [x] 선별 모델을 `Assets/Games/StickerWorld/Art/External/KenneyFurnitureKit/Models` 아래에 추가.
+- [x] 전체 팩을 통째로 넣지 않고, 스테이지 정체성에 필요한 모델만 사용.
+- [x] Stage 01을 은행 로비/대기줄 느낌으로 보강.
+  - 벤치, 창구 책상, 모니터, 키보드, 식물, 입구 러그, 보관 상자.
+- [x] Stage 02를 VIP 라운지 느낌으로 보강.
+  - 원형 러그, 소파, 커피 테이블, 서랍장, 플로어 램프, 코트랙, 식물.
+- [x] Stage 03을 기록 보관실 느낌으로 보강.
+  - 책장, 책더미, 박스, 후문 프레임, 업무 책상, 노트북, 스탠드 조명.
+- [x] FBX 원본 단위가 씬보다 커서 공통 스케일 보정값을 추가.
+- [x] Stage 01/02/03 씬 빌더 재실행 및 화면 확인.
+  - `Assets/Screenshots/stickerworld_assetpass_stage01_scaled.png`
+  - `Assets/Screenshots/stickerworld_assetpass_stage02_scaled.png`
+  - `Assets/Screenshots/stickerworld_assetpass_stage03_scaled.png`
+- [x] EditMode 테스트 45/45 통과.
+- [x] 최종 콘솔 0건 확인.
+
+## 2026-07-08 — 3D G0 스테이지별 목표 구조 분리
+
+- [x] `StickerWorld3DStageController`에 스테이지 목표 타입 추가.
+  - `ClassicVault`: 기존 첫 금고형 기본 침입.
+  - `VipCeremony`: VIP 금고문 열기 + 경비 예절 상태 + 플레이어 축소.
+  - `ArchiveBackdoor`: CCTV 소음 유인 + 후문 벽 파괴 + 플레이어 축소.
+- [x] HUD 목표 상태 문구를 스테이지별로 다르게 표시하도록 변경.
+  - Stage 01: 몸 축소 / 진입로 확보 / 경비 처리.
+  - Stage 02: 몸 축소 / VIP 금고문 / 경비 예절.
+  - Stage 03: 몸 축소 / CCTV 소음 유인 / 후문 파괴.
+- [x] 실패 로그가 빠진 조건을 구체적으로 알려주도록 개선.
+- [x] Stage 02가 예전식 "경비 처리만 하고 들어가기"로는 끝나지 않도록 분리.
+  - 금고문을 열지 않으면 `VIP 금고문 열기`가 부족하다고 안내.
+- [x] Stage 03이 예전식 "CCTV 무력화"로는 끝나지 않도록 분리.
+  - CCTV를 재우면 실패하고, 개 스티커로 소음 유인을 만들어야 함.
+- [x] Stage 01/02/03 씬 빌더 재실행 및 Build Settings 포함 상태 확인.
+- [x] 플레이 모드 강제 루트 검증.
+  - Stage 01 성공: `졸림 + CCTV`, `왕 + 의자`, `작음 + 플레이어`.
+  - Stage 02 성공: `왕 + 왕좌 의자`, `졸림 + VIP 금고문`, `작음 + 플레이어`.
+  - Stage 02 오답 차단: 금고문을 열지 않으면 클리어 불가.
+  - Stage 03 성공: `개 + 짖는 CCTV 후보`, `폭발 + 균열 난 후문 벽`, `작음 + 플레이어`.
+  - Stage 03 오답 차단: CCTV를 재우면 클리어 불가.
+- [x] 결과 스크린샷 저장.
+  - `Assets/Screenshots/stickerworld_objectivepass_stage01_result.png`
+  - `Assets/Screenshots/stickerworld_objectivepass_stage02_result.png`
+  - `Assets/Screenshots/stickerworld_objectivepass_stage03_result.png`
+- [x] EditMode 테스트 45/45 통과.
+- [x] 최종 콘솔 0건 확인.
+
+## 2026-07-08 — 3D G0 TMP 한글 텍스트 선명도 패스
+
+- [x] 3D 월드 라벨을 legacy `TextMesh`에서 `TextMeshPro`로 교체.
+- [x] HUD 텍스트를 uGUI `Text`에서 `TextMeshProUGUI`로 교체.
+- [x] `StickerWorld3DWorldLabel`을 추가해 라벨이 얇은 벽/문/소품의 비균일 스케일을 상속받지 않도록 분리.
+- [x] TextMeshPro Essential Resources 자동 보장 로직 추가.
+- [x] `NotoSansKR-VF.ttf`를 프로젝트 내부로 가져와 한글 TMP 폰트 에셋 생성.
+  - Source: `https://fonts.google.com/noto/specimen/Noto%2BSans%2BKR`
+  - License: SIL Open Font License 1.1
+  - License record: `Assets/Licenses/NotoSansKR_OFL.md`
+- [x] Stage 01/02/03 씬 빌더 재실행으로 모든 3D 씬 라벨 재생성.
+- [x] legacy `TextMesh`/uGUI `Text`가 3D 스티커월드 씬에 남지 않은 것 확인.
+- [x] 화면 확인 스크린샷 저장.
+  - `Assets/Screenshots/stickerworld_tmp_text_stage03.png`
+- [x] EditMode 테스트 45/45 통과.
+- [x] 최종 콘솔 에러 0건, 관련 경고 0건 확인.
+
 ## 다음 작업
 
 - [x] 스티커/태그/규칙 SO 생성 메뉴 정리.
@@ -192,6 +260,10 @@
 - [x] 2번째 3D 퍼즐 방 제작.
 - [x] 3개 이상 3D 퍼즐 방 제작.
 - [x] 3개 스테이지 연속 데모 런 연결.
+- [x] 외부 CC0 에셋 1차 적용으로 스테이지별 화면 정체성 보강.
+- [x] 스테이지별 규칙/목표 구조를 더 다르게 만들어 반복감 줄이기.
+- [x] 3D 월드 라벨/HUD를 TMP 한글 렌더링으로 교체해 깨져 보이는 텍스트 수정.
+- [ ] 각 스테이지에 2개 이상 대체 해법을 의도적으로 설계하고 안내/리플레이성을 검증.
 - [ ] 사람 플레이로 3개 스테이지 연속 클립성 검증.
 
 ## 검증 기준
