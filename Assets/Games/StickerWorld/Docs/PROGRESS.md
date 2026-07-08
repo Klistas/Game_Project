@@ -130,17 +130,69 @@
   - `Assets/Screenshots/stickerworld_3d_stage02_success.png`
 - [x] EditMode 테스트 45/45 통과.
 
+## 2026-07-08 — 반응 모션 연결 + 3D Stage 03 추가
+
+- [x] `StickerWorld3DReactionMotion` 추가.
+  - 반응 결과가 단순 태그/색상 변경에 그치지 않고 실제 오브젝트 변형으로 보이도록 연결.
+  - `PowerOff`: CCTV/기계가 꺾임.
+  - `Explode`: 벽/문/소품이 납작하게 무너짐.
+  - `PassThrough`: 문/벽이 작아지거나 틈을 냄.
+  - `Bow`: 의자/고양이/경비가 왕실 반응처럼 커지거나 숙임.
+  - `MakeNoise`: CCTV/소품이 회전하며 소리 반응을 드러냄.
+- [x] `StickerWorld3DStageController`가 반응 모션 컴포넌트를 호출하도록 연결.
+- [x] 기존 Stage 01/02 빌더 재실행 시 주요 오브젝트에 기본 반응 모션이 자동 부착되도록 정리.
+- [x] 세 번째 퍼즐 방 생성 메뉴 추가.
+  - `Tools > StickerWorld > Build 3D Stage 03 Scene`
+  - `StickerWorld3DStage03.unity`
+- [x] Stage 03을 기록 보관실 후문 테마로 구성.
+  - 짖는 CCTV 후보
+  - 균열 난 후문 벽
+  - 기록 금고문
+  - 복사기
+  - 압수 돈상자
+  - 서류함 고양이
+  - 대기 의자
+- [x] Stage 03의 대표 클리어 루트 구성.
+  - `개 + CCTV`: 경비 주의 분산
+  - `폭발 + 균열 난 후문 벽`: 우회 진입로 확보
+  - `작음 + 플레이어`: 금고 안쪽 진입 가능
+- [x] Stage 03를 Build Settings에 추가.
+- [x] 플레이 모드에서 첫 화면과 성공 결과 패널을 스크린샷으로 확인.
+  - `Assets/Screenshots/stickerworld_3d_stage03_first_screen-1.png`
+  - `Assets/Screenshots/stickerworld_3d_stage03_success-1.png`
+- [x] EditMode 테스트 45/45 통과.
+
+## 2026-07-08 — 3스테이지 G0 데모 런 연결
+
+- [x] Stage 01 -> Stage 02 -> Stage 03 -> Stage 01 순환 흐름 연결.
+- [x] ResultPanel에 `다시 시작` / `다음 스테이지` 버튼 추가.
+- [x] 성공 결과 상태에서 `N` 단축키로 다음 스테이지 이동, `R` 단축키로 현재 스테이지 재시작 가능하도록 정리.
+- [x] Stage 01 성공 결과는 `다음: VIP 금고실`, Stage 02 성공 결과는 `다음: 기록 보관실`, Stage 03 최종 결과는 `처음부터 다시`로 표시.
+- [x] Stage 01/02/03 씬 빌더 재실행 및 Build Settings 포함 상태 확인.
+- [x] 플레이 모드 강제 루트 검증으로 세 방 연속 흐름 확인.
+  - Stage 01 클리어 후 Stage 02 로드 확인.
+  - Stage 02 클리어 후 Stage 03 로드 확인.
+  - Stage 03 클리어 후 Stage 01 재시작 확인.
+- [x] 연결 흐름 스크린샷 저장.
+  - `Assets/Screenshots/stickerworld_3d_run_stage01_next.png`
+  - `Assets/Screenshots/stickerworld_3d_run_stage02_next.png`
+  - `Assets/Screenshots/stickerworld_3d_run_complete.png`
+- [x] EditMode 테스트 45/45 통과.
+- [x] 최종 콘솔 0건 확인.
+
 ## 다음 작업
 
 - [x] 스티커/태그/규칙 SO 생성 메뉴 정리.
 - [x] 5개 G0 스티커 데이터 생성.
 - [x] 은행 테마 placeholder 씬 빌더 작성.
 - [x] 드래그 앤 드롭 부착 조작 구현.
-- [ ] 반응 프리미티브를 실제 씬 오브젝트 동작으로 연결.
+- [x] 반응 프리미티브를 실제 씬 오브젝트 동작으로 연결.
 - [x] 3D 감시/발각/실패 루프 추가.
 - [x] 3D 스티커 부착 VFX/사운드 추가.
 - [x] 2번째 3D 퍼즐 방 제작.
-- [ ] 3개 이상 스테이지 제작 후 클립성 검증.
+- [x] 3개 이상 3D 퍼즐 방 제작.
+- [x] 3개 스테이지 연속 데모 런 연결.
+- [ ] 사람 플레이로 3개 스테이지 연속 클립성 검증.
 
 ## 검증 기준
 

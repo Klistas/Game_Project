@@ -33,7 +33,9 @@ namespace GamePrototype.StickerWorld.Gameplay
         [SerializeField] private string introLog = "은행 G0: CCTV를 재우고, 경비를 속이고, 몸을 작게 만들어 금고 안으로 들어가세요.";
         [SerializeField] private string blockedGoalLog = "금고 앞까지 왔지만 아직 해법이 부족합니다. 감시, 경비, 진입 방법을 모두 망가뜨려야 합니다.";
         [SerializeField] private string successTitle = "기상천외한 침입 성공";
-        [SerializeField, TextArea] private string successBody = "CCTV는 졸고, 경비는 왕실 예절을 하느라 바쁘고, 플레이어는 금고 문 밑 먼지처럼 들어갔습니다.\n\nR: 다시 시작";
+        [SerializeField, TextArea] private string successBody = "CCTV는 졸고, 경비는 왕실 예절을 하느라 바쁘고, 플레이어는 금고 문 밑 먼지처럼 들어갔습니다.";
+        [SerializeField] private string nextSceneName;
+        [SerializeField] private string nextStageLabel = "다음 스테이지";
 
         private readonly StickerApplicationService stickerService = new StickerApplicationService();
         private readonly Dictionary<StickerSO, bool> usedStickers = new Dictionary<StickerSO, bool>();
@@ -45,6 +47,9 @@ namespace GamePrototype.StickerWorld.Gameplay
         private CanvasGroup resultGroup;
         private Text resultText;
         private Image resultPanelImage;
+        private Button restartButton;
+        private Button nextStageButton;
+        private Text nextStageButtonText;
         private StickerWorld3DTarget hoverTarget;
         private AudioSource audioSource;
         private AudioClip attachClip;
@@ -53,6 +58,7 @@ namespace GamePrototype.StickerWorld.Gameplay
         private AudioClip failureClip;
         private int selectedIndex;
         private bool complete;
+        private bool lastResultSuccess;
 
         public void Configure(
             StickerSO[] stickerAssets,
@@ -121,6 +127,16 @@ namespace GamePrototype.StickerWorld.Gameplay
             }
         }
 
+        public void ConfigureStageFlow(string nextScene, string nextLabel)
+        {
+            nextSceneName = string.IsNullOrWhiteSpace(nextScene) ? string.Empty : nextScene.Trim();
+            nextStageLabel = string.IsNullOrWhiteSpace(nextLabel) ? "다음 스테이지" : nextLabel.Trim();
+            if (nextStageButtonText != null)
+            {
+                nextStageButtonText.text = nextStageLabel;
+            }
+        }
+
         public void ConfigureCctvZone(Vector2 xRange, Vector2 zRange)
         {
             cctvZoneX = xRange;
@@ -162,7 +178,15 @@ namespace GamePrototype.StickerWorld.Gameplay
             {
                 if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
                 {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    RestartStage();
+                }
+
+                if (Keyboard.current != null &&
+                    Keyboard.current.nKey.wasPressedThisFrame &&
+                    lastResultSuccess &&
+                    HasNextStage())
+                {
+                    LoadNextStage();
                 }
 
                 return;
@@ -335,6 +359,7 @@ namespace GamePrototype.StickerWorld.Gameplay
                 target.AddTag(effect.targetTagId);
             }
 
+            bool motionHandled = ApplyReactionMotion(target, effect);
             switch (effect.reaction)
             {
                 case ReactionId.PowerOff:
@@ -362,12 +387,23 @@ namespace GamePrototype.StickerWorld.Gameplay
                     target.AddTag("Open");
                     target.SetState("펑!");
                     target.Tint(new Color(0.86f, 0.24f, 0.14f));
-                    target.gameObject.SetActive(false);
+                    if (target == cctvTarget && cctvCone != null)
+                    {
+                        cctvCone.SetActive(false);
+                    }
+
+                    if (!motionHandled)
+                    {
+                        target.gameObject.SetActive(false);
+                    }
                     break;
                 case ReactionId.Resize:
                     target.AddTag("Tiny");
                     target.SetState("작아짐");
-                    target.SetTargetScale(effect.value <= 0f ? 0.55f : effect.value);
+                    if (!motionHandled)
+                    {
+                        target.SetTargetScale(effect.value <= 0f ? 0.55f : effect.value);
+                    }
                     target.Tint(new Color(0.34f, 0.62f, 0.88f));
                     break;
                 case ReactionId.MakeNoise:
@@ -385,7 +421,10 @@ namespace GamePrototype.StickerWorld.Gameplay
                 case ReactionId.PassThrough:
                     target.AddTag("Open");
                     target.SetState("통과 가능");
-                    target.SetTargetScale(effect.value <= 0f ? 0.72f : effect.value);
+                    if (!motionHandled)
+                    {
+                        target.SetTargetScale(effect.value <= 0f ? 0.72f : effect.value);
+                    }
                     target.Tint(new Color(0.28f, 0.72f, 0.58f));
                     break;
             }
@@ -393,6 +432,17 @@ namespace GamePrototype.StickerWorld.Gameplay
             WriteLog(string.IsNullOrWhiteSpace(effect.message) ? $"{target.DisplayName}이 이상하게 반응했습니다." : effect.message);
             PlayClip(reactionClip);
             SpawnPulse(target.transform.position, ReactionColor(effect.reaction), 0.62f);
+        }
+
+        private static bool ApplyReactionMotion(StickerWorld3DTarget target, RuleEffect effect)
+        {
+            if (target == null)
+            {
+                return false;
+            }
+
+            var motion = target.GetComponent<StickerWorld3DReactionMotion>();
+            return motion != null && motion.Apply(effect.reaction, effect.value);
         }
 
         private void DistractGuardTo(Vector3 point)
@@ -461,7 +511,7 @@ namespace GamePrototype.StickerWorld.Gameplay
                 FinishStage(
                     false,
                     "CCTV에 찍혔습니다",
-                    "감시 카메라가 아직 깨어 있었습니다. 스티커 범죄는 귀엽지만 증거는 선명합니다.\n\nR: 다시 시작");
+                    "감시 카메라가 아직 깨어 있었습니다. 스티커 범죄는 귀엽지만 증거는 선명합니다.");
                 return;
             }
 
@@ -470,7 +520,7 @@ namespace GamePrototype.StickerWorld.Gameplay
                 FinishStage(
                     false,
                     "경비원에게 들켰습니다",
-                    "경비원이 스티커를 보고도 웃지 않았습니다. 이 은행은 유머 감각이 부족합니다.\n\nR: 다시 시작");
+                    "경비원이 스티커를 보고도 웃지 않았습니다. 이 은행은 유머 감각이 부족합니다.");
             }
         }
 
@@ -568,12 +618,16 @@ namespace GamePrototype.StickerWorld.Gameplay
             stickerBarText = CreateText(canvasObject.transform, "StickerBar", new Vector2(0.03f, 0.03f), new Vector2(0.68f, 0.09f), 22, TextAnchor.MiddleLeft, new Color(1f, 0.86f, 0.35f), string.Empty);
             aimText = CreateText(canvasObject.transform, "AimText", new Vector2(0.32f, 0.83f), new Vector2(0.68f, 0.89f), 21, TextAnchor.MiddleCenter, new Color(0.92f, 0.96f, 1f), string.Empty);
             logText = CreateText(canvasObject.transform, "LogText", new Vector2(0.68f, 0.78f), new Vector2(0.97f, 0.97f), 18, TextAnchor.UpperRight, new Color(0.86f, 0.9f, 0.96f), string.Empty);
-            CreateText(canvasObject.transform, "Help", new Vector2(0.68f, 0.03f), new Vector2(0.97f, 0.11f), 18, TextAnchor.MiddleRight, new Color(0.75f, 0.82f, 0.9f), "WASD 이동 / 1~5 선택 / 좌클릭 부착 / F 자신에게 부착");
+            CreateText(canvasObject.transform, "Help", new Vector2(0.68f, 0.03f), new Vector2(0.97f, 0.11f), 18, TextAnchor.MiddleRight, new Color(0.75f, 0.82f, 0.9f), "WASD 이동 / 1~5 선택 / 좌클릭 부착 / F 자신 / R 재시작 / 성공 후 N 다음");
 
             var resultRoot = CreatePanel(canvasObject.transform, "ResultPanel", new Vector2(0.28f, 0.24f), new Vector2(0.72f, 0.74f), new Color(0.94f, 0.92f, 0.82f, 1f));
             resultPanelImage = resultRoot.GetComponent<Image>();
             resultGroup = resultRoot.gameObject.AddComponent<CanvasGroup>();
-            resultText = CreateText(resultRoot.transform, "ResultText", new Vector2(0.08f, 0.12f), new Vector2(0.92f, 0.88f), 28, TextAnchor.MiddleCenter, new Color(0.1f, 0.1f, 0.08f), string.Empty);
+            resultText = CreateText(resultRoot.transform, "ResultText", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.9f), 28, TextAnchor.MiddleCenter, new Color(0.1f, 0.1f, 0.08f), string.Empty);
+            restartButton = CreateButton(resultRoot.transform, "RestartButton", new Vector2(0.18f, 0.08f), new Vector2(0.47f, 0.22f), "다시 시작", RestartStage);
+            nextStageButton = CreateButton(resultRoot.transform, "NextStageButton", new Vector2(0.53f, 0.08f), new Vector2(0.82f, 0.22f), NextStageLabel(), LoadNextStage);
+            nextStageButtonText = nextStageButton.GetComponentInChildren<Text>();
+            nextStageButton.gameObject.SetActive(false);
             resultGroup.alpha = 0f;
             resultGroup.blocksRaycasts = false;
             resultGroup.interactable = false;
@@ -797,6 +851,7 @@ namespace GamePrototype.StickerWorld.Gameplay
         private void FinishStage(bool success, string title, string body)
         {
             complete = true;
+            lastResultSuccess = success;
             if (player != null)
             {
                 player.SetControlEnabled(false);
@@ -818,7 +873,7 @@ namespace GamePrototype.StickerWorld.Gameplay
             if (resultText != null)
             {
                 resultText.color = Color.white;
-                resultText.text = title + "\n\n" + body;
+                resultText.text = title + "\n\n" + body + "\n\n" + ResultControlHint(success);
             }
 
             if (resultGroup != null)
@@ -827,6 +882,57 @@ namespace GamePrototype.StickerWorld.Gameplay
                 resultGroup.blocksRaycasts = true;
                 resultGroup.interactable = true;
             }
+
+            if (restartButton != null)
+            {
+                restartButton.gameObject.SetActive(true);
+            }
+
+            if (nextStageButton != null)
+            {
+                bool showNext = success && HasNextStage();
+                nextStageButton.gameObject.SetActive(showNext);
+                nextStageButton.interactable = showNext;
+                if (nextStageButtonText != null)
+                {
+                    nextStageButtonText.text = NextStageLabel();
+                }
+            }
+        }
+
+        private bool HasNextStage()
+        {
+            return !string.IsNullOrWhiteSpace(nextSceneName);
+        }
+
+        private string NextStageLabel()
+        {
+            return string.IsNullOrWhiteSpace(nextStageLabel) ? "다음 스테이지" : nextStageLabel;
+        }
+
+        private string ResultControlHint(bool success)
+        {
+            if (success && HasNextStage())
+            {
+                return $"N: {NextStageLabel()} / R: 다시 시작";
+            }
+
+            return "R: 다시 시작";
+        }
+
+        private void RestartStage()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        private void LoadNextStage()
+        {
+            if (!HasNextStage())
+            {
+                return;
+            }
+
+            SceneManager.LoadScene(nextSceneName);
         }
 
         private static RectTransform CreatePanel(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Color color)
@@ -861,6 +967,16 @@ namespace GamePrototype.StickerWorld.Gameplay
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
             return text;
+        }
+
+        private static Button CreateButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, string label, UnityEngine.Events.UnityAction onClick)
+        {
+            var rect = CreatePanel(parent, name, anchorMin, anchorMax, new Color(0.08f, 0.11f, 0.12f, 0.96f));
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = rect.GetComponent<Image>();
+            button.onClick.AddListener(onClick);
+            CreateText(rect.transform, "Label", new Vector2(0.04f, 0.08f), new Vector2(0.96f, 0.92f), 20, TextAnchor.MiddleCenter, Color.white, label);
+            return button;
         }
     }
 }
