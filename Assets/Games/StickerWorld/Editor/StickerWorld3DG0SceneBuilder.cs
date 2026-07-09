@@ -6,6 +6,7 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.TextCore.LowLevel;
 
 namespace GamePrototype.StickerWorld.Editor
@@ -24,6 +25,8 @@ namespace GamePrototype.StickerWorld.Editor
         private const string TmpSettingsAssetPath = TmpSettingsDir + "/TMP Settings.asset";
         private const string KoreanTmpFontAssetPath = MaterialsDir + "/StickerWorld_Korean_TMP.asset";
         private const float KenneyModelScale = 0.3f;
+        private const float StageCameraOrthographicSize = 5.55f;
+        private const float WorldLabelScale = 0.055f;
 
         [MenuItem("Tools/StickerWorld/Build 3D G0 Scene")]
         public static void Build()
@@ -400,11 +403,22 @@ namespace GamePrototype.StickerWorld.Editor
             var camera = cameraObject.AddComponent<Camera>();
             camera.tag = "MainCamera";
             camera.orthographic = true;
-            camera.orthographicSize = 5.9f;
+            camera.orthographicSize = StageCameraOrthographicSize;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.07f, 0.085f, 0.1f);
-            cameraObject.transform.position = new Vector3(0f, 11.0f, -4.2f);
-            cameraObject.transform.rotation = Quaternion.Euler(70f, 0f, 0f);
+            camera.backgroundColor = new Color(0.055f, 0.065f, 0.075f);
+            camera.nearClipPlane = 0.1f;
+            camera.farClipPlane = 80f;
+            camera.allowHDR = true;
+            camera.allowMSAA = true;
+            camera.useOcclusionCulling = true;
+            cameraObject.transform.position = new Vector3(0f, 10.4f, -4.6f);
+            cameraObject.transform.rotation = Quaternion.Euler(66f, 0f, 0f);
+            var cameraData = cameraObject.AddComponent<UniversalAdditionalCameraData>();
+            cameraData.renderPostProcessing = true;
+            cameraData.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            cameraData.antialiasingQuality = AntialiasingQuality.High;
+            cameraData.requiresDepthTexture = true;
+            cameraData.requiresColorTexture = false;
             cameraObject.AddComponent<AudioListener>();
             return camera;
         }
@@ -544,7 +558,9 @@ namespace GamePrototype.StickerWorld.Editor
             lightObject.transform.SetParent(parent, false);
             var light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.1f;
+            light.intensity = 1.2f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.35f;
             lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
         }
 
@@ -577,7 +593,9 @@ namespace GamePrototype.StickerWorld.Editor
             lightObject.transform.SetParent(parent, false);
             var light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.15f;
+            light.intensity = 1.25f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.35f;
             lightObject.transform.rotation = Quaternion.Euler(50f, -25f, 0f);
         }
 
@@ -609,7 +627,9 @@ namespace GamePrototype.StickerWorld.Editor
             lightObject.transform.SetParent(parent, false);
             var light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.08f;
+            light.intensity = 1.18f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.35f;
             lightObject.transform.rotation = Quaternion.Euler(52f, -35f, 0f);
         }
 
@@ -732,7 +752,7 @@ namespace GamePrototype.StickerWorld.Editor
             Vector3 parentLocalPosition = parent.InverseTransformPoint(worldPosition);
             var text = CreateWorldText(parent, target.name + "_" + name, value, parentLocalPosition, fontSize, color, textFont);
             var follower = text.gameObject.AddComponent<StickerWorld3DWorldLabel>();
-            follower.Configure(target.transform, localOffset, new Vector3(70f, 0f, 0f), 0.045f);
+            follower.Configure(target.transform, localOffset, new Vector3(66f, 0f, 0f), WorldLabelScale);
             return text;
         }
 
@@ -741,8 +761,8 @@ namespace GamePrototype.StickerWorld.Editor
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             go.transform.localPosition = localPosition;
-            go.transform.localRotation = Quaternion.Euler(70f, 0f, 0f);
-            go.transform.localScale = Vector3.one * 0.045f;
+            go.transform.localRotation = Quaternion.Euler(66f, 0f, 0f);
+            go.transform.localScale = Vector3.one * WorldLabelScale;
 
             var text = go.AddComponent<TextMeshPro>();
             text.text = value;
